@@ -7,19 +7,20 @@ local notifs = {}
 local visible = true
 local dbcooper = false
 
--- paleta (tema negro)
-local COL_BG = Color3.fromRGB(15, 15, 15)
-local COL_BG2 = Color3.fromRGB(20, 20, 20)
-local COL_BTN = Color3.fromRGB(35, 35, 35)
+-- paleta (tema negro absoluto + rojo)
+local COL_BG = Color3.fromRGB(4, 4, 4)
+local COL_BG2 = Color3.fromRGB(8, 8, 8)
+local COL_BTN = Color3.fromRGB(18, 18, 18)
 local COL_TEXT = Color3.fromRGB(255, 255, 255)
 local COL_SUBTEXT = Color3.fromRGB(200, 200, 200)
-local COL_ACCENT = Color3.fromRGB(21, 103, 251)
+local COL_ACCENT = Color3.fromRGB(220, 25, 25)
 local COL_RED = Color3.fromRGB(230, 40, 40)
 
 local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
 
 local NORMAL_SIZE = UDim2.new(0, 721, 0, 584)
 local MAX_SIZE = UDim2.new(0, 900, 0, 720)
+local TOPBAR_ONLY_SIZE = UDim2.new(0, 721, 0, 64)
 
 local function tp(ins, pos, time, thing)
     game:GetService("TweenService"):Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut),{Position = pos}):Play()
@@ -334,12 +335,63 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     title.Position = UDim2.new(0, 74, 0, 10)
     title.Size = UDim2.new(0, 250, 0, 48)
     title.Font = Enum.Font.GothamBold
-    title.TextColor3 = COL_TEXT
+    title.TextColor3 = COL_ACCENT
     title.TextSize = 22
     title.TextWrapped = true
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.TextYAlignment = Enum.TextYAlignment.Center
     title.ZIndex = 10
+    title.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextStrokeTransparency = 0.75 -- difuminado blanco sutil alrededor del texto rojo
+
+    -- pulso suave del difuminado para dar sensación de "glow" animado
+    task.spawn(function()
+        while title.Parent do
+            game:GetService("TweenService"):Create(title, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {TextStrokeTransparency = 0.4}):Play()
+            task.wait(1.2)
+            game:GetService("TweenService"):Create(title, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {TextStrokeTransparency = 0.75}):Play()
+            task.wait(1.2)
+        end
+    end)
+
+    -- ===== FPS y nombre del juego, debajo del título =====
+    local statsLabel = Instance.new("TextLabel")
+    statsLabel.Name = "statsLabel"
+    statsLabel.Parent = main
+    statsLabel.BackgroundTransparency = 1
+    statsLabel.Position = UDim2.new(0, 74, 0, 34)
+    statsLabel.Size = UDim2.new(0, 320, 0, 22)
+    statsLabel.Font = Enum.Font.Gotham
+    statsLabel.TextColor3 = COL_SUBTEXT
+    statsLabel.TextSize = 14
+    statsLabel.TextXAlignment = Enum.TextXAlignment.Left
+    statsLabel.TextYAlignment = Enum.TextYAlignment.Top
+    statsLabel.ZIndex = 10
+
+    local gameName = "?"
+    local okName, resName = pcall(function()
+        return game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+    end)
+    if okName and resName then
+        gameName = resName
+    else
+        gameName = game.Name
+    end
+
+    local fpsCount = 0
+    local fpsAccum = 0
+    local fpsTimer = 0
+    game:GetService("RunService").Heartbeat:Connect(function(dt)
+        fpsAccum += 1
+        fpsTimer += dt
+        if fpsTimer >= 1 then
+            fpsCount = fpsAccum
+            fpsAccum = 0
+            fpsTimer = 0
+            statsLabel.Text = "Fps = " .. fpsCount .. "    Game = " .. gameName
+        end
+    end)
+    statsLabel.Text = "Fps = 0    Game = " .. gameName
 
     -- fila de controles elegantes (derecha)
     local controls = Instance.new("Frame")
@@ -387,7 +439,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         return btn
     end
 
-    -- [-] minimizar/reabrir (ver reopenButton más abajo, este es el visual dentro de la topbar por si se prefiere)
+    -- [-] colapsar (deja solo la topbar visible)
     local collapseButton = styledControlButton("collapseButton", "–", COL_BTN, 18)
 
     -- [◻] maximizar/restaurar
@@ -397,12 +449,13 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     local closeButton = styledControlButton("closeButton", "✕", Color3.fromRGB(60, 20, 20), 14)
     closeButton.BackgroundColor3 = Color3.fromRGB(50, 20, 20)
 
-    -- ===== botón flotante NEGRO redondeado, FUERA del menú, siempre visible: minimiza/reabre el menú completo =====
+    -- ===== botón flotante NEGRO, sin bordes, FUERA del menú, siempre visible, movible: minimiza/reabre el menú =====
     local reopenButton = Instance.new("ImageButton")
     reopenButton.Name = "reopenButton"
     reopenButton.Parent = scrgui
     reopenButton.AnchorPoint = Vector2.new(1, 1)
     reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    reopenButton.BackgroundTransparency = 0
     reopenButton.BorderSizePixel = 0
     reopenButton.Position = UDim2.new(1, -30, 1, -30)
     reopenButton.Size = UDim2.new(0, 64, 0, 64)
@@ -410,17 +463,50 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     reopenButton.ScaleType = Enum.ScaleType.Fit
     reopenButton.Visible = true
     reopenButton.ZIndex = 50
+    -- sin UICorner ni UIStroke: botón plano, cuadrado, sin bordes
 
-    local uc_reopen = Instance.new("UICorner")
-    uc_reopen.CornerRadius = UDim.new(0, 20)
-    uc_reopen.Parent = reopenButton
-
-    local reopenStroke = Instance.new("UIStroke")
-    reopenStroke.Parent = reopenButton
-    reopenStroke.Color = Color3.fromRGB(60, 60, 60)
-    reopenStroke.Thickness = 1.5
+    -- animación de aparición
+    reopenButton.Size = UDim2.new(0, 0, 0, 0)
+    game:GetService("TweenService"):Create(reopenButton, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 64, 0, 64)}):Play()
 
     addHover(reopenButton, {scaleUp = 1.1})
+
+    -- drag propio para el botón de minimizar (independiente del drag del menú)
+    local rbDragging, rbDragStart, rbStartPos, rbDragInput
+    local rbMoved = false
+
+    reopenButton.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            rbDragging = true
+            rbMoved = false
+            rbDragStart = input.Position
+            rbStartPos = reopenButton.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    rbDragging = false
+                end
+            end)
+        end
+    end)
+
+    reopenButton.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            rbDragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == rbDragInput and rbDragging then
+            local delta = input.Position - rbDragStart
+            if delta.Magnitude > 3 then
+                rbMoved = true
+            end
+            reopenButton.Position = UDim2.new(
+                rbStartPos.X.Scale, rbStartPos.X.Offset + delta.X,
+                rbStartPos.Y.Scale, rbStartPos.Y.Offset + delta.Y
+            )
+        end
+    end)
 
     -- notif1
     local notif = Instance.new("Frame")
@@ -613,7 +699,8 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     else
         title.Text = "Write Hub"
     end
-    tp(main, UDim2.new(0.5, 0, 0.5, 0), 1)
+    main.Size = UDim2.new(0, 0, 0, 0)
+    game:GetService("TweenService"):Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, 0, 0.5, 0), Size = NORMAL_SIZE}):Play()
     window = {}
 
     -- ===== [◻] maximizar/restaurar =====
@@ -691,12 +778,49 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         openAnimating = false
     end
 
-    -- tanto el botón externo como el [-] de la topbar hacen la misma acción: minimizar/reabrir
+    -- el botón flotante externo oculta/reabre el menú completo
     reopenButton.MouseButton1Click:Connect(function()
+        if rbMoved then return end -- evita reabrir el menú justo después de arrastrar el botón
         window:ToggleVisible()
     end)
+
+    -- ===== [-] colapsar: deja visible solo la topbar (icono + título + fps/game + controles) =====
+    local isCollapsed = false
+    local collapseAnimating = false
+    local sizeBeforeCollapse = NORMAL_SIZE
+    local collapsibleChildren = {workarea, search, sidebar}
+
+    function window:ToggleCollapse()
+        if collapseAnimating then return end
+        collapseAnimating = true
+        isCollapsed = not isCollapsed
+
+        if isCollapsed then
+            sizeBeforeCollapse = isMaximized and MAX_SIZE or NORMAL_SIZE
+            for _, child in ipairs(collapsibleChildren) do
+                game:GetService("TweenService"):Create(child, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 1}):Play()
+            end
+            local tw = game:GetService("TweenService"):Create(main, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {Size = TOPBAR_ONLY_SIZE})
+            tw:Play()
+            tw.Completed:Wait()
+            for _, child in ipairs(collapsibleChildren) do
+                child.Visible = false
+            end
+            collapseButton.Text = "▭"
+        else
+            for _, child in ipairs(collapsibleChildren) do
+                child.Visible = true
+                child.BackgroundTransparency = child == workarea and 0 or (child == search and 0 or 1)
+            end
+            game:GetService("TweenService"):Create(main, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {Size = sizeBeforeCollapse}):Play()
+            collapseButton.Text = "–"
+        end
+
+        collapseAnimating = false
+    end
+
     collapseButton.MouseButton1Click:Connect(function()
-        window:ToggleVisible()
+        window:ToggleCollapse()
     end)
 
     if visiblekey then
