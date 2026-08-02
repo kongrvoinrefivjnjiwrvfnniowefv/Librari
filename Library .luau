@@ -18,6 +18,9 @@ local COL_RED = Color3.fromRGB(230, 40, 40)
 
 local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
 
+local NORMAL_SIZE = UDim2.new(0, 721, 0, 584)
+local MAX_SIZE = UDim2.new(0, 900, 0, 720)
+
 local function tp(ins, pos, time, thing)
     game:GetService("TweenService"):Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut),{Position = pos}):Play()
 end
@@ -120,7 +123,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         splash.Parent = scrgui
         splash.AnchorPoint = Vector2.new(0.5, 0.5)
         splash.BackgroundColor3 = COL_BG
-        splash.BackgroundTransparency = 0.100
+        splash.BackgroundTransparency = 0
         splash.Position = UDim2.new(0.5, 0, 2, 0)
         splash.Size = UDim2.new(0, 340, 0, 340)
         splash.Visible = true
@@ -149,19 +152,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         -- spinner rojo tipo "sin conexión" alrededor de la imagen de carga
         local _, stopSpin = addLoadingSpinner(splash, sicon)
 
-        local sshadow = Instance.new("ImageLabel")
-        sshadow.Name = "sshadow"
-        sshadow.Parent = splash
-        sshadow.AnchorPoint = Vector2.new(0.5, 0.5)
-        sshadow.BackgroundTransparency = 1
-        sshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-        sshadow.Size = UDim2.new(1.20000005, 0, 1.20000005, 0)
-        sshadow.ZIndex = 39
-        sshadow.Image = "rbxassetid://313486536"
-        sshadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-        sshadow.ImageTransparency = 0.400
-        sshadow.TileSize = UDim2.new(0, 1, 0, 1)
-
         splash:TweenPosition(UDim2.new(0.5, 0, 0.5, 0), "InOut", "Quart", 1)
         wait(3)
         stopSpin()
@@ -177,7 +167,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     main.BackgroundColor3 = COL_BG
     main.BackgroundTransparency = 0.050
     main.Position = UDim2.new(0.5, 0, 2, 0)
-    main.Size = UDim2.new(0, 721, 0, 584)
+    main.Size = NORMAL_SIZE
     main.ClipsDescendants = false
 
     local uc = Instance.new("UICorner")
@@ -327,67 +317,126 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         end
     end)
 
-    -- ===== botones de control: cerrar (esquina) + minimizar/reabrir dedicado =====
+    -- ===== TOPBAR: icono + título a la izquierda, controles [-] [◻] [X] a la derecha =====
 
-    -- botón de CERRAR: tu imagen, grande, en la esquina superior derecha del menú
-    local closeButton = Instance.new("ImageButton")
-    closeButton.Name = "closeButton"
-    closeButton.Parent = main
-    closeButton.AnchorPoint = Vector2.new(1, 0)
-    closeButton.BackgroundTransparency = 1
-    closeButton.BorderSizePixel = 0
-    closeButton.Position = UDim2.new(1, -14, 0, 14)
-    closeButton.Size = UDim2.new(0, 46, 0, 46)
-    closeButton.Image = CONTROL_IMAGE
-    closeButton.Active = true
-    closeButton.ZIndex = 10
+    local topbarIcon = Instance.new("ImageLabel")
+    topbarIcon.Name = "topbarIcon"
+    topbarIcon.Parent = main
+    topbarIcon.BackgroundTransparency = 1
+    topbarIcon.Position = UDim2.new(0, 18, 0, 14)
+    topbarIcon.Size = UDim2.new(0, 32, 0, 32)
+    topbarIcon.Image = CONTROL_IMAGE
+    topbarIcon.ScaleType = Enum.ScaleType.Fit
+    topbarIcon.ZIndex = 10
 
-    local uc_close = Instance.new("UICorner")
-    uc_close.CornerRadius = UDim.new(1, 0)
-    uc_close.Parent = closeButton
-
-    addHover(closeButton, {scaleUp = 1.15})
-
-    closeButton.MouseButton1Click:Connect(function()
-        scrgui:Destroy()
-    end)
-
-    -- botón de MINIMIZAR/REABRIR: separado, negro, esquinas redondeadas, con la imagen adentro
-    local minimizeButton = Instance.new("ImageButton")
-    minimizeButton.Name = "minimizeButton"
-    minimizeButton.Parent = main
-    minimizeButton.AnchorPoint = Vector2.new(1, 0)
-    minimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    minimizeButton.BorderSizePixel = 0
-    minimizeButton.Position = UDim2.new(1, -68, 0, 14)
-    minimizeButton.Size = UDim2.new(0, 46, 0, 46)
-    minimizeButton.Image = CONTROL_IMAGE
-    minimizeButton.ScaleType = Enum.ScaleType.Fit
-    minimizeButton.Active = true
-    minimizeButton.ZIndex = 10
-
-    local uc_min = Instance.new("UICorner")
-    uc_min.CornerRadius = UDim.new(0, 14)
-    uc_min.Parent = minimizeButton
-
-    addHover(minimizeButton, {scaleUp = 1.1})
-
-    -- title text at topbar
+    local uc_ticon = Instance.new("UICorner")
+    uc_ticon.CornerRadius = UDim.new(1, 0)
+    uc_ticon.Parent = topbarIcon
 
     local title = Instance.new("TextLabel")
     title.Name = "title"
     title.Parent = main
-    title.BackgroundColor3 = COL_BG
     title.BackgroundTransparency = 1
-    title.BorderSizePixel = 2
-    title.Position = UDim2.new(0.389000326, 0, 0.0351027399, 0)
-    title.Size = UDim2.new(0, 250, 0, 15)
-    title.Font = Enum.Font.Gotham
-    title.LineHeight = 1.180
+    title.Position = UDim2.new(0, 58, 0, 14)
+    title.Size = UDim2.new(0, 250, 0, 32)
+    title.Font = Enum.Font.GothamBold
     title.TextColor3 = COL_TEXT
-    title.TextSize = 28
+    title.TextSize = 22
     title.TextWrapped = true
     title.TextXAlignment = Enum.TextXAlignment.Left
+    title.TextYAlignment = Enum.TextYAlignment.Center
+    title.ZIndex = 10
+
+    -- fila de controles (derecha)
+    local controls = Instance.new("Frame")
+    controls.Name = "controls"
+    controls.Parent = main
+    controls.AnchorPoint = Vector2.new(1, 0)
+    controls.BackgroundTransparency = 1
+    controls.Position = UDim2.new(1, -14, 0, 14)
+    controls.Size = UDim2.new(0, 110, 0, 32)
+    controls.ZIndex = 10
+
+    local ull_ctrl = Instance.new("UIListLayout")
+    ull_ctrl.Parent = controls
+    ull_ctrl.FillDirection = Enum.FillDirection.Horizontal
+    ull_ctrl.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ull_ctrl.VerticalAlignment = Enum.VerticalAlignment.Center
+    ull_ctrl.SortOrder = Enum.SortOrder.LayoutOrder
+    ull_ctrl.Padding = UDim.new(0, 8)
+
+    -- [-] minimizar/colapsar
+    local collapseButton = Instance.new("TextButton")
+    collapseButton.Name = "collapseButton"
+    collapseButton.Parent = controls
+    collapseButton.BackgroundColor3 = COL_BTN
+    collapseButton.Size = UDim2.new(0, 32, 0, 32)
+    collapseButton.AutoButtonColor = false
+    collapseButton.Font = Enum.Font.GothamBold
+    collapseButton.Text = "-"
+    collapseButton.TextColor3 = COL_TEXT
+    collapseButton.TextSize = 22
+    collapseButton.ZIndex = 10
+
+    local uc_collapse = Instance.new("UICorner")
+    uc_collapse.CornerRadius = UDim.new(0, 10)
+    uc_collapse.Parent = collapseButton
+    addHover(collapseButton, {scaleUp = 1.1, hoverColor = Color3.fromRGB(55, 55, 55)})
+
+    -- [◻] maximizar/restaurar
+    local maximizeButton = Instance.new("TextButton")
+    maximizeButton.Name = "maximizeButton"
+    maximizeButton.Parent = controls
+    maximizeButton.BackgroundColor3 = COL_BTN
+    maximizeButton.Size = UDim2.new(0, 32, 0, 32)
+    maximizeButton.AutoButtonColor = false
+    maximizeButton.Font = Enum.Font.GothamBold
+    maximizeButton.Text = "[ ]"
+    maximizeButton.TextColor3 = COL_TEXT
+    maximizeButton.TextSize = 16
+    maximizeButton.ZIndex = 10
+
+    local uc_max = Instance.new("UICorner")
+    uc_max.CornerRadius = UDim.new(0, 10)
+    uc_max.Parent = maximizeButton
+    addHover(maximizeButton, {scaleUp = 1.1, hoverColor = Color3.fromRGB(55, 55, 55)})
+
+    -- [X] cerrar (con confirmación sí/no)
+    local closeButton = Instance.new("TextButton")
+    closeButton.Name = "closeButton"
+    closeButton.Parent = controls
+    closeButton.BackgroundColor3 = COL_RED
+    closeButton.Size = UDim2.new(0, 32, 0, 32)
+    closeButton.AutoButtonColor = false
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.Text = "X"
+    closeButton.TextColor3 = COL_TEXT
+    closeButton.TextSize = 18
+    closeButton.ZIndex = 10
+
+    local uc_closebtn = Instance.new("UICorner")
+    uc_closebtn.CornerRadius = UDim.new(0, 10)
+    uc_closebtn.Parent = closeButton
+    addHover(closeButton, {scaleUp = 1.1, hoverColor = Color3.fromRGB(255, 70, 70)})
+
+    -- ===== botón flotante NEGRO redondeado con la imagen, para reabrir el menú completo =====
+    local reopenButton = Instance.new("ImageButton")
+    reopenButton.Name = "reopenButton"
+    reopenButton.Parent = scrgui
+    reopenButton.AnchorPoint = Vector2.new(1, 1)
+    reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    reopenButton.BorderSizePixel = 0
+    reopenButton.Position = UDim2.new(1, -30, 1, -30)
+    reopenButton.Size = UDim2.new(0, 60, 0, 60)
+    reopenButton.Image = CONTROL_IMAGE
+    reopenButton.ScaleType = Enum.ScaleType.Fit
+    reopenButton.Visible = false
+    reopenButton.ZIndex = 20
+
+    local uc_reopen = Instance.new("UICorner")
+    uc_reopen.CornerRadius = UDim.new(0, 18)
+    uc_reopen.Parent = reopenButton
+    addHover(reopenButton, {scaleUp = 1.1})
 
     -- notif1
     local notif = Instance.new("Frame")
@@ -398,7 +447,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notif.Position = UDim2.new(0.5, 0, 0.5, 0)
     notif.Size = UDim2.new(0, 304, 0, 362)
     notif.Visible = false
-    notif.ZIndex = 3
+    notif.ZIndex = 30
 
     local uc_11 = Instance.new("UICorner")
     uc_11.CornerRadius = UDim.new(0, 18)
@@ -411,7 +460,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notificon.BackgroundTransparency = 1
     notificon.Position = UDim2.new(0.335526317, 0, 0.0994475111, 0)
     notificon.Size = UDim2.new(0, 100, 0, 100)
-    notificon.ZIndex = 3
+    notificon.ZIndex = 30
     notificon.Image = "rbxassetid://4871684504"
     notificon.ImageColor3 = COL_TEXT
 
@@ -421,7 +470,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notifbutton1.BackgroundColor3 = COL_ACCENT
     notifbutton1.Position = UDim2.new(0.0559210554, 0, 0.817679524, 0)
     notifbutton1.Size = UDim2.new(0, 270, 0, 50)
-    notifbutton1.ZIndex = 3
+    notifbutton1.ZIndex = 30
     notifbutton1.Font = Enum.Font.Gotham
     notifbutton1.Text = "OK"
     notifbutton1.TextColor3 = COL_TEXT
@@ -432,16 +481,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     uc_12.Parent = notifbutton1
     addHover(notifbutton1, {scaleUp = 1.05})
 
-    local notifshadow = Instance.new("ImageLabel")
-    notifshadow.Name = "notifshadow"
-    notifshadow.Parent = notif
-    notifshadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    notifshadow.BackgroundTransparency = 1
-    notifshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    notifshadow.Size = UDim2.new(1.20000005, 0, 1.20000005, 0)
-    notifshadow.Image = "rbxassetid://313486536"
-    notifshadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-
     local notifdarkness = Instance.new("Frame")
     notifdarkness.Name = "notifdarkness"
     notifdarkness.Parent = notif
@@ -450,7 +489,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notifdarkness.BackgroundTransparency = 0.600
     notifdarkness.Position = UDim2.new(0.5, 0, 0.5, 0)
     notifdarkness.Size = UDim2.new(0, 721, 0, 584)
-    notifdarkness.ZIndex = 2
+    notifdarkness.ZIndex = 29
 
     local uc_13 = Instance.new("UICorner")
     uc_13.CornerRadius = UDim.new(0, 18)
@@ -463,7 +502,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notiftitle.BackgroundTransparency = 1
     notiftitle.Position = UDim2.new(0.167763159, 0, 0.375690609, 0)
     notiftitle.Size = UDim2.new(0, 200, 0, 50)
-    notiftitle.ZIndex = 3
+    notiftitle.ZIndex = 30
     notiftitle.Font = Enum.Font.GothamMedium
     notiftitle.Text = "Notice"
     notiftitle.TextColor3 = COL_TEXT
@@ -476,14 +515,14 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notiftext.BackgroundTransparency = 1
     notiftext.Position = UDim2.new(0.0822368413, 0, 0.513812184, 0)
     notiftext.Size = UDim2.new(0, 254, 0, 66)
-    notiftext.ZIndex = 3
+    notiftext.ZIndex = 30
     notiftext.Font = Enum.Font.Gotham
     notiftext.Text = "We would like to contact you regarding your car's extended warranty."
     notiftext.TextColor3 = COL_SUBTEXT
     notiftext.TextSize = 16
     notiftext.TextWrapped = true
 
-    -- notifcation 2 (two button)
+    -- notifcation 2 (two button) -- usada para la confirmación de cerrar
 
     local notif2 = Instance.new("Frame")
     notif2.Name = "notif2"
@@ -491,9 +530,9 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notif2.AnchorPoint = Vector2.new(0.5, 0.5)
     notif2.BackgroundColor3 = COL_BG
     notif2.Position = UDim2.new(0.5, 0, 0.5, 0)
-    notif2.Size = UDim2.new(0, 304, 0, 362)
+    notif2.Size = UDim2.new(0, 304, 0, 260)
     notif2.Visible = false
-    notif2.ZIndex = 3
+    notif2.ZIndex = 30
 
     local uc_14 = Instance.new("UICorner")
     uc_14.CornerRadius = UDim.new(0, 18)
@@ -506,7 +545,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notif2icon.BackgroundTransparency = 1
     notif2icon.Position = UDim2.new(0.335526317, 0, 0.0994475111, 0)
     notif2icon.Size = UDim2.new(0, 100, 0, 100)
-    notif2icon.ZIndex = 3
+    notif2icon.ZIndex = 30
     notif2icon.Image = "rbxassetid://12608260095"
     notif2icon.ImageColor3 = COL_TEXT
 
@@ -517,7 +556,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notif2title.BackgroundTransparency = 1
     notif2title.Position = UDim2.new(0.167763159, 0, 0.375690609, 0)
     notif2title.Size = UDim2.new(0, 200, 0, 50)
-    notif2title.ZIndex = 3
+    notif2title.ZIndex = 30
     notif2title.Font = Enum.Font.GothamMedium
     notif2title.Text = "Notice"
     notif2title.TextColor3 = COL_TEXT
@@ -530,7 +569,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notif2text.BackgroundTransparency = 1
     notif2text.Position = UDim2.new(0.0822368413, 0, 0.513812184, 0)
     notif2text.Size = UDim2.new(0, 254, 0, 66)
-    notif2text.ZIndex = 3
+    notif2text.ZIndex = 30
     notif2text.Font = Enum.Font.Gotham
     notif2text.Text = "We would like to contact you regarding your car's extended warranty."
     notif2text.TextColor3 = COL_SUBTEXT
@@ -543,7 +582,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notif2button1.BackgroundColor3 = COL_ACCENT
     notif2button1.Position = UDim2.new(0.0559210517, 0, 0.715469658, 0)
     notif2button1.Size = UDim2.new(0, 270, 0, 40)
-    notif2button1.ZIndex = 3
+    notif2button1.ZIndex = 30
     notif2button1.Font = Enum.Font.Gotham
     notif2button1.Text = "Sure!"
     notif2button1.TextColor3 = COL_TEXT
@@ -554,16 +593,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     uc_15.Parent = notif2button1
     addHover(notif2button1, {scaleUp = 1.05})
 
-    local notif2shadow = Instance.new("ImageLabel")
-    notif2shadow.Name = "notif2shadow"
-    notif2shadow.Parent = notif2
-    notif2shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    notif2shadow.BackgroundTransparency = 1
-    notif2shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    notif2shadow.Size = UDim2.new(1.20000005, 0, 1.20000005, 0)
-    notif2shadow.Image = "rbxassetid://313486536"
-    notif2shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-
     local notif2darkness = Instance.new("Frame")
     notif2darkness.Name = "notif2darkness"
     notif2darkness.Parent = notif2
@@ -572,7 +601,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notif2darkness.BackgroundTransparency = 0.600
     notif2darkness.Position = UDim2.new(0.5, 0, 0.5, 0)
     notif2darkness.Size = UDim2.new(0, 721, 0, 584)
-    notif2darkness.ZIndex = 2
+    notif2darkness.ZIndex = 29
 
     local uc_16 = Instance.new("UICorner")
     uc_16.CornerRadius = UDim.new(0, 18)
@@ -585,7 +614,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notif2button2.BackgroundTransparency = 1
     notif2button2.Position = UDim2.new(0.0526315793, 0, 0.842541456, 0)
     notif2button2.Size = UDim2.new(0, 270, 0, 40)
-    notif2button2.ZIndex = 3
+    notif2button2.ZIndex = 30
     notif2button2.Font = Enum.Font.Gotham
     notif2button2.Text = "Go away."
     notif2button2.TextColor3 = COL_SUBTEXT
@@ -598,28 +627,101 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     if ti then
         title.Text = ti
     else
-        title.Text = ""
+        title.Text = "Write Hub"
     end
-       tp(main, UDim2.new(0.5, 0, 0.5, 0), 1)
+    tp(main, UDim2.new(0.5, 0, 0.5, 0), 1)
     window = {}
 
-    -- ===== animación de minimizar/reabrir =====
+    -- ===== [-] colapsar: reduce la ventana a solo la topbar =====
+    local isCollapsed = false
+    local collapseAnimating = false
+    local expandedHeight = NORMAL_SIZE.Y.Offset
+
+    function window:ToggleCollapse()
+        if collapseAnimating then return end
+        collapseAnimating = true
+        isCollapsed = not isCollapsed
+
+        local goalHeight = isCollapsed and 60 or expandedHeight
+        workarea.Visible = not isCollapsed
+        sidebar.Visible = not isCollapsed
+        search.Visible = not isCollapsed
+
+        game:GetService("TweenService"):Create(
+            main,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+            {Size = UDim2.new(main.Size.X.Scale, main.Size.X.Offset, 0, goalHeight)}
+        ):Play()
+
+        task.wait(0.3)
+        collapseAnimating = false
+    end
+
+    collapseButton.MouseButton1Click:Connect(function()
+        window:ToggleCollapse()
+    end)
+
+    -- ===== [◻] maximizar/restaurar: alterna tamaño normal <-> grande =====
+    local isMaximized = false
+    local maxAnimating = false
+
+    function window:ToggleMaximize()
+        if maxAnimating or isCollapsed then return end
+        maxAnimating = true
+        isMaximized = not isMaximized
+
+        local goalSize = isMaximized and MAX_SIZE or NORMAL_SIZE
+        expandedHeight = goalSize.Y.Offset
+
+        game:GetService("TweenService"):Create(
+            main,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+            {Size = goalSize}
+        ):Play()
+
+        maximizeButton.Text = isMaximized and "❐" or "[ ]"
+
+        task.wait(0.3)
+        maxAnimating = false
+    end
+
+    maximizeButton.MouseButton1Click:Connect(function()
+        window:ToggleMaximize()
+    end)
+
+    -- ===== [X] cerrar con confirmación sí/no =====
+    closeButton.MouseButton1Click:Connect(function()
+        window:Notify2(
+            "¿Cerrar Write Hub?",
+            "Esta acción cerrará el menú por completo.",
+            "Sí",
+            "No",
+            nil,
+            function()
+                scrgui:Destroy()
+            end,
+            function() end
+        )
+    end)
+
+    -- ===== botón flotante negro: oculta/reabre el menú completo =====
     local isOpen = true
-    local animating = false
+    local openAnimating = false
 
     function window:ToggleVisible()
-        if animating then return end
-        animating = true
+        if openAnimating then return end
+        openAnimating = true
         isOpen = not isOpen
 
         if isOpen then
+            reopenButton.Visible = false
             main.Visible = true
             main.Size = UDim2.new(0, 0, 0, 0)
             main.Position = UDim2.new(0.5, 0, 0.5, 0)
             game:GetService("TweenService"):Create(
                 main,
                 TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-                {Size = UDim2.new(0, 721, 0, 584)}
+                {Size = isMaximized and MAX_SIZE or NORMAL_SIZE}
             ):Play()
             task.wait(0.35)
         else
@@ -631,12 +733,13 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             closeTween:Play()
             closeTween.Completed:Wait()
             main.Visible = false
+            reopenButton.Visible = true
         end
 
-        animating = false
+        openAnimating = false
     end
 
-    minimizeButton.MouseButton1Click:Connect(function()
+    reopenButton.MouseButton1Click:Connect(function()
         window:ToggleVisible()
     end)
 
