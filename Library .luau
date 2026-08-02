@@ -10,9 +10,13 @@ local dbcooper = false
 -- paleta (tema negro)
 local COL_BG = Color3.fromRGB(15, 15, 15)
 local COL_BG2 = Color3.fromRGB(20, 20, 20)
+local COL_BTN = Color3.fromRGB(35, 35, 35)
 local COL_TEXT = Color3.fromRGB(255, 255, 255)
 local COL_SUBTEXT = Color3.fromRGB(200, 200, 200)
 local COL_ACCENT = Color3.fromRGB(21, 103, 251)
+local COL_RED = Color3.fromRGB(230, 40, 40)
+
+local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
 
 local function tp(ins, pos, time, thing)
     game:GetService("TweenService"):Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut),{Position = pos}):Play()
@@ -46,6 +50,36 @@ local function addHover(btn, opts)
             game:GetService("TweenService"):Create(btn, tweenOut, {BackgroundColor3 = baseColor}):Play()
         end
     end)
+end
+
+-- spinner rojo tipo "sin conexión" alrededor de un ImageLabel/ImageButton
+local function addLoadingSpinner(parent, targetImage)
+    local ring = Instance.new("ImageLabel")
+    ring.Name = "loadingRing"
+    ring.Parent = parent
+    ring.AnchorPoint = Vector2.new(0.5, 0.5)
+    ring.BackgroundTransparency = 1
+    ring.Position = UDim2.new(0.5, 0, 0.5, 0)
+    ring.Size = UDim2.new(1.35, 0, 1.35, 0)
+    ring.ZIndex = (targetImage.ZIndex or 1) - 1
+    ring.Image = "rbxassetid://4965945880" -- anillo circular (aro simple)
+    ring.ImageColor3 = COL_RED
+    ring.ScaleType = Enum.ScaleType.Fit
+
+    local spinning = true
+    task.spawn(function()
+        while spinning and ring.Parent do
+            local tween = game:GetService("TweenService"):Create(
+                ring,
+                TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
+                {Rotation = ring.Rotation + 360}
+            )
+            tween:Play()
+            tween.Completed:Wait()
+        end
+    end)
+
+    return ring, function() spinning = false end
 end
 
 function lib:init(ti, dosplash, visiblekey, deleteprevious)
@@ -103,16 +137,17 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         sicon.BackgroundColor3 = COL_BG
         sicon.BackgroundTransparency = 1
         sicon.Position = UDim2.new(0.5, 0, 0.5, 0)
-        sicon.Size = UDim2.new(0, 191, 0, 190)
+        sicon.Size = UDim2.new(0, 150, 0, 150)
         sicon.ZIndex = 40
-        sicon.Image = "rbxassetid://12621719043"
+        sicon.Image = CONTROL_IMAGE
         sicon.ScaleType = Enum.ScaleType.Fit
-        sicon.TileSize = UDim2.new(1, 0, 20, 0)
 
-        local ug = Instance.new("UIGradient")
-        ug.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(0.01, Color3.fromRGB(61, 61, 61)), ColorSequenceKeypoint.new(0.47, Color3.fromRGB(41, 41, 41)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))}
-        ug.Rotation = 90
-        ug.Parent = sicon
+        local uc_sicon = Instance.new("UICorner")
+        uc_sicon.CornerRadius = UDim.new(1, 0)
+        uc_sicon.Parent = sicon
+
+        -- spinner rojo tipo "sin conexión" alrededor de la imagen de carga
+        local _, stopSpin = addLoadingSpinner(splash, sicon)
 
         local sshadow = Instance.new("ImageLabel")
         sshadow.Name = "sshadow"
@@ -126,8 +161,10 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         sshadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
         sshadow.ImageTransparency = 0.400
         sshadow.TileSize = UDim2.new(0, 1, 0, 1)
+
         splash:TweenPosition(UDim2.new(0.5, 0, 0.5, 0), "InOut", "Quart", 1)
-        wait(2)
+        wait(3)
+        stopSpin()
         splash:TweenPosition(UDim2.new(0.5, 0, 2, 0), "InOut", "Quart", 1)
         game:GetService("Debris"):AddItem(splash, 1)
     end
@@ -141,6 +178,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     main.BackgroundTransparency = 0.050
     main.Position = UDim2.new(0.5, 0, 2, 0)
     main.Size = UDim2.new(0, 721, 0, 584)
+    main.ClipsDescendants = false
 
     local uc = Instance.new("UICorner")
     uc.CornerRadius = UDim.new(0, 18)
@@ -289,43 +327,50 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         end
     end)
 
-    -- botón único de control (reemplaza close/minimize/resize)
+    -- ===== botones de control: cerrar (esquina) + minimizar/reabrir dedicado =====
 
-    local buttons = Instance.new("Frame")
-    buttons.Name = "buttons"
-    buttons.Parent = main
-    buttons.BackgroundColor3 = COL_BG
-    buttons.BackgroundTransparency = 1
-    buttons.Size = UDim2.new(0, 105, 0, 57)
+    -- botón de CERRAR: tu imagen, grande, en la esquina superior derecha del menú
+    local closeButton = Instance.new("ImageButton")
+    closeButton.Name = "closeButton"
+    closeButton.Parent = main
+    closeButton.AnchorPoint = Vector2.new(1, 0)
+    closeButton.BackgroundTransparency = 1
+    closeButton.BorderSizePixel = 0
+    closeButton.Position = UDim2.new(1, -14, 0, 14)
+    closeButton.Size = UDim2.new(0, 46, 0, 46)
+    closeButton.Image = CONTROL_IMAGE
+    closeButton.Active = true
+    closeButton.ZIndex = 10
 
-    local ull_3 = Instance.new("UIListLayout")
-    ull_3.Parent = buttons
-    ull_3.FillDirection = Enum.FillDirection.Horizontal
-    ull_3.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    ull_3.SortOrder = Enum.SortOrder.LayoutOrder
-    ull_3.VerticalAlignment = Enum.VerticalAlignment.Center
-    ull_3.Padding = UDim.new(0, 10)
+    local uc_close = Instance.new("UICorner")
+    uc_close.CornerRadius = UDim.new(1, 0)
+    uc_close.Parent = closeButton
 
-    local controlButton = Instance.new("ImageButton")
-    controlButton.Name = "controlButton"
-    controlButton.Parent = buttons
-    controlButton.BackgroundColor3 = Color3.fromRGB(250, 250, 250)
-    controlButton.BackgroundTransparency = 1
-    controlButton.BorderSizePixel = 0
-    controlButton.Size = UDim2.new(0, 30, 0, 30)
-    controlButton.Image = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
-    controlButton.Active = true
+    addHover(closeButton, {scaleUp = 1.15})
 
-    local uc_cb = Instance.new("UICorner")
-    uc_cb.CornerRadius = UDim.new(1, 0)
-    uc_cb.Parent = controlButton
-
-    addHover(controlButton, {scaleUp = 1.15})
-
-    -- click izquierdo = cerrar, click derecho = minimizar/mostrar
-    controlButton.MouseButton1Click:Connect(function()
+    closeButton.MouseButton1Click:Connect(function()
         scrgui:Destroy()
     end)
+
+    -- botón de MINIMIZAR/REABRIR: separado, negro, esquinas redondeadas, con la imagen adentro
+    local minimizeButton = Instance.new("ImageButton")
+    minimizeButton.Name = "minimizeButton"
+    minimizeButton.Parent = main
+    minimizeButton.AnchorPoint = Vector2.new(1, 0)
+    minimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    minimizeButton.BorderSizePixel = 0
+    minimizeButton.Position = UDim2.new(1, -68, 0, 14)
+    minimizeButton.Size = UDim2.new(0, 46, 0, 46)
+    minimizeButton.Image = CONTROL_IMAGE
+    minimizeButton.ScaleType = Enum.ScaleType.Fit
+    minimizeButton.Active = true
+    minimizeButton.ZIndex = 10
+
+    local uc_min = Instance.new("UICorner")
+    uc_min.CornerRadius = UDim.new(0, 14)
+    uc_min.Parent = minimizeButton
+
+    addHover(minimizeButton, {scaleUp = 1.1})
 
     -- title text at topbar
 
@@ -336,7 +381,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     title.BackgroundTransparency = 1
     title.BorderSizePixel = 2
     title.Position = UDim2.new(0.389000326, 0, 0.0351027399, 0)
-    title.Size = UDim2.new(0, 400, 0, 15)
+    title.Size = UDim2.new(0, 250, 0, 15)
     title.Font = Enum.Font.Gotham
     title.LineHeight = 1.180
     title.TextColor3 = COL_TEXT
@@ -558,23 +603,40 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
        tp(main, UDim2.new(0.5, 0, 0.5, 0), 1)
     window = {}
 
+    -- ===== animación de minimizar/reabrir =====
+    local isOpen = true
+    local animating = false
+
     function window:ToggleVisible()
-        if dbcooper then return end
-        visible = not visible
-        dbcooper = true
-        if visible then
-            tp(main, UDim2.new(0.5, 0, 0.5, 0), 0.5)
-            task.wait(0.5)
-            dbcooper = false
+        if animating then return end
+        animating = true
+        isOpen = not isOpen
+
+        if isOpen then
+            main.Visible = true
+            main.Size = UDim2.new(0, 0, 0, 0)
+            main.Position = UDim2.new(0.5, 0, 0.5, 0)
+            game:GetService("TweenService"):Create(
+                main,
+                TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+                {Size = UDim2.new(0, 721, 0, 584)}
+            ):Play()
+            task.wait(0.35)
         else
-            tp(main, main.Position + UDim2.new(0,0,2,0), 0.5)
-            task.wait(0.5)
-            dbcooper = false
+            local closeTween = game:GetService("TweenService"):Create(
+                main,
+                TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
+                {Size = UDim2.new(0, 0, 0, 0)}
+            )
+            closeTween:Play()
+            closeTween.Completed:Wait()
+            main.Visible = false
         end
+
+        animating = false
     end
 
-    -- click derecho en el botón de control = minimizar/mostrar
-    controlButton.MouseButton2Click:Connect(function()
+    minimizeButton.MouseButton1Click:Connect(function()
         window:ToggleVisible()
     end)
 
@@ -584,11 +646,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
                 window:ToggleVisible()
             end
         end)
-    end
-
-    function window:GreenButton(callback)
-        -- ahora se dispara con click derecho sostenido? se mantiene por compatibilidad, ligado al botón de control con doble propósito no aplica.
-        -- si necesitás un tercer callback dedicado, decime y agrego un botón extra.
     end
 
     function window:TempNotify(text1, text2, icon)
@@ -779,7 +836,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             sidebar2.TextColor3 = Color3.fromRGB(255, 255, 255)
             for b, v in next, workareas do
                 v.Visible = false
-                v.GroupTransparency = 0
             end
             workareamain.Visible = true
 
@@ -810,7 +866,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             button.Name = "button"
             button.Text = name
             button.Parent = workareamain
-            button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            button.BackgroundColor3 = COL_BTN
             button.BackgroundTransparency = 0
             button.Size = UDim2.new(0, 418, 0, 37)
             button.ZIndex = 2
@@ -858,68 +914,76 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 
         function sec:Switch(name, defaultmode, callback)
             local mode = defaultmode
-            local toggleswitch = Instance.new("TextLabel")
+            local toggleswitch = Instance.new("Frame")
             toggleswitch.Name = "toggleswitch"
             toggleswitch.Parent = workareamain
-            toggleswitch.BackgroundColor3 = COL_BG2
-            toggleswitch.BackgroundTransparency = 1
-            toggleswitch.BorderSizePixel = 2
+            toggleswitch.BackgroundColor3 = COL_BTN
+            toggleswitch.BackgroundTransparency = 0
+            toggleswitch.BorderSizePixel = 0
             toggleswitch.Size = UDim2.new(0, 418, 0, 37)
-            toggleswitch.Font = Enum.Font.Gotham
-            toggleswitch.Text = name
-            toggleswitch.TextColor3 = COL_TEXT
-            toggleswitch.TextSize = 21
-            toggleswitch.TextWrapped = true
-            toggleswitch.TextXAlignment = Enum.TextXAlignment.Left
+
+            local uc_sw = Instance.new("UICorner")
+            uc_sw.CornerRadius = UDim.new(0, 9)
+            uc_sw.Parent = toggleswitch
+
+            local swLabel = Instance.new("TextLabel")
+            swLabel.Name = "swLabel"
+            swLabel.Parent = toggleswitch
+            swLabel.BackgroundTransparency = 1
+            swLabel.Position = UDim2.new(0, 14, 0, 0)
+            swLabel.Size = UDim2.new(1, -100, 1, 0)
+            swLabel.Font = Enum.Font.Gotham
+            swLabel.Text = name
+            swLabel.TextColor3 = COL_TEXT
+            swLabel.TextSize = 18
+            swLabel.TextWrapped = true
+            swLabel.TextXAlignment = Enum.TextXAlignment.Left
 
             local Frame = Instance.new("TextButton")
             Frame.Parent = toggleswitch
-            Frame.Position = UDim2.new(0.832535863, 0, 0.0270270277, 0)
-            Frame.Size = UDim2.new(0, 70, 0, 36)
-            Frame.Text=""
+            Frame.AnchorPoint = Vector2.new(1, 0.5)
+            Frame.Position = UDim2.new(1, -8, 0.5, 0)
+            Frame.Size = UDim2.new(0, 56, 0, 28)
+            Frame.Text = ""
             Frame.AutoButtonColor = false
 
             local uc_4 = Instance.new("UICorner")
-            uc_4.CornerRadius = UDim.new(5, 0)
+            uc_4.CornerRadius = UDim.new(1, 0)
             uc_4.Parent = Frame
 
-            local TextButton = Instance.new("TextButton")
-            TextButton.Parent = Frame
-            TextButton.BackgroundColor3 = COL_TEXT
-            TextButton.Size = UDim2.new(0, 34, 0, 34)
-            TextButton.AutoButtonColor = false
-            TextButton.Text = ""
+            local knob = Instance.new("Frame")
+            knob.Parent = Frame
+            knob.BackgroundColor3 = COL_TEXT
+            knob.Size = UDim2.new(0, 22, 0, 22)
+            knob.AnchorPoint = Vector2.new(0, 0.5)
+            knob.Position = UDim2.new(0, 3, 0.5, 0)
 
             local uc_5 = Instance.new("UICorner")
-            uc_5.CornerRadius = UDim.new(5, 0)
-            uc_5.Parent = TextButton
+            uc_5.CornerRadius = UDim.new(1, 0)
+            uc_5.Parent = knob
 
-            if defaultmode == false then
-                TextButton.Position = UDim2.new(0, 1, 0, 1)
-                Frame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            else
-                TextButton.Position = UDim2.new(0, 35, 0, 1)
-                Frame.BackgroundColor3 = COL_ACCENT
+            local function applyState(instant)
+                local knobGoal = mode and UDim2.new(1, -25, 0.5, 0) or UDim2.new(0, 3, 0.5, 0)
+                local colGoal = mode and COL_ACCENT or Color3.fromRGB(60, 60, 60)
+                if instant then
+                    knob.Position = knobGoal
+                    Frame.BackgroundColor3 = colGoal
+                else
+                    game:GetService("TweenService"):Create(knob, TweenInfo.new(0.15, Enum.EasingStyle.Sine), {Position = knobGoal}):Play()
+                    game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.15), {BackgroundColor3 = colGoal}):Play()
+                end
             end
+            applyState(true)
 
             local function flip()
                 mode = not mode
-
+                applyState(false)
                 if callback then
                     callback(mode)
-                end
-
-                if mode then
-                    TextButton:TweenPosition(UDim2.new(0, 35, 0, 1), "In", "Sine", 0.15, true)
-                    game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.15), {BackgroundColor3 = COL_ACCENT}):Play()
-                else
-                    TextButton:TweenPosition(UDim2.new(0,1,0,1), "In", "Sine", 0.15, true)
-                    game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(60, 60, 60)}):Play()
                 end
             end
 
             Frame.MouseButton1Click:Connect(flip)
-            TextButton.MouseButton1Click:Connect(flip)
         end
 
         function sec:TextField(name, placeholder, callback)
@@ -939,7 +1003,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 
             local Frame_2 = Instance.new("Frame")
             Frame_2.Parent = textfield
-            Frame_2.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            Frame_2.BackgroundColor3 = COL_BTN
             Frame_2.Position = UDim2.new(0.441926777, 0, 0.0270270277, 0)
             Frame_2.Size = UDim2.new(0, 233, 0, 34)
 
