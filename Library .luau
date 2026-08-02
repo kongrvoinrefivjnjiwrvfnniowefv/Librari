@@ -65,7 +65,7 @@ local function addLoadingSpinner(parent, targetImage)
     ring.Position = UDim2.new(0.5, 0, 0.5, 0)
     ring.Size = UDim2.new(1.35, 0, 1.35, 0)
     ring.ZIndex = (targetImage.ZIndex or 1) - 1
-    ring.Image = "rbxassetid://4965945880" -- anillo circular (aro simple)
+    ring.Image = "rbxassetid://4965945880"
     ring.ImageColor3 = COL_RED
     ring.ScaleType = Enum.ScaleType.Fit
 
@@ -87,14 +87,11 @@ end
 
 function lib:init(ti, dosplash, visiblekey, deleteprevious)
     if syn then
-        
          cg = game:GetService("CoreGui")
         if cg:FindFirstChild("ScreenGui") and deleteprevious then
            tp(cg.ScreenGui.main, cg.ScreenGui.main.Position + UDim2.new(0,0,2,0), 0.5)
             game:GetService("Debris"):AddItem(cg.ScreenGui, 1)
       end
-
-         -- main
         scrgui = Instance.new("ScreenGui")
         syn.protect_gui(scrgui)
         scrgui.Parent = game:GetService("CoreGui")
@@ -103,8 +100,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             gethui().ScreenGui.main:TweenPosition(gethui().ScreenGui.main.Position + UDim2.new(0,0,2,0), "InOut", "Quart", 0.5)
             game:GetService("Debris"):AddItem(gethui().ScreenGui, 1)
         end
-
-        -- main
          scrgui = Instance.new("ScreenGui")
         scrgui.Parent = gethui()
     else
@@ -149,7 +144,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         uc_sicon.CornerRadius = UDim.new(1, 0)
         uc_sicon.Parent = sicon
 
-        -- spinner rojo tipo "sin conexión" alrededor de la imagen de carga
         local _, stopSpin = addLoadingSpinner(splash, sicon)
 
         splash:TweenPosition(UDim2.new(0.5, 0, 0.5, 0), "InOut", "Quart", 1)
@@ -174,7 +168,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     uc.CornerRadius = UDim.new(0, 18)
     uc.Parent = main
 
-    local UserInputService = game:GetService("UserInputService") --- skidded ik
+    local UserInputService = game:GetService("UserInputService")
     local dragging
     local dragInput
     local dragStart
@@ -238,7 +232,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     search.Name = "search"
     search.Parent = main
     search.BackgroundColor3 = COL_BG2
-    search.Position = UDim2.new(0.0256588068, 0, 0.0958904102, 0)
+    search.Position = UDim2.new(0.0256588068, 0, 0.161, 0)
     search.Size = UDim2.new(0, 225, 0, 34)
 
     local uc_8 = Instance.new("UICorner")
@@ -287,8 +281,8 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     sidebar.BackgroundColor3 = COL_BG
     sidebar.BackgroundTransparency = 1
     sidebar.BorderSizePixel = 0
-    sidebar.Position = UDim2.new(0.0249653254, 0, 0.181506842, 0)
-    sidebar.Size = UDim2.new(0, 233, 0, 463)
+    sidebar.Position = UDim2.new(0.0249653254, 0, 0.245, 0)
+    sidebar.Size = UDim2.new(0, 233, 0, 400)
     sidebar.AutomaticCanvasSize = "Y"
     sidebar.CanvasSize = UDim2.new(0, 0, 0, 0)
     sidebar.ScrollBarThickness = 2
@@ -298,7 +292,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     ull_2.SortOrder = Enum.SortOrder.LayoutOrder
     ull_2.Padding = UDim.new(0, 5)
 
-    game:GetService("RunService"):BindToRenderStep("search", 1, function() -- i sure do love skidding
+    game:GetService("RunService"):BindToRenderStep("search", 1, function()
         if not searchtextbox:IsFocused() then 
             for b,v in next, sidebar:GetChildren() do
                 if not v:IsA("TextButton") then return end
@@ -317,14 +311,14 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         end
     end)
 
-    -- ===== TOPBAR: icono + título a la izquierda, controles [-] [◻] [X] a la derecha =====
+    -- ===== TOPBAR: icono grande + título a la izquierda, controles elegantes [-] [◻] [X] a la derecha =====
 
     local topbarIcon = Instance.new("ImageLabel")
     topbarIcon.Name = "topbarIcon"
     topbarIcon.Parent = main
     topbarIcon.BackgroundTransparency = 1
-    topbarIcon.Position = UDim2.new(0, 18, 0, 14)
-    topbarIcon.Size = UDim2.new(0, 32, 0, 32)
+    topbarIcon.Position = UDim2.new(0, 16, 0, 10)
+    topbarIcon.Size = UDim2.new(0, 48, 0, 48)
     topbarIcon.Image = CONTROL_IMAGE
     topbarIcon.ScaleType = Enum.ScaleType.Fit
     topbarIcon.ZIndex = 10
@@ -337,8 +331,8 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     title.Name = "title"
     title.Parent = main
     title.BackgroundTransparency = 1
-    title.Position = UDim2.new(0, 58, 0, 14)
-    title.Size = UDim2.new(0, 250, 0, 32)
+    title.Position = UDim2.new(0, 74, 0, 10)
+    title.Size = UDim2.new(0, 250, 0, 48)
     title.Font = Enum.Font.GothamBold
     title.TextColor3 = COL_TEXT
     title.TextSize = 22
@@ -347,14 +341,14 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     title.TextYAlignment = Enum.TextYAlignment.Center
     title.ZIndex = 10
 
-    -- fila de controles (derecha)
+    -- fila de controles elegantes (derecha)
     local controls = Instance.new("Frame")
     controls.Name = "controls"
     controls.Parent = main
     controls.AnchorPoint = Vector2.new(1, 0)
     controls.BackgroundTransparency = 1
-    controls.Position = UDim2.new(1, -14, 0, 14)
-    controls.Size = UDim2.new(0, 110, 0, 32)
+    controls.Position = UDim2.new(1, -16, 0, 18)
+    controls.Size = UDim2.new(0, 106, 0, 28)
     controls.ZIndex = 10
 
     local ull_ctrl = Instance.new("UIListLayout")
@@ -363,63 +357,47 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     ull_ctrl.HorizontalAlignment = Enum.HorizontalAlignment.Right
     ull_ctrl.VerticalAlignment = Enum.VerticalAlignment.Center
     ull_ctrl.SortOrder = Enum.SortOrder.LayoutOrder
-    ull_ctrl.Padding = UDim.new(0, 8)
+    ull_ctrl.Padding = UDim.new(0, 10)
 
-    -- [-] minimizar/colapsar
-    local collapseButton = Instance.new("TextButton")
-    collapseButton.Name = "collapseButton"
-    collapseButton.Parent = controls
-    collapseButton.BackgroundColor3 = COL_BTN
-    collapseButton.Size = UDim2.new(0, 32, 0, 32)
-    collapseButton.AutoButtonColor = false
-    collapseButton.Font = Enum.Font.GothamBold
-    collapseButton.Text = "-"
-    collapseButton.TextColor3 = COL_TEXT
-    collapseButton.TextSize = 22
-    collapseButton.ZIndex = 10
+    local function styledControlButton(nameStr, symbol, baseColor, symbolSize)
+        local btn = Instance.new("TextButton")
+        btn.Name = nameStr
+        btn.Parent = controls
+        btn.BackgroundColor3 = baseColor
+        btn.BackgroundTransparency = 0.25
+        btn.Size = UDim2.new(0, 28, 0, 28)
+        btn.AutoButtonColor = false
+        btn.Font = Enum.Font.GothamMedium
+        btn.Text = symbol
+        btn.TextColor3 = COL_TEXT
+        btn.TextSize = symbolSize or 16
+        btn.ZIndex = 10
 
-    local uc_collapse = Instance.new("UICorner")
-    uc_collapse.CornerRadius = UDim.new(0, 10)
-    uc_collapse.Parent = collapseButton
-    addHover(collapseButton, {scaleUp = 1.1, hoverColor = Color3.fromRGB(55, 55, 55)})
+        local uc_b = Instance.new("UICorner")
+        uc_b.CornerRadius = UDim.new(1, 0)
+        uc_b.Parent = btn
+
+        local stroke = Instance.new("UIStroke")
+        stroke.Parent = btn
+        stroke.Color = Color3.fromRGB(70, 70, 70)
+        stroke.Thickness = 1
+        stroke.Transparency = 0.4
+
+        addHover(btn, {scaleUp = 1.12, hoverColor = baseColor})
+        return btn
+    end
+
+    -- [-] minimizar/reabrir (ver reopenButton más abajo, este es el visual dentro de la topbar por si se prefiere)
+    local collapseButton = styledControlButton("collapseButton", "–", COL_BTN, 18)
 
     -- [◻] maximizar/restaurar
-    local maximizeButton = Instance.new("TextButton")
-    maximizeButton.Name = "maximizeButton"
-    maximizeButton.Parent = controls
-    maximizeButton.BackgroundColor3 = COL_BTN
-    maximizeButton.Size = UDim2.new(0, 32, 0, 32)
-    maximizeButton.AutoButtonColor = false
-    maximizeButton.Font = Enum.Font.GothamBold
-    maximizeButton.Text = "[ ]"
-    maximizeButton.TextColor3 = COL_TEXT
-    maximizeButton.TextSize = 16
-    maximizeButton.ZIndex = 10
-
-    local uc_max = Instance.new("UICorner")
-    uc_max.CornerRadius = UDim.new(0, 10)
-    uc_max.Parent = maximizeButton
-    addHover(maximizeButton, {scaleUp = 1.1, hoverColor = Color3.fromRGB(55, 55, 55)})
+    local maximizeButton = styledControlButton("maximizeButton", "▢", COL_BTN, 14)
 
     -- [X] cerrar (con confirmación sí/no)
-    local closeButton = Instance.new("TextButton")
-    closeButton.Name = "closeButton"
-    closeButton.Parent = controls
-    closeButton.BackgroundColor3 = COL_RED
-    closeButton.Size = UDim2.new(0, 32, 0, 32)
-    closeButton.AutoButtonColor = false
-    closeButton.Font = Enum.Font.GothamBold
-    closeButton.Text = "X"
-    closeButton.TextColor3 = COL_TEXT
-    closeButton.TextSize = 18
-    closeButton.ZIndex = 10
+    local closeButton = styledControlButton("closeButton", "✕", Color3.fromRGB(60, 20, 20), 14)
+    closeButton.BackgroundColor3 = Color3.fromRGB(50, 20, 20)
 
-    local uc_closebtn = Instance.new("UICorner")
-    uc_closebtn.CornerRadius = UDim.new(0, 10)
-    uc_closebtn.Parent = closeButton
-    addHover(closeButton, {scaleUp = 1.1, hoverColor = Color3.fromRGB(255, 70, 70)})
-
-    -- ===== botón flotante NEGRO redondeado con la imagen, para reabrir el menú completo =====
+    -- ===== botón flotante NEGRO redondeado, FUERA del menú, siempre visible: minimiza/reabre el menú completo =====
     local reopenButton = Instance.new("ImageButton")
     reopenButton.Name = "reopenButton"
     reopenButton.Parent = scrgui
@@ -427,15 +405,21 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     reopenButton.BorderSizePixel = 0
     reopenButton.Position = UDim2.new(1, -30, 1, -30)
-    reopenButton.Size = UDim2.new(0, 60, 0, 60)
+    reopenButton.Size = UDim2.new(0, 64, 0, 64)
     reopenButton.Image = CONTROL_IMAGE
     reopenButton.ScaleType = Enum.ScaleType.Fit
-    reopenButton.Visible = false
-    reopenButton.ZIndex = 20
+    reopenButton.Visible = true
+    reopenButton.ZIndex = 50
 
     local uc_reopen = Instance.new("UICorner")
-    uc_reopen.CornerRadius = UDim.new(0, 18)
+    uc_reopen.CornerRadius = UDim.new(0, 20)
     uc_reopen.Parent = reopenButton
+
+    local reopenStroke = Instance.new("UIStroke")
+    reopenStroke.Parent = reopenButton
+    reopenStroke.Color = Color3.fromRGB(60, 60, 60)
+    reopenStroke.Thickness = 1.5
+
     addHover(reopenButton, {scaleUp = 1.1})
 
     -- notif1
@@ -632,46 +616,16 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     tp(main, UDim2.new(0.5, 0, 0.5, 0), 1)
     window = {}
 
-    -- ===== [-] colapsar: reduce la ventana a solo la topbar =====
-    local isCollapsed = false
-    local collapseAnimating = false
-    local expandedHeight = NORMAL_SIZE.Y.Offset
-
-    function window:ToggleCollapse()
-        if collapseAnimating then return end
-        collapseAnimating = true
-        isCollapsed = not isCollapsed
-
-        local goalHeight = isCollapsed and 60 or expandedHeight
-        workarea.Visible = not isCollapsed
-        sidebar.Visible = not isCollapsed
-        search.Visible = not isCollapsed
-
-        game:GetService("TweenService"):Create(
-            main,
-            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-            {Size = UDim2.new(main.Size.X.Scale, main.Size.X.Offset, 0, goalHeight)}
-        ):Play()
-
-        task.wait(0.3)
-        collapseAnimating = false
-    end
-
-    collapseButton.MouseButton1Click:Connect(function()
-        window:ToggleCollapse()
-    end)
-
-    -- ===== [◻] maximizar/restaurar: alterna tamaño normal <-> grande =====
+    -- ===== [◻] maximizar/restaurar =====
     local isMaximized = false
     local maxAnimating = false
 
     function window:ToggleMaximize()
-        if maxAnimating or isCollapsed then return end
+        if maxAnimating then return end
         maxAnimating = true
         isMaximized = not isMaximized
 
         local goalSize = isMaximized and MAX_SIZE or NORMAL_SIZE
-        expandedHeight = goalSize.Y.Offset
 
         game:GetService("TweenService"):Create(
             main,
@@ -679,7 +633,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             {Size = goalSize}
         ):Play()
 
-        maximizeButton.Text = isMaximized and "❐" or "[ ]"
+        maximizeButton.Text = isMaximized and "❐" or "▢"
 
         task.wait(0.3)
         maxAnimating = false
@@ -704,7 +658,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         )
     end)
 
-    -- ===== botón flotante negro: oculta/reabre el menú completo =====
+    -- ===== botón único (fuera del menú): minimiza/reabre el menú completo =====
     local isOpen = true
     local openAnimating = false
 
@@ -714,7 +668,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         isOpen = not isOpen
 
         if isOpen then
-            reopenButton.Visible = false
             main.Visible = true
             main.Size = UDim2.new(0, 0, 0, 0)
             main.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -733,13 +686,16 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             closeTween:Play()
             closeTween.Completed:Wait()
             main.Visible = false
-            reopenButton.Visible = true
         end
 
         openAnimating = false
     end
 
+    -- tanto el botón externo como el [-] de la topbar hacen la misma acción: minimizar/reabrir
     reopenButton.MouseButton1Click:Connect(function()
+        window:ToggleVisible()
+    end)
+    collapseButton.MouseButton1Click:Connect(function()
         window:ToggleVisible()
     end)
 
@@ -942,7 +898,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             end
             workareamain.Visible = true
 
-            -- animación de aparición de la sección
             workareamain.Position = UDim2.new(0.0393013097, 15, 0.0958904102, 0)
             local goal = UDim2.new(0.0393013097, 0, 0.0958904102, 0)
             game:GetService("TweenService"):Create(workareamain, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = goal}):Play()
@@ -1024,6 +979,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             toggleswitch.BackgroundTransparency = 0
             toggleswitch.BorderSizePixel = 0
             toggleswitch.Size = UDim2.new(0, 418, 0, 37)
+            toggleswitch.ClipsDescendants = false
 
             local uc_sw = Instance.new("UICorner")
             uc_sw.CornerRadius = UDim.new(0, 9)
@@ -1042,24 +998,38 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             swLabel.TextWrapped = true
             swLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-            local Frame = Instance.new("TextButton")
+            -- pista del switch: ahora es un TextButton que ocupa toda la fila detectando clic en cualquier parte
+            local hitArea = Instance.new("TextButton")
+            hitArea.Name = "hitArea"
+            hitArea.Parent = toggleswitch
+            hitArea.BackgroundTransparency = 1
+            hitArea.Size = UDim2.new(1, 0, 1, 0)
+            hitArea.Text = ""
+            hitArea.ZIndex = 5
+            hitArea.AutoButtonColor = false
+
+            local Frame = Instance.new("Frame")
+            Frame.Name = "track"
             Frame.Parent = toggleswitch
             Frame.AnchorPoint = Vector2.new(1, 0.5)
             Frame.Position = UDim2.new(1, -8, 0.5, 0)
             Frame.Size = UDim2.new(0, 56, 0, 28)
-            Frame.Text = ""
-            Frame.AutoButtonColor = false
+            Frame.ZIndex = 4
 
             local uc_4 = Instance.new("UICorner")
             uc_4.CornerRadius = UDim.new(1, 0)
             uc_4.Parent = Frame
 
             local knob = Instance.new("Frame")
+            knob.Name = "knob"
             knob.Parent = Frame
             knob.BackgroundColor3 = COL_TEXT
             knob.Size = UDim2.new(0, 22, 0, 22)
             knob.AnchorPoint = Vector2.new(0, 0.5)
             knob.Position = UDim2.new(0, 3, 0.5, 0)
+            knob.ZIndex = 4
+            -- el knob no debe interceptar el input; el click siempre lo procesa hitArea
+            knob.Active = false
 
             local uc_5 = Instance.new("UICorner")
             uc_5.CornerRadius = UDim.new(1, 0)
@@ -1086,7 +1056,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
                 end
             end
 
-            Frame.MouseButton1Click:Connect(flip)
+            hitArea.MouseButton1Click:Connect(flip)
         end
 
         function sec:TextField(name, placeholder, callback)
