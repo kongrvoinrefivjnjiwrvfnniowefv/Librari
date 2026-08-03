@@ -7,22 +7,24 @@ local notifs = {}
 local visible = true
 local dbcooper = false
 
--- paleta (tema negro + topbar roja)
+-- paleta (todo negro, acento rojo)
 local COL_BG = Color3.fromRGB(15, 15, 15)
 local COL_BG2 = Color3.fromRGB(20, 20, 20)
 local COL_BTN = Color3.fromRGB(35, 35, 35)
 local COL_TEXT = Color3.fromRGB(255, 255, 255)
-local COL_SUBTEXT = Color3.fromRGB(190, 185, 200)
-local COL_ACCENT = Color3.fromRGB(21, 103, 251)
+local COL_SUBTEXT = Color3.fromRGB(190, 190, 190)
+local COL_ACCENT = Color3.fromRGB(220, 40, 45) -- antes azul, ahora rojo
 
--- rojo (topbar)
-local COL_RED = Color3.fromRGB(235, 45, 55)
-local COL_RED_DIM = Color3.fromRGB(190, 35, 45)
-local TOPBAR_BG = Color3.fromRGB(28, 10, 12)
-local TOPBAR_STROKE = Color3.fromRGB(120, 30, 35)
-local TOPBAR_ICON_BG = Color3.fromRGB(45, 14, 16)
+local TOPBAR_BG = Color3.fromRGB(12, 12, 12)
+local TOPBAR_STROKE = Color3.fromRGB(60, 60, 60)
+local TOPBAR_ICON_BG = Color3.fromRGB(25, 25, 25)
 
 local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
+
+-- imágenes de los iconos de control de la topbar
+local ICON_CLOSE = "rbxassetid://111147657950432"
+local ICON_COLLAPSE = "rbxassetid://119364000008939"
+local ICON_EXPAND = "rbxassetid://76932851909318"
 
 local NORMAL_SIZE = UDim2.new(0, 721, 0, 584)
 local MAX_SIZE = UDim2.new(0, 900, 0, 720)
@@ -72,7 +74,7 @@ local function addLoadingSpinner(parent, targetImage)
     ring.Size = UDim2.new(1.35, 0, 1.35, 0)
     ring.ZIndex = (targetImage.ZIndex or 1) - 1
     ring.Image = "rbxassetid://4965945880"
-    ring.ImageColor3 = COL_RED
+    ring.ImageColor3 = COL_ACCENT
     ring.ScaleType = Enum.ScaleType.Fit
 
     local spinning = true
@@ -270,54 +272,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     workareacornerhider.BorderSizePixel = 0
     workareacornerhider.Size = UDim2.new(0, 18, 0.99895674, 0)
 
-
-    -- searchbar
-
-    local search = Instance.new("Frame")
-    search.Name = "search"
-    search.Parent = main
-    search.BackgroundColor3 = COL_BG2
-    search.Position = UDim2.new(0.0256588068, 0, 0.19, 0)
-    search.Size = UDim2.new(0, 225, 0, 34)
-
-    local uc_8 = Instance.new("UICorner")
-    uc_8.CornerRadius = UDim.new(0, 9)
-    uc_8.Parent = search
-
-    local searchicon = Instance.new("ImageButton")
-    searchicon.Name = "searchicon"
-    searchicon.Parent = search
-    searchicon.BackgroundColor3 = COL_BG2
-    searchicon.BackgroundTransparency = 1
-    searchicon.BorderColor3 = Color3.fromRGB(27, 42, 53)
-    searchicon.Position = UDim2.new(0.0379999988, -2, 0.138999999, 2)
-    searchicon.Size = UDim2.new(0, 24, 0, 21)
-    searchicon.Image = "rbxassetid://2804603863"
-    searchicon.ImageColor3 = COL_TEXT
-    searchicon.ScaleType = Enum.ScaleType.Fit
-
-    local searchtextbox = Instance.new("TextBox")
-    searchtextbox.Name = "searchtextbox"
-    searchtextbox.Parent = search
-    searchtextbox.BackgroundColor3 = COL_BG2
-    searchtextbox.BackgroundTransparency = 1
-    searchtextbox.ClipsDescendants = true
-    searchtextbox.Position = UDim2.new(0.180257514, 0, -0.0162218884, 0)
-    searchtextbox.Size = UDim2.new(0, 176, 0, 34)
-    searchtextbox.Font = Enum.Font.Gotham
-    searchtextbox.LineHeight = 0.870
-    searchtextbox.PlaceholderText = "Search"
-    searchtextbox.PlaceholderColor3 = COL_SUBTEXT
-    searchtextbox.Text = ""
-    searchtextbox.TextColor3 = COL_TEXT
-    searchtextbox.TextSize = 22
-    searchtextbox.TextXAlignment = Enum.TextXAlignment.Left
-
-    searchicon.MouseButton1Click:Connect(function()
-        searchtextbox:CaptureFocus()
-    end)
-
-    -- sidebar
+    -- sidebar (ahora empieza más arriba porque se eliminó la searchbar)
 
     local sidebar = Instance.new("ScrollingFrame")
     sidebar.Name = "sidebar"
@@ -326,8 +281,8 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     sidebar.BackgroundColor3 = COL_BG
     sidebar.BackgroundTransparency = 1
     sidebar.BorderSizePixel = 0
-    sidebar.Position = UDim2.new(0.0249653254, 0, 0.27, 0)
-    sidebar.Size = UDim2.new(0, 233, 0, 380)
+    sidebar.Position = UDim2.new(0.0249653254, 0, 0.19, 0)
+    sidebar.Size = UDim2.new(0, 233, 0, 460)
     sidebar.AutomaticCanvasSize = "Y"
     sidebar.CanvasSize = UDim2.new(0, 0, 0, 0)
     sidebar.ScrollBarThickness = 2
@@ -337,26 +292,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     ull_2.SortOrder = Enum.SortOrder.LayoutOrder
     ull_2.Padding = UDim.new(0, 5)
 
-    game:GetService("RunService"):BindToRenderStep("search", 1, function()
-        if not searchtextbox:IsFocused() then 
-            for b,v in next, sidebar:GetChildren() do
-                if not v:IsA("TextButton") then return end
-                v.Visible = true
-            end
-        end
-        local InputText=string.upper(searchtextbox.Text)
-        for _,button in pairs(sidebar:GetChildren())do
-            if button:IsA("TextButton")then
-                if InputText==""or string.find(string.upper(button.Text),InputText)~=nil then
-                    button.Visible=true
-                else
-                    button.Visible=false
-                end
-            end
-        end
-    end)
-
-    -- ===== TOPBAR ROJA estilo "Kato Script" =====
+    -- ===== TOPBAR NEGRA =====
 
     local topbar = Instance.new("Frame")
     topbar.Name = "topbar"
@@ -376,9 +312,9 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     topbarStroke.Parent = topbar
     topbarStroke.Color = TOPBAR_STROKE
     topbarStroke.Thickness = 1
-    topbarStroke.Transparency = 0.35
+    topbarStroke.Transparency = 0.4
 
-    -- icono circular pequeño (izquierda), aro rojo
+    -- icono circular pequeño (izquierda)
     local topbarIcon = Instance.new("ImageLabel")
     topbarIcon.Name = "topbarIcon"
     topbarIcon.Parent = topbar
@@ -396,11 +332,11 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 
     local ticonStroke = Instance.new("UIStroke")
     ticonStroke.Parent = topbarIcon
-    ticonStroke.Color = COL_RED
+    ticonStroke.Color = COL_ACCENT
     ticonStroke.Thickness = 1.2
     ticonStroke.Transparency = 0.2
 
-    -- título + subtítulo (todo en rojo)
+    -- título + subtítulo
     local title = Instance.new("TextLabel")
     title.Name = "title"
     title.Parent = topbar
@@ -408,7 +344,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     title.Position = UDim2.new(0, 54, 0, 6)
     title.Size = UDim2.new(0, 220, 0, 20)
     title.Font = Enum.Font.GothamBold
-    title.TextColor3 = COL_RED
+    title.TextColor3 = COL_ACCENT
     title.TextSize = 16
     title.TextWrapped = true
     title.TextXAlignment = Enum.TextXAlignment.Left
@@ -422,7 +358,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     subtitle.Position = UDim2.new(0, 54, 0, 26)
     subtitle.Size = UDim2.new(0, 220, 0, 16)
     subtitle.Font = Enum.Font.Gotham
-    subtitle.TextColor3 = COL_RED_DIM
+    subtitle.TextColor3 = COL_SUBTEXT
     subtitle.TextSize = 12
     subtitle.TextWrapped = true
     subtitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -436,7 +372,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     statsFrame.Parent = topbar
     statsFrame.BackgroundTransparency = 1
     statsFrame.AnchorPoint = Vector2.new(1, 0.5)
-    statsFrame.Position = UDim2.new(1, -130, 0.5, 0)
+    statsFrame.Position = UDim2.new(1, -110, 0.5, 0)
     statsFrame.Size = UDim2.new(0, 90, 0, 36)
     statsFrame.ZIndex = 11
 
@@ -447,7 +383,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     fpsLabel.Position = UDim2.new(0, 0, 0, 0)
     fpsLabel.Size = UDim2.new(1, 0, 0, 16)
     fpsLabel.Font = Enum.Font.GothamMedium
-    fpsLabel.TextColor3 = COL_RED
+    fpsLabel.TextColor3 = COL_ACCENT
     fpsLabel.TextSize = 13
     fpsLabel.TextXAlignment = Enum.TextXAlignment.Left
     fpsLabel.Text = "FPS: --"
@@ -460,7 +396,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     pingLabel.Position = UDim2.new(0, 0, 0, 18)
     pingLabel.Size = UDim2.new(1, 0, 0, 16)
     pingLabel.Font = Enum.Font.GothamMedium
-    pingLabel.TextColor3 = COL_RED
+    pingLabel.TextColor3 = COL_ACCENT
     pingLabel.TextSize = 13
     pingLabel.TextXAlignment = Enum.TextXAlignment.Left
     pingLabel.Text = "PING: --ms"
@@ -469,14 +405,14 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     startFpsCounter(fpsLabel)
     startPingCounter(pingLabel)
 
-    -- iconos elegantes: [-] colapsar | compartir | expandir | cerrar
+    -- iconos de control con IMÁGENES: [-] colapsar | [ ] expandir | X cerrar
     local controls = Instance.new("Frame")
     controls.Name = "controls"
     controls.Parent = topbar
     controls.AnchorPoint = Vector2.new(1, 0.5)
     controls.BackgroundTransparency = 1
     controls.Position = UDim2.new(1, -10, 0.5, 0)
-    controls.Size = UDim2.new(0, 106, 0, 24)
+    controls.Size = UDim2.new(0, 90, 0, 24)
     controls.ZIndex = 11
 
     local ull_ctrl = Instance.new("UIListLayout")
@@ -487,27 +423,26 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     ull_ctrl.SortOrder = Enum.SortOrder.LayoutOrder
     ull_ctrl.Padding = UDim.new(0, 12)
 
-    local function slimIconButton(nameStr, symbol, col, size)
-        local btn = Instance.new("TextButton")
+    local function iconControlButton(nameStr, imageId)
+        local btn = Instance.new("ImageButton")
         btn.Name = nameStr
         btn.Parent = controls
         btn.BackgroundTransparency = 1
         btn.Size = UDim2.new(0, 18, 0, 18)
-        btn.AutoButtonColor = false
-        btn.Font = Enum.Font.GothamMedium
-        btn.Text = symbol
-        btn.TextColor3 = col or COL_RED_DIM
-        btn.TextSize = size or 14
+        btn.Image = imageId
+        btn.ImageColor3 = COL_ACCENT
+        btn.ScaleType = Enum.ScaleType.Fit
         btn.ZIndex = 11
-        addHover(btn, {scaleUp = 1.3, hoverColor = nil})
+        addHover(btn, {scaleUp = 1.3})
         return btn
     end
 
-    -- [-] colapsa la topbar: deja solo la barra, esconde sidebar/search/workarea
-    local collapseButton = slimIconButton("collapseButton", "–", COL_RED_DIM, 16)
-    local shareButton = slimIconButton("shareButton", "⇗", COL_RED_DIM, 13)
-    local expandButton = slimIconButton("expandButton", "◇", COL_RED_DIM, 13)
-    local closeButton = slimIconButton("closeButton", "✕", COL_RED, 13)
+    -- [-] colapsa la topbar
+    local collapseButton = iconControlButton("collapseButton", ICON_COLLAPSE)
+    -- [ ] expandir/restaurar
+    local expandButton = iconControlButton("expandButton", ICON_EXPAND)
+    -- X cerrar (con confirmación)
+    local closeButton = iconControlButton("closeButton", ICON_CLOSE)
 
     -- ===== botón único FUERA del menú, negro redondeado con la imagen: minimiza/reabre el menú completo =====
     local reopenButton = Instance.new("ImageButton")
@@ -728,7 +663,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     tp(main, UDim2.new(0.5, 0, 0.5, 0), 1)
     window = {}
 
-    -- ===== [-] colapsar la topbar: deja solo la barra, esconde sidebar/search/workarea =====
+    -- ===== [-] colapsar la topbar =====
     local isCollapsed = false
     local collapseAnimating = false
     local expandedHeight = NORMAL_SIZE.Y.Offset
@@ -743,7 +678,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         if isCollapsed then
             workarea.Visible = false
             sidebar.Visible = false
-            search.Visible = false
         end
 
         local tw = game:GetService("TweenService"):Create(
@@ -757,10 +691,8 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         if not isCollapsed then
             workarea.Visible = true
             sidebar.Visible = true
-            search.Visible = true
         end
 
-        collapseButton.Text = isCollapsed and "▢" or "–"
         collapseAnimating = false
     end
 
@@ -768,7 +700,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         window:ToggleCollapse()
     end)
 
-    -- ===== expandir/restaurar (◇) =====
+    -- ===== [ ] expandir/restaurar =====
     local isMaximized = false
     local maxAnimating = false
 
@@ -794,17 +726,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         window:ToggleMaximize()
     end)
 
-    -- ===== compartir =====
-    shareButton.MouseButton1Click:Connect(function()
-        local ok = pcall(function()
-            if setclipboard then
-                setclipboard("Write Hub - " .. tostring(title.Text))
-            end
-        end)
-        window:TempNotify("Compartir", ok and "Copiado al portapapeles." or "No se pudo copiar.", "rbxassetid://2804603863")
-    end)
-
-    -- ===== cerrar con confirmación sí/no =====
+    -- ===== X cerrar con confirmación sí/no =====
     closeButton.MouseButton1Click:Connect(function()
         window:Notify2(
             "¿Cerrar Write Hub?",
