@@ -22,11 +22,12 @@ local TOPBAR_ICON_BG = Color3.fromRGB(25, 25, 25)
 -- imagen de perfil/control, confirmada que carga bien con rbxthumb
 local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
 
--- iconos de control: usar rbxassetid:// directo (rbxthumb es solo para thumbnails de Asset,
--- estos IDs son Decals/Images sueltos y necesitan el formato directo)
-local ICON_CLOSE = "rbxthumb://111147657950432"
-local ICON_COLLAPSE = "rbxthumb://119364000008939"
-local ICON_EXPAND = "rbxthumb://76932851909318"
+-- iconos de control: usar rbxassetid:// directo (rbxthumb es solo para thumbnails de Asset;
+-- estos IDs son Decals/Images sueltos y necesitaban el formato directo -- corregido, antes
+-- usaban "rbxthumb://<id>" sin los parámetros type=Asset&id=..., por eso no cargaban)
+local ICON_CLOSE = "rbxassetid://111147657950432"
+local ICON_COLLAPSE = "rbxassetid://119364000008939"
+local ICON_EXPAND = "rbxassetid://76932851909318"
 
 local NORMAL_SIZE = UDim2.new(0, 721, 0, 584)
 local MAX_SIZE = UDim2.new(0, 900, 0, 720)
@@ -377,7 +378,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     topbarStroke.Thickness = 1
     topbarStroke.Transparency = 0.5
 
-    -- icono circular pequeño (izquierda) con pulso sutil
+    -- icono circular pequeño (izquierda), SIN borde
     local topbarIcon = Instance.new("ImageLabel")
     topbarIcon.Name = "topbarIcon"
     topbarIcon.Parent = topbar
@@ -392,12 +393,6 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     local uc_ticon = Instance.new("UICorner")
     uc_ticon.CornerRadius = UDim.new(1, 0)
     uc_ticon.Parent = topbarIcon
-
-    local ticonStroke = Instance.new("UIStroke")
-    ticonStroke.Parent = topbarIcon
-    ticonStroke.Color = COL_ACCENT
-    ticonStroke.Thickness = 1.2
-    ticonStroke.Transparency = 0.2
 
     -- título + subtítulo
     local title = Instance.new("TextLabel")
