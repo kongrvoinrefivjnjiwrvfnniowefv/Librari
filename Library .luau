@@ -1,88 +1,5572 @@
---[[
-    Fluent Interface Suite
-    This script is not intended to be modified.
-    To view the source code, see the 'src' folder on GitHub!
+local UILibrary = {}
+--// Modules
 
-    Author: dawid
-    License: MIT
-    GitHub: https://github.com/dawid-scripts/Fluent
---]]
+local function getObjGen()
+    local objGen = {}
 
-local a,b={{1,'ModuleScript',{'MainModule'},{{18,'ModuleScript',{'Creator'}},{28,'ModuleScript',{'Icons'}},{47,'ModuleScript',{'Themes'},{{50,'ModuleScript',{'Dark'}},{52,'ModuleScript',{'Light'}},{51,'ModuleScript',{'Darker'}},{53,'ModuleScript',{'Rose'}},{49,'ModuleScript',{'Aqua'}},{48,'ModuleScript',{'Amethyst'}}}},{19,'ModuleScript',{'Elements'},{{21,'ModuleScript',{'Colorpicker'}},{27,'ModuleScript',{'Toggle'}},{23,'ModuleScript',{'Input'}},{20,'ModuleScript',{'Button'}},{25,'ModuleScript',{'Paragraph'}},{22,'ModuleScript',{'Dropdown'}},{26,'ModuleScript',{'Slider'}},{24,'ModuleScript',{'Keybind'}}}},{29,'Folder',{'Packages'},{{30,'ModuleScript',{'Flipper'},{{33,'ModuleScript',{'GroupMotor'}},{46,'ModuleScript',{'isMotor.spec'}},{39,'ModuleScript',{'Signal'}},{40,'ModuleScript',{'Signal.spec'}},{45,'ModuleScript',{'isMotor'}},{36,'ModuleScript',{'Instant.spec'}},{44,'ModuleScript',{'Spring.spec'}},{42,'ModuleScript',{'SingleMotor.spec'}},{38,'ModuleScript',{'Linear.spec'}},{31,'ModuleScript',{'BaseMotor'}},{43,'ModuleScript',{'Spring'}},{35,'ModuleScript',{'Instant'}},{37,'ModuleScript',{'Linear'}},{41,'ModuleScript',{'SingleMotor'}},{34,'ModuleScript',{'GroupMotor.spec'}},{32,'ModuleScript',{'BaseMotor.spec'}}}}}},{2,'ModuleScript',{'Acrylic'},{{3,'ModuleScript',{'AcrylicBlur'}},{5,'ModuleScript',{'CreateAcrylic'}},{6,'ModuleScript',{'Utils'}},{4,'ModuleScript',{'AcrylicPaint'}}}},{7,'Folder',{'Components'},{{9,'ModuleScript',{'Button'}},{12,'ModuleScript',{'Notification'}},{13,'ModuleScript',{'Section'}},{17,'ModuleScript',{'Window'}},{14,'ModuleScript',{'Tab'}},{10,'ModuleScript',{'Dialog'}},{8,'ModuleScript',{'Assets'}},{16,'ModuleScript',{'TitleBar'}},{15,'ModuleScript',{'Textbox'}},{11,'ModuleScript',{'Element'}}}}}}}local aa={function()local c,d,e,f,g=b(1)local h,i,j,k,l,m=game:GetService'Lighting',game:GetService'RunService',game:GetService'Players'.LocalPlayer,game:GetService'UserInputService',game:GetService'TweenService',game:GetService'Workspace'.CurrentCamera local n,o=j:GetMouse(),d local p,q,r,s=e(o.Creator),e(o.Elements),e(o.Acrylic),o.Components local t,u,v=e(s.Notification),p.New,protectgui or(syn and syn.protect_gui)or function()end local w=u('ScreenGui',{Parent=i:IsStudio()and j.PlayerGui or game:GetService'CoreGui'})v(w)t:Init(w)local x={Version='1.1.0',OpenFrames={},Options={},Themes=e(o.Themes).Names,Window=nil,WindowFrame=nil,Unloaded=false,Theme='Dark',DialogOpen=false,UseAcrylic=false,Acrylic=false,Transparency=true,MinimizeKeybind=nil,MinimizeKey=Enum.KeyCode.LeftControl,GUI=w}function x.SafeCallback(y,z,...)if not z then return end local A,B=pcall(z,...)if not A then local C,D=B:find':%d+: 'if not D then return x:Notify{Title='Interface',Content='Callback error',SubContent=B,Duration=5}end return x:Notify{Title='Interface',Content='Callback error',SubContent=B:sub(D+1),Duration=5}end end function x.Round(y,z,A)if A==0 then return math.floor(z)end z=tostring(z)return z:find'%.'and tonumber(z:sub(1,z:find'%.'+A))or z end local y=e(o.Icons).assets function x.GetIcon(z,A)if A~=nil and y['lucide-'..A]then return y['lucide-'..A]end return nil end local z={}z.__index=z z.__namecall=function(A,B,...)return z[B](...)end for A,B in ipairs(q)do z['Add'..B.__type]=function(C,D,E)B.Container=C.Container B.Type=C.Type B.ScrollFrame=C.ScrollFrame B.Library=x return B:New(D,E)end end x.Elements=z function x.CreateWindow(C,D)assert(D.Title,'Window - Missing Title')if x.Window then print'You cannot create more than one window.'return end x.MinimizeKey=D.MinimizeKey x.UseAcrylic=D.Acrylic if D.Acrylic then r.init()end local E=e(s.Window){Parent=w,Size=D.Size,Title=D.Title,SubTitle=D.SubTitle,TabWidth=D.TabWidth}x.Window=E x:SetTheme(D.Theme)return E end function x.SetTheme(C,D)if x.Window and table.find(x.Themes,D)then x.Theme=D p.UpdateTheme()end end function x.Destroy(C)if x.Window then x.Unloaded=true if x.UseAcrylic then x.Window.AcrylicPaint.Model:Destroy()end p.Disconnect()x.GUI:Destroy()end end function x.ToggleAcrylic(C,D)if x.Window then if x.UseAcrylic then x.Acrylic=D x.Window.AcrylicPaint.Model.Transparency=D and 0.98 or 1 if D then r.Enable()else r.Disable()end end end end function x.ToggleTransparency(C,D)if x.Window then x.Window.AcrylicPaint.Frame.Background.BackgroundTransparency=D and 0.35 or 0 end end function x.Notify(C,D)return t:New(D)end if getgenv then getgenv().Fluent=x end return x end,function()local c,d,e,f,g=b(2)local h={AcrylicBlur=e(d.AcrylicBlur),CreateAcrylic=e(d.CreateAcrylic),AcrylicPaint=e(d.AcrylicPaint)}function h.init()local i=Instance.new'DepthOfFieldEffect'i.FarIntensity=0 i.InFocusRadius=0.1 i.NearIntensity=1 local j={}function h.Enable()for k,l in pairs(j)do l.Enabled=false end i.Parent=game:GetService'Lighting'end function h.Disable()for k,l in pairs(j)do l.Enabled=l.enabled end i.Parent=nil end local k=function()local k=function(k)if k:IsA'DepthOfFieldEffect'then j[k]={enabled=k.Enabled}end end for l,m in pairs(game:GetService'Lighting':GetChildren())do k(m)end if game:GetService'Workspace'.CurrentCamera then for n,o in pairs(game:GetService'Workspace'.CurrentCamera:GetChildren())do k(o)end end end k()h.Enable()end return h end,function()local c,d,e,f,g=b(3)local h,i,j,k=e(d.Parent.Parent.Creator),e(d.Parent.CreateAcrylic),unpack(e(d.Parent.Utils))local l=function(l)local m={}l=l or 0.001 local n,o={topLeft=Vector2.new(),topRight=Vector2.new(),bottomRight=Vector2.new()},i()o.Parent=workspace local p,q=function(p,q)n.topLeft=q n.topRight=q+Vector2.new(p.X,0)n.bottomRight=q+p end,function()local p=game:GetService'Workspace'.CurrentCamera if p then p=p.CFrame end local q=p if not q then q=CFrame.new()end local r,s,t,u=q,n.topLeft,n.topRight,n.bottomRight local v,w,x=j(s,l),j(t,l),j(u,l)local y,z=(w-v).Magnitude,(w-x).Magnitude o.CFrame=CFrame.fromMatrix((v+x)/2,r.XVector,r.YVector,r.ZVector)o.Mesh.Scale=Vector3.new(y,z,0)end local r,s=function(r)local s=k()local t,u=r.AbsoluteSize-Vector2.new(s,s),r.AbsolutePosition+Vector2.new(s/2,s/2)p(t,u)task.spawn(q)end,function()local r=game:GetService'Workspace'.CurrentCamera if not r then return end table.insert(m,r:GetPropertyChangedSignal'CFrame':Connect(q))table.insert(m,r:GetPropertyChangedSignal'ViewportSize':Connect(q))table.insert(m,r:GetPropertyChangedSignal'FieldOfView':Connect(q))task.spawn(q)end o.Destroying:Connect(function()for t,u in m do pcall(function()u:Disconnect()end)end end)s()return r,o end return function(m)local n,o,p={},l(m)local q=h.New('Frame',{BackgroundTransparency=1,Size=UDim2.fromScale(1,1)})h.AddSignal(q:GetPropertyChangedSignal'AbsolutePosition',function()o(q)end)h.AddSignal(q:GetPropertyChangedSignal'AbsoluteSize',function()o(q)end)n.AddParent=function(r)h.AddSignal(r:GetPropertyChangedSignal'Visible',function()n.SetVisibility(r.Visible)end)end n.SetVisibility=function(r)p.Transparency=r and 0.98 or 1 end n.Frame=q n.Model=p return n end end,function()local c,d,e,f,g=b(4)local h,i=e(d.Parent.Parent.Creator),e(d.Parent.AcrylicBlur)local j=h.New return function(k)local l={}l.Frame=j('Frame',{Size=UDim2.fromScale(1,1),BackgroundTransparency=0.9,BackgroundColor3=Color3.fromRGB(255,255,255),BorderSizePixel=0},{j('ImageLabel',{Image='rbxassetid://8992230677',ScaleType='Slice',SliceCenter=Rect.new(Vector2.new(99,99),Vector2.new(99,99)),AnchorPoint=Vector2.new(0.5,0.5),Size=UDim2.new(1,120,1,116),Position=UDim2.new(0.5,0,0.5,0),BackgroundTransparency=1,ImageColor3=Color3.fromRGB(0,0,0),ImageTransparency=0.7}),j('UICorner',{CornerRadius=UDim.new(0,8)}),j('Frame',{BackgroundTransparency=0.45,Size=UDim2.fromScale(1,1),Name='Background',ThemeTag={BackgroundColor3='AcrylicMain'}},{j('UICorner',{CornerRadius=UDim.new(0,8)})}),j('Frame',{BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=0.4,Size=UDim2.fromScale(1,1)},{j('UICorner',{CornerRadius=UDim.new(0,8)}),j('UIGradient',{Rotation=90,ThemeTag={Color='AcrylicGradient'}})}),j('ImageLabel',{Image='rbxassetid://9968344105',ImageTransparency=0.98,ScaleType=Enum.ScaleType.Tile,TileSize=UDim2.new(0,128,0,128),Size=UDim2.fromScale(1,1),BackgroundTransparency=1},{j('UICorner',{CornerRadius=UDim.new(0,8)})}),j('ImageLabel',{Image='rbxassetid://9968344227',ImageTransparency=0.9,ScaleType=Enum.ScaleType.Tile,TileSize=UDim2.new(0,128,0,128),Size=UDim2.fromScale(1,1),BackgroundTransparency=1,ThemeTag={ImageTransparency='AcrylicNoise'}},{j('UICorner',{CornerRadius=UDim.new(0,8)})}),j('Frame',{BackgroundTransparency=1,Size=UDim2.fromScale(1,1),ZIndex=2},{j('UICorner',{CornerRadius=UDim.new(0,8)}),j('UIStroke',{Transparency=0.5,Thickness=1,ThemeTag={Color='AcrylicBorder'}})})})local m if e(d.Parent.Parent).UseAcrylic then m=i()m.Frame.Parent=l.Frame l.Model=m.Model l.AddParent=m.AddParent l.SetVisibility=m.SetVisibility end return l end end,function()local c,d,e,f,g=b(5)local h=d.Parent.Parent local i=e(h.Creator)local j=function()local j=i.New('Part',{Name='Body',Color=Color3.new(0,0,0),Material=Enum.Material.Glass,Size=Vector3.new(1,1,0),Anchored=true,CanCollide=false,Locked=true,CastShadow=false,Transparency=0.98},{i.New('SpecialMesh',{MeshType=Enum.MeshType.Brick,Offset=Vector3.new(0,0,-1E-6)})})return j end return j end,function()local c,d,e,f,g=b(6)local h,i=function(h,i,j,k,l)return(h-i)*(l-k)/(j-i)+k end,function(h,i)local j=game:GetService'Workspace'.CurrentCamera:ScreenPointToRay(h.X,h.Y)return j.Origin+j.Direction*i end local j=function()local j=game:GetService'Workspace'.CurrentCamera.ViewportSize.Y return h(j,0,2560,8,56)end return{i,j}end,[8]=function()local c,d,e,f,g=b(8)return{Close='rbxthumb://type=Asset&id=111147657950432&w=150&h=150',Min='rbxthumb://type=Asset&id=119364000008939&w=150&h=150',Max='rbxthumb://type=Asset&id=76932851909318&w=150&h=150',Restore='rbxassetid://9886659001'}end,[9]=function()local c,d,e,f,g=b(9)local h=d.Parent.Parent local i,j=e(h.Packages.Flipper),e(h.Creator)local k,l=j.New,i.Spring.new return function(m,n,o)o=o or false local p={}p.Title=k('TextLabel',{FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',TextColor3=Color3.fromRGB(255,255,255),TextSize=14,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,BackgroundColor3=Color3.fromRGB(255,255,255),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,Size=UDim2.fromScale(1,1),ThemeTag={TextColor3='Text'}})p.HoverFrame=k('Frame',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,ThemeTag={BackgroundColor3='Hover'}},{k('UICorner',{CornerRadius=UDim.new(0,4)})})p.Frame=k('TextButton',{Size=UDim2.new(0,0,0,32),Parent=n,ThemeTag={BackgroundColor3='DialogButton'}},{k('UICorner',{CornerRadius=UDim.new(0,4)}),k('UIStroke',{ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Transparency=0.65,ThemeTag={Color='DialogButtonBorder'}}),p.HoverFrame,p.Title})local q,r=j.SpringMotor(1,p.HoverFrame,'BackgroundTransparency',o)j.AddSignal(p.Frame.MouseEnter,function()r(0.97)end)j.AddSignal(p.Frame.MouseLeave,function()r(1)end)j.AddSignal(p.Frame.MouseButton1Down,function()r(1)end)j.AddSignal(p.Frame.MouseButton1Up,function()r(0.97)end)return p end end,[10]=function()local c,d,e,f,g=b(10)local h,i,j,k=game:GetService'UserInputService',game:GetService'Players'.LocalPlayer:GetMouse(),game:GetService'Workspace'.CurrentCamera,d.Parent.Parent local l,m=e(k.Packages.Flipper),e(k.Creator)local n,o,p,q=l.Spring.new,l.Instant.new,m.New,{Window=nil}function q.Init(r,s)q.Window=s return q end function q.Create(r)local s={Buttons=0}s.TintFrame=p('TextButton',{Text='',Size=UDim2.fromScale(1,1),BackgroundColor3=Color3.fromRGB(0,0,0),BackgroundTransparency=1,Parent=q.Window.Root},{p('UICorner',{CornerRadius=UDim.new(0,8)})})local t,u=m.SpringMotor(1,s.TintFrame,'BackgroundTransparency',true)s.ButtonHolder=p('Frame',{Size=UDim2.new(1,-40,1,-40),AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromScale(0.5,0.5),BackgroundTransparency=1},{p('UIListLayout',{Padding=UDim.new(0,10),FillDirection=Enum.FillDirection.Horizontal,HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder})})s.ButtonHolderFrame=p('Frame',{Size=UDim2.new(1,0,0,70),Position=UDim2.new(0,0,1,-70),ThemeTag={BackgroundColor3='DialogHolder'}},{p('Frame',{Size=UDim2.new(1,0,0,1),ThemeTag={BackgroundColor3='DialogHolderLine'}}),s.ButtonHolder})s.Title=p('TextLabel',{FontFace=Font.new('rbxasset://fonts/families/GothamSSm.json',Enum.FontWeight.SemiBold,Enum.FontStyle.Normal),Text='Dialog',TextColor3=Color3.fromRGB(255,255,255),TextSize=22,TextXAlignment=Enum.TextXAlignment.Left,Size=UDim2.new(1,0,0,22),Position=UDim2.fromOffset(20,25),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,ThemeTag={TextColor3='Text'}})s.Scale=p('UIScale',{Scale=1})local v,w=m.SpringMotor(1.1,s.Scale,'Scale')s.Root=p('CanvasGroup',{Size=UDim2.fromOffset(300,165),AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromScale(0.5,0.5),GroupTransparency=1,Parent=s.TintFrame,ThemeTag={BackgroundColor3='Dialog'}},{p('UICorner',{CornerRadius=UDim.new(0,8)}),p('UIStroke',{Transparency=0.5,ThemeTag={Color='DialogBorder'}}),s.Scale,s.Title,s.ButtonHolderFrame})local x,y=m.SpringMotor(1,s.Root,'GroupTransparency')function s.Open(z)e(k).DialogOpen=true s.Scale.Scale=1.1 u(0.75)y(0)w(1)end function s.Close(z)e(k).DialogOpen=false u(1)y(1)w(1.1)s.Root.UIStroke:Destroy()task.wait(0.15)s.TintFrame:Destroy()end function s.Button(z,A,B)s.Buttons=s.Buttons+1 A=A or'Button'B=B or function()end local C=e(k.Components.Button)('',s.ButtonHolder,true)C.Title.Text=A for D,E in next,s.ButtonHolder:GetChildren()do if E:IsA'TextButton'then E.Size=UDim2.new(1/s.Buttons,-(((s.Buttons-1)*10)/s.Buttons),0,32)end end m.AddSignal(C.Frame.MouseButton1Click,function()e(k):SafeCallback(B)pcall(function()s:Close()end)end)return C end return s end return q end,[11]=function()local c,d,e,f,g=b(11)local h=d.Parent.Parent local i,j=e(h.Packages.Flipper),e(h.Creator)local k,l=j.New,i.Spring.new return function(m,n,o,p)local q={}q.TitleLabel=k('TextLabel',{FontFace=Font.new('rbxasset://fonts/families/GothamSSm.json',Enum.FontWeight.Medium,Enum.FontStyle.Normal),Text=m,TextColor3=Color3.fromRGB(255,255,255),TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,Size=UDim2.new(1,0,0,14),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,ThemeTag={TextColor3='Text'}})q.DescLabel=k('TextLabel',{FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',Text=n,TextColor3=Color3.fromRGB(255,255,255),TextSize=12,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,BackgroundColor3=Color3.fromRGB(255,255,255),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,Size=UDim2.new(1,0,0,14),ThemeTag={TextColor3='SubText'}})q.LabelHolder=k('Frame',{AutomaticSize=Enum.AutomaticSize.Y,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,Position=UDim2.fromOffset(10,0),Size=UDim2.new(1,-28,0,0)},{k('UIListLayout',{SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center}),k('UIPadding',{PaddingBottom=UDim.new(0,13),PaddingTop=UDim.new(0,13)}),q.TitleLabel,q.DescLabel})q.Border=k('UIStroke',{Transparency=0.5,ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Color=Color3.fromRGB(0,0,0),ThemeTag={Color='ElementBorder'}})q.Frame=k('TextButton',{Size=UDim2.new(1,0,0,0),BackgroundTransparency=0.89,BackgroundColor3=Color3.fromRGB(130,130,130),Parent=o,AutomaticSize=Enum.AutomaticSize.Y,Text='',LayoutOrder=7,ThemeTag={BackgroundColor3='Element',BackgroundTransparency='ElementTransparency'}},{k('UICorner',{CornerRadius=UDim.new(0,4)}),q.Border,q.LabelHolder})function q.SetTitle(r,s)q.TitleLabel.Text=s end function q.SetDesc(r,s)if s==nil then s=''end if s==''then q.DescLabel.Visible=false else q.DescLabel.Visible=true end q.DescLabel.Text=s end function q.Destroy(r)q.Frame:Destroy()end q:SetTitle(m)q:SetDesc(n)if p then local r,s,t=h.Themes,j.SpringMotor(j.GetThemeProperty'ElementTransparency',q.Frame,'BackgroundTransparency',false,true)j.AddSignal(q.Frame.MouseEnter,function()t(j.GetThemeProperty'ElementTransparency'-j.GetThemeProperty'HoverChange')end)j.AddSignal(q.Frame.MouseLeave,function()t(j.GetThemeProperty'ElementTransparency')end)j.AddSignal(q.Frame.MouseButton1Down,function()t(j.GetThemeProperty'ElementTransparency'+j.GetThemeProperty'HoverChange')end)j.AddSignal(q.Frame.MouseButton1Up,function()t(j.GetThemeProperty'ElementTransparency'-j.GetThemeProperty'HoverChange')end)end return q end end,[12]=function()local c,d,e,f,g=b(12)local h=d.Parent.Parent local i,j,k=e(h.Packages.Flipper),e(h.Creator),e(h.Acrylic)local l,m,n,o=i.Spring.new,i.Instant.new,j.New,{}function o.Init(p,q)o.Holder=n('Frame',{Position=UDim2.new(1,-30,1,-30),Size=UDim2.new(0,310,1,-30),AnchorPoint=Vector2.new(1,1),BackgroundTransparency=1,Parent=q},{n('UIListLayout',{HorizontalAlignment=Enum.HorizontalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Bottom,Padding=UDim.new(0,20)})})end function o.New(p,q)q.Title=q.Title or'Title'q.Content=q.Content or'Content'q.SubContent=q.SubContent or''q.Duration=q.Duration or nil q.Buttons=q.Buttons or{}local r={Closed=false}r.AcrylicPaint=k.AcrylicPaint()r.Title=n('TextLabel',{Position=UDim2.new(0,14,0,17),Text=q.Title,RichText=true,TextColor3=Color3.fromRGB(255,255,255),TextTransparency=0,FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',TextSize=13,TextXAlignment='Left',TextYAlignment='Center',Size=UDim2.new(1,-12,0,12),TextWrapped=true,BackgroundTransparency=1,ThemeTag={TextColor3='Text'}})r.ContentLabel=n('TextLabel',{FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',Text=q.Content,TextColor3=Color3.fromRGB(255,255,255),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left,AutomaticSize=Enum.AutomaticSize.Y,Size=UDim2.new(1,0,0,14),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,TextWrapped=true,ThemeTag={TextColor3='Text'}})r.SubContentLabel=n('TextLabel',{FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',Text=q.SubContent,TextColor3=Color3.fromRGB(255,255,255),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left,AutomaticSize=Enum.AutomaticSize.Y,Size=UDim2.new(1,0,0,14),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,TextWrapped=true,ThemeTag={TextColor3='SubText'}})r.LabelHolder=n('Frame',{AutomaticSize=Enum.AutomaticSize.Y,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,Position=UDim2.fromOffset(14,40),Size=UDim2.new(1,-28,0,0)},{n('UIListLayout',{SortOrder=Enum.SortOrder.LayoutOrder,VerticalAlignment=Enum.VerticalAlignment.Center,Padding=UDim.new(0,3)}),r.ContentLabel,r.SubContentLabel})r.CloseButton=n('TextButton',{Text='',Position=UDim2.new(1,-14,0,13),Size=UDim2.fromOffset(20,20),AnchorPoint=Vector2.new(1,0),BackgroundTransparency=1},{n('ImageLabel',{Image=e(d.Parent.Assets).Close,Size=UDim2.fromOffset(16,16),Position=UDim2.fromScale(0.5,0.5),AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,ThemeTag={ImageColor3='Text'}})})r.Root=n('Frame',{BackgroundTransparency=1,Size=UDim2.new(1,0,1,0),Position=UDim2.fromScale(1,0)},{r.AcrylicPaint.Frame,r.Title,r.CloseButton,r.LabelHolder})if q.Content==''then r.ContentLabel.Visible=false end if q.SubContent==''then r.SubContentLabel.Visible=false end r.Holder=n('Frame',{BackgroundTransparency=1,Size=UDim2.new(1,0,0,200),Parent=o.Holder},{r.Root})local s=i.GroupMotor.new{Scale=1,Offset=60}s:onStep(function(t)r.Root.Position=UDim2.new(t.Scale,t.Offset,0,0)end)j.AddSignal(r.CloseButton.MouseButton1Click,function()r:Close()end)function r.Open(t)local u=r.LabelHolder.AbsoluteSize.Y r.Holder.Size=UDim2.new(1,0,0,58+u)s:setGoal{Scale=l(0,{frequency=5}),Offset=l(0,{frequency=5})}end function r.Close(t)if not r.Closed then r.Closed=true task.spawn(function()s:setGoal{Scale=l(1,{frequency=5}),Offset=l(60,{frequency=5})}task.wait(0.4)if e(h).UseAcrylic then r.AcrylicPaint.Model:Destroy()end r.Holder:Destroy()end)end end r:Open()if q.Duration then task.delay(q.Duration,function()r:Close()end)end return r end return o end,[13]=function()local c,d,e,f,g=b(13)local h=d.Parent.Parent local i=e(h.Creator)local j=i.New return function(k,l)local m={}m.Layout=j('UIListLayout',{Padding=UDim.new(0,5)})m.Container=j('Frame',{Size=UDim2.new(1,0,0,26),Position=UDim2.fromOffset(0,24),BackgroundTransparency=1},{m.Layout})m.Root=j('Frame',{BackgroundTransparency=1,Size=UDim2.new(1,0,0,26),LayoutOrder=7,Parent=l},{j('TextLabel',{RichText=true,Text=k,TextTransparency=0,FontFace=Font.new('rbxassetid://12187365364',Enum.FontWeight.SemiBold,Enum.FontStyle.Normal),TextSize=18,TextXAlignment='Left',TextYAlignment='Center',Size=UDim2.new(1,-16,0,18),Position=UDim2.fromOffset(0,2),ThemeTag={TextColor3='Text'}}),m.Container})i.AddSignal(m.Layout:GetPropertyChangedSignal'AbsoluteContentSize',function()m.Container.Size=UDim2.new(1,0,0,m.Layout.AbsoluteContentSize.Y)m.Root.Size=UDim2.new(1,0,0,m.Layout.AbsoluteContentSize.Y+25)end)return m end end,[14]=function()local c,d,e,f,g=b(14)local h=d.Parent.Parent local i,j=e(h.Packages.Flipper),e(h.Creator)local k,l,m,n,o=j.New,i.Spring.new,i.Instant.new,h.Components,{Window=nil,Tabs={},Containers={},SelectedTab=0,TabCount=0}function o.Init(p,q)o.Window=q return o end function o.GetCurrentTabPos(p)local q,r=o.Window.TabHolder.AbsolutePosition.Y,o.Tabs[o.SelectedTab].Frame.AbsolutePosition.Y return r-q end function o.New(p,q,r,s)local t,u=e(h),o.Window local v=t.Elements o.TabCount=o.TabCount+1 local w,x=o.TabCount,{Selected=false,Name=q,Type='Tab'}if t:GetIcon(r)then r=t:GetIcon(r)end if r==''or nil then r=nil end x.Frame=k('TextButton',{Size=UDim2.new(1,0,0,34),BackgroundTransparency=1,Parent=s,ThemeTag={BackgroundColor3='Tab'}},{k('UICorner',{CornerRadius=UDim.new(0,6)}),k('TextLabel',{AnchorPoint=Vector2.new(0,0.5),Position=r and UDim2.new(0,30,0.5,0)or UDim2.new(0,12,0.5,0),Text=q,RichText=true,TextColor3=Color3.fromRGB(255,255,255),TextTransparency=0,FontFace=Font.new('rbxasset://fonts/families/GothamSSm.json',Enum.FontWeight.Regular,Enum.FontStyle.Normal),TextSize=12,TextXAlignment='Left',TextYAlignment='Center',Size=UDim2.new(1,-12,1,0),BackgroundTransparency=1,ThemeTag={TextColor3='Text'}}),k('ImageLabel',{AnchorPoint=Vector2.new(0,0.5),Size=UDim2.fromOffset(16,16),Position=UDim2.new(0,8,0.5,0),BackgroundTransparency=1,Image=r and r or nil,ThemeTag={ImageColor3='Text'}})})local y=k('UIListLayout',{Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder})x.ContainerFrame=k('ScrollingFrame',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Parent=u.ContainerHolder,Visible=false,BottomImage='rbxassetid://6889812791',MidImage='rbxassetid://6889812721',TopImage='rbxassetid://6276641225',ScrollBarImageColor3=Color3.fromRGB(255,255,255),ScrollBarImageTransparency=0.95,ScrollBarThickness=3,BorderSizePixel=0,CanvasSize=UDim2.fromScale(0,0),ScrollingDirection=Enum.ScrollingDirection.Y},{y,k('UIPadding',{PaddingRight=UDim.new(0,10),PaddingLeft=UDim.new(0,1),PaddingTop=UDim.new(0,1),PaddingBottom=UDim.new(0,1)})})j.AddSignal(y:GetPropertyChangedSignal'AbsoluteContentSize',function()x.ContainerFrame.CanvasSize=UDim2.new(0,0,0,y.AbsoluteContentSize.Y+2)end)x.Motor,x.SetTransparency=j.SpringMotor(1,x.Frame,'BackgroundTransparency')j.AddSignal(x.Frame.MouseEnter,function()x.SetTransparency(x.Selected and 0.85 or 0.89)end)j.AddSignal(x.Frame.MouseLeave,function()x.SetTransparency(x.Selected and 0.89 or 1)end)j.AddSignal(x.Frame.MouseButton1Down,function()x.SetTransparency(0.92)end)j.AddSignal(x.Frame.MouseButton1Up,function()x.SetTransparency(x.Selected and 0.85 or 0.89)end)j.AddSignal(x.Frame.MouseButton1Click,function()o:SelectTab(w)end)o.Containers[w]=x.ContainerFrame o.Tabs[w]=x x.Container=x.ContainerFrame x.ScrollFrame=x.Container function x.AddSection(z,A)local B,C={Type='Section'},e(n.Section)(A,x.Container)B.Container=C.Container B.ScrollFrame=x.Container setmetatable(B,v)return B end setmetatable(x,v)return x end function o.SelectTab(p,q)local r=o.Window o.SelectedTab=q for s,t in next,o.Tabs do t.SetTransparency(1)t.Selected=false end o.Tabs[q].SetTransparency(0.89)o.Tabs[q].Selected=true r.TabDisplay.Text=o.Tabs[q].Name r.SelectorPosMotor:setGoal(l(o:GetCurrentTabPos(),{frequency=6}))task.spawn(function()r.ContainerPosMotor:setGoal(l(110,{frequency=10}))r.ContainerBackMotor:setGoal(l(1,{frequency=10}))task.wait(0.15)for u,v in next,o.Containers do v.Visible=false end o.Containers[q].Visible=true r.ContainerPosMotor:setGoal(l(94,{frequency=5}))r.ContainerBackMotor:setGoal(l(0,{frequency=8}))end)end return o end,[15]=function()local c,d,e,f,g=b(15)local h,i=game:GetService'TextService',d.Parent.Parent local j,k=e(i.Packages.Flipper),e(i.Creator)local l=k.New return function(m,n)n=n or false local o={}o.Input=l('TextBox',{FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',TextColor3=Color3.fromRGB(255,255,255),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Center,BackgroundColor3=Color3.fromRGB(255,255,255),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Position=UDim2.fromOffset(10,0),ThemeTag={TextColor3='Text',PlaceholderColor3='SubText'}})o.Container=l('Frame',{BackgroundTransparency=1,ClipsDescendants=true,Position=UDim2.new(0,6,0,0),Size=UDim2.new(1,-12,1,0)},{o.Input})o.Indicator=l('Frame',{Size=UDim2.new(1,-4,0,1),Position=UDim2.new(0,2,1,0),AnchorPoint=Vector2.new(0,1),BackgroundTransparency=n and 0.5 or 0,ThemeTag={BackgroundColor3=n and'InputIndicator'or'DialogInputLine'}})o.Frame=l('Frame',{Size=UDim2.new(0,0,0,30),BackgroundTransparency=n and 0.9 or 0,Parent=m,ThemeTag={BackgroundColor3=n and'Input'or'DialogInput'}},{l('UICorner',{CornerRadius=UDim.new(0,4)}),l('UIStroke',{ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Transparency=n and 0.5 or 0.65,ThemeTag={Color=n and'InElementBorder'or'DialogButtonBorder'}}),o.Indicator,o.Container})local p=function()local p,q=2,o.Container.AbsoluteSize.X if not o.Input:IsFocused()or o.Input.TextBounds.X<=q-2*p then o.Input.Position=UDim2.new(0,p,0,0)else local r=o.Input.CursorPosition if r~=-1 then local s=string.sub(o.Input.Text,1,r-1)local t=h:GetTextSize(s,o.Input.TextSize,o.Input.Font,Vector2.new(math.huge,math.huge)).X local u=o.Input.Position.X.Offset+t if u<p then o.Input.Position=UDim2.fromOffset(p-t,0)elseif u>q-p-1 then o.Input.Position=UDim2.fromOffset(q-t-p-1,0)end end end end task.spawn(p)k.AddSignal(o.Input:GetPropertyChangedSignal'Text',p)k.AddSignal(o.Input:GetPropertyChangedSignal'CursorPosition',p)k.AddSignal(o.Input.Focused,function()p()o.Indicator.Size=UDim2.new(1,-2,0,2)o.Indicator.Position=UDim2.new(0,1,1,0)o.Indicator.BackgroundTransparency=0 k.OverrideTag(o.Frame,{BackgroundColor3=n and'InputFocused'or'DialogHolder'})k.OverrideTag(o.Indicator,{BackgroundColor3='Accent'})end)k.AddSignal(o.Input.FocusLost,function()p()o.Indicator.Size=UDim2.new(1,-4,0,1)o.Indicator.Position=UDim2.new(0,2,1,0)o.Indicator.BackgroundTransparency=0.5 k.OverrideTag(o.Frame,{BackgroundColor3=n and'Input'or'DialogInput'})k.OverrideTag(o.Indicator,{BackgroundColor3=n and'InputIndicator'or'DialogInputLine'})end)return o end end,[16]=function()local c,d,e,f,g=b(16)local h,i=d.Parent.Parent,e(d.Parent.Assets)local j,k=e(h.Creator),e(h.Packages.Flipper)local l,m=j.New,j.AddSignal return function(n)local o,p,q={},e(h),function(o,p,q,r)local s={Callback=r or function()end}s.Frame=l('TextButton',{Size=UDim2.new(0,34,1,-8),AnchorPoint=Vector2.new(1,0),BackgroundTransparency=1,Parent=q,Position=p,Text='',ThemeTag={BackgroundColor3='Text'}},{l('UICorner',{CornerRadius=UDim.new(0,7)}),l('ImageLabel',{Image=o,Size=UDim2.fromOffset(16,16),Position=UDim2.fromScale(0.5,0.5),AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,Name='Icon',ThemeTag={ImageColor3='Text'}})})local t,u=j.SpringMotor(1,s.Frame,'BackgroundTransparency')m(s.Frame.MouseEnter,function()u(0.94)end)m(s.Frame.MouseLeave,function()u(1,true)end)m(s.Frame.MouseButton1Down,function()u(0.96)end)m(s.Frame.MouseButton1Up,function()u(0.94)end)m(s.Frame.MouseButton1Click,s.Callback)s.SetCallback=function(v)s.Callback=v end return s end o.Frame=l('Frame',{Size=UDim2.new(1,0,0,42),BackgroundTransparency=1,Parent=n.Parent},{l('Frame',{Size=UDim2.new(1,-16,1,0),Position=UDim2.new(0,16,0,0),BackgroundTransparency=1},{l('UIListLayout',{Padding=UDim.new(0,5),FillDirection=Enum.FillDirection.Horizontal,SortOrder=Enum.SortOrder.LayoutOrder}),l('TextLabel',{RichText=true,Text=n.Title,FontFace=Font.new('rbxasset://fonts/families/GothamSSm.json',Enum.FontWeight.Regular,Enum.FontStyle.Normal),TextSize=12,TextXAlignment='Left',TextYAlignment='Center',Size=UDim2.fromScale(0,1),AutomaticSize=Enum.AutomaticSize.X,BackgroundTransparency=1,ThemeTag={TextColor3='Text'}}),l('TextLabel',{RichText=true,Text=n.SubTitle,TextTransparency=0.4,FontFace=Font.new('rbxasset://fonts/families/GothamSSm.json',Enum.FontWeight.Regular,Enum.FontStyle.Normal),TextSize=12,TextXAlignment='Left',TextYAlignment='Center',Size=UDim2.fromScale(0,1),AutomaticSize=Enum.AutomaticSize.X,BackgroundTransparency=1,ThemeTag={TextColor3='Text'}})}),l('Frame',{BackgroundTransparency=0.5,Size=UDim2.new(1,0,0,1),Position=UDim2.new(0,0,1,0),ThemeTag={BackgroundColor3='TitleBarLine'}})})o.CloseButton=q(i.Close,UDim2.new(1,-4,0,4),o.Frame,function()p.Window:Dialog{Title='Close',Content='Are you sure you want to unload the interface?',Buttons={{Title='Yes',Callback=function()p:Destroy()end},{Title='No'}}}end)o.MaxButton=q(i.Max,UDim2.new(1,-40,0,4),o.Frame,function()n.Window.Maximize(not n.Window.Maximized)end)o.MinButton=q(i.Min,UDim2.new(1,-80,0,4),o.Frame,function()p.Window:Minimize()end)
-    task.spawn(function()
-        local t = o.Frame:FindFirstChild("Title", true)
-        if t then
-            t.Text = "  Aiga"
-            local g = Instance.new("UIGradient")
-            g.Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
-                ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
-            })
-            g.Parent = t
-            local i = Instance.new("ImageLabel")
-            i.Size = UDim2.fromOffset(24, 24)
-            i.Position = UDim2.new(0, -28, 0.5, 0)
-            i.AnchorPoint = Vector2.new(0, 0.5)
-            i.BackgroundTransparency = 1
-            i.Image = 'rbxthumb://type=Asset&id=86868808077613&w=150&h=150'
-            i.Parent = t
+    local function getObjects()
+        local function initObj()
+            local Gui = {
+                UIObjects = Instance.new("Folder"),
+                Cheats = Instance.new("Folder"),
+                Button = Instance.new("Frame"),
+                UICorner = Instance.new("UICorner"),
+                DropShadowHolder = Instance.new("Frame"),
+                DropShadow = Instance.new("ImageLabel"),
+                Text = Instance.new("TextLabel"),
+                HoverFrame = Instance.new("Frame"),
+                UICorner_2 = Instance.new("UICorner"),
+                Checkbox = Instance.new("Frame"),
+                UIAspectRatioConstraint = Instance.new("UIAspectRatioConstraint"),
+                Selection = Instance.new("Frame"),
+                UICorner_3 = Instance.new("UICorner"),
+                UIGradient = Instance.new("UIGradient"),
+                HoverFrame_2 = Instance.new("Frame"),
+                UICorner_4 = Instance.new("UICorner"),
+                Toggle = Instance.new("Frame"),
+                UIPadding = Instance.new("UIPadding"),
+                UIGradient_2 = Instance.new("UIGradient"),
+                UICorner_5 = Instance.new("UICorner"),
+                DropShadowHolder_2 = Instance.new("Frame"),
+                DropShadow_2 = Instance.new("ImageLabel"),
+                Content = Instance.new("Frame"),
+                Frame = Instance.new("Frame"),
+                UICorner_6 = Instance.new("UICorner"),
+                UIAspectRatioConstraint_2 = Instance.new("UIAspectRatioConstraint"),
+                HoverFrame_3 = Instance.new("Frame"),
+                UIPadding_2 = Instance.new("UIPadding"),
+                UIGradient_3 = Instance.new("UIGradient"),
+                UICorner_7 = Instance.new("UICorner"),
+                Textbox = Instance.new("Frame"),
+                DropShadowHolder_3 = Instance.new("Frame"),
+                DropShadow_3 = Instance.new("ImageLabel"),
+                UICorner_8 = Instance.new("UICorner"),
+                Text_2 = Instance.new("TextBox"),
+                UITextSizeConstraint = Instance.new("UITextSizeConstraint"),
+                Keybind = Instance.new("Frame"),
+                UICorner_9 = Instance.new("UICorner"),
+                DropShadowHolder_4 = Instance.new("Frame"),
+                DropShadow_4 = Instance.new("ImageLabel"),
+                Text_3 = Instance.new("TextLabel"),
+                HoverFrame_4 = Instance.new("Frame"),
+                UICorner_10 = Instance.new("UICorner"),
+                ColorPicker = Instance.new("Frame"),
+                UIListLayout = Instance.new("UIListLayout"),
+                Text_4 = Instance.new("ImageLabel"),
+                DropShadowHolder_5 = Instance.new("Frame"),
+                DropShadow_5 = Instance.new("ImageLabel"),
+                Label = Instance.new("TextBox"),
+                Preview = Instance.new("ImageButton"),
+                DropShadowHolder_6 = Instance.new("Frame"),
+                DropShadow_6 = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_3 = Instance.new("UIAspectRatioConstraint"),
+                Hover = Instance.new("ImageLabel"),
+                Slider = Instance.new("Frame"),
+                Drag = Instance.new("Frame"),
+                UICorner_11 = Instance.new("UICorner"),
+                Frame_2 = Instance.new("Frame"),
+                UICorner_12 = Instance.new("UICorner"),
+                UIGradient_4 = Instance.new("UIGradient"),
+                UIListLayout_2 = Instance.new("UIListLayout"),
+                KeyInput = Instance.new("Frame"),
+                UICorner_13 = Instance.new("UICorner"),
+                DropShadowHolder_7 = Instance.new("Frame"),
+                DropShadow_7 = Instance.new("ImageLabel"),
+                Text_5 = Instance.new("TextBox"),
+                UIListLayout_3 = Instance.new("UIListLayout"),
+                Dropdown = Instance.new("Frame"),
+                MainHolder = Instance.new("Frame"),
+                UICorner_14 = Instance.new("UICorner"),
+                DropShadowHolder_8 = Instance.new("Frame"),
+                DropShadow_8 = Instance.new("ImageLabel"),
+                Content_2 = Instance.new("Frame"),
+                Text_6 = Instance.new("TextLabel"),
+                UITextSizeConstraint_2 = Instance.new("UITextSizeConstraint"),
+                UIPadding_3 = Instance.new("UIPadding"),
+                UIListLayout_4 = Instance.new("UIListLayout"),
+                Icon = Instance.new("Frame"),
+                UIAspectRatioConstraint_4 = Instance.new("UIAspectRatioConstraint"),
+                Holder = Instance.new("Frame"),
+                Icon_2 = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_5 = Instance.new("UIAspectRatioConstraint"),
+                UIListLayout_5 = Instance.new("UIListLayout"),
+                OptionHolder = Instance.new("Frame"),
+                Cover = Instance.new("Frame"),
+                DropShadow_9 = Instance.new("ImageLabel"),
+                UICorner_15 = Instance.new("UICorner"),
+                UIPadding_4 = Instance.new("UIPadding"),
+                UICorner_16 = Instance.new("UICorner"),
+                ContentHolder = Instance.new("Frame"),
+                Content_3 = Instance.new("ScrollingFrame"),
+                UIListLayout_6 = Instance.new("UIListLayout"),
+                Bottom = Instance.new("ImageButton"),
+                Current = Instance.new("TextLabel"),
+                Select = Instance.new("ImageLabel"),
+                Slot = Instance.new("ImageButton"),
+                Line = Instance.new("Frame"),
+                Select_2 = Instance.new("ImageLabel"),
+                Current_2 = Instance.new("TextLabel"),
+                Top = Instance.new("ImageButton"),
+                Line_2 = Instance.new("Frame"),
+                Select_3 = Instance.new("ImageLabel"),
+                Current_3 = Instance.new("TextLabel"),
+                Objects = Instance.new("Folder"),
+                Category = Instance.new("Frame"),
+                HoverFrame_5 = Instance.new("Frame"),
+                Content_4 = Instance.new("Frame"),
+                Image = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_6 = Instance.new("UIAspectRatioConstraint"),
+                Title = Instance.new("TextLabel"),
+                UITextSizeConstraint_3 = Instance.new("UITextSizeConstraint"),
+                UIListLayout_7 = Instance.new("UIListLayout"),
+                CategoryContent = Instance.new("Frame"),
+                Bar2Holder = Instance.new("Frame"),
+                UIListLayout_8 = Instance.new("UIListLayout"),
+                UIListLayout_9 = Instance.new("UIListLayout"),
+                UIPadding_5 = Instance.new("UIPadding"),
+                Window = Instance.new("Frame"),
+                Watermark = Instance.new("TextLabel"),
+                UIPadding_6 = Instance.new("UIPadding"),
+                MainUI = Instance.new("Frame"),
+                DropShadowHolder_9 = Instance.new("Frame"),
+                DropShadow_10 = Instance.new("ImageLabel"),
+                UICorner_17 = Instance.new("UICorner"),
+                Sidebar = Instance.new("Frame"),
+                ContentHolder_2 = Instance.new("Frame"),
+                UserInfo = Instance.new("Frame"),
+                Content_5 = Instance.new("Frame"),
+                Rank = Instance.new("TextLabel"),
+                UIPadding_7 = Instance.new("UIPadding"),
+                UIListLayout_10 = Instance.new("UIListLayout"),
+                Title_2 = Instance.new("TextLabel"),
+                Line_3 = Instance.new("Frame"),
+                Fill = Instance.new("ImageLabel"),
+                Texture = Instance.new("ImageLabel"),
+                UIListLayout_11 = Instance.new("UIListLayout"),
+                Cheats_2 = Instance.new("Frame"),
+                UIListLayout_12 = Instance.new("UIListLayout"),
+                UIPadding_8 = Instance.new("UIPadding"),
+                Logo = Instance.new("ImageLabel"),
+                UIGradient_5 = Instance.new("UIGradient"),
+                CheatHolder = Instance.new("Frame"),
+                UIListLayout_13 = Instance.new("UIListLayout"),
+                Fill_2 = Instance.new("ImageLabel"),
+                DivLine = Instance.new("Frame"),
+                Tab2 = Instance.new("ImageLabel"),
+                Shadow = Instance.new("Frame"),
+                UIGradient_6 = Instance.new("UIGradient"),
+                Sidebar2 = Instance.new("Frame"),
+                UIAspectRatioConstraint_7 = Instance.new("UIAspectRatioConstraint"),
+                ColorPickerOverlay = Instance.new("ImageButton"),
+                Content_6 = Instance.new("Frame"),
+                MainWindow = Instance.new("Frame"),
+                Wheel = Instance.new("ImageLabel"),
+                Hitbox = Instance.new("ImageButton"),
+                Shadow_2 = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_8 = Instance.new("UIAspectRatioConstraint"),
+                Pointer = Instance.new("ImageLabel"),
+                UIListLayout_14 = Instance.new("UIListLayout"),
+                Saturation = Instance.new("ImageLabel"),
+                DropShadowHolder_10 = Instance.new("Frame"),
+                DropShadow_11 = Instance.new("ImageLabel"),
+                Pointer_2 = Instance.new("ImageLabel"),
+                UIGradient_7 = Instance.new("UIGradient"),
+                Hitbox_2 = Instance.new("ImageButton"),
+                UIListLayout_15 = Instance.new("UIListLayout"),
+                ClrDisplay = Instance.new("Frame"),
+                UIListLayout_16 = Instance.new("UIListLayout"),
+                RGB = Instance.new("ImageLabel"),
+                Textbox_2 = Instance.new("TextLabel"),
+                DropShadowHolder_11 = Instance.new("Frame"),
+                DropShadow_12 = Instance.new("ImageLabel"),
+                Header = Instance.new("TextLabel"),
+                Hex = Instance.new("ImageLabel"),
+                DropShadowHolder_12 = Instance.new("Frame"),
+                DropShadow_13 = Instance.new("ImageLabel"),
+                Textbox_3 = Instance.new("TextLabel"),
+                Header_2 = Instance.new("TextLabel"),
+                UIAspectRatioConstraint_9 = Instance.new("UIAspectRatioConstraint"),
+                Buttons = Instance.new("Frame"),
+                Confirm = Instance.new("ImageButton"),
+                Confirm_2 = Instance.new("TextLabel"),
+                DropShadowHolder_13 = Instance.new("Frame"),
+                DropShadow_14 = Instance.new("ImageLabel"),
+                Checkmark = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_10 = Instance.new("UIAspectRatioConstraint"),
+                OtherFill = Instance.new("ImageLabel"),
+                UIListLayout_17 = Instance.new("UIListLayout"),
+                Cancel = Instance.new("ImageButton"),
+                OtherFill_2 = Instance.new("ImageLabel"),
+                DropShadowHolder_14 = Instance.new("Frame"),
+                DropShadow_15 = Instance.new("ImageLabel"),
+                Checkmark_2 = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_11 = Instance.new("UIAspectRatioConstraint"),
+                Content_7 = Instance.new("Frame"),
+                Shadow_3 = Instance.new("Frame"),
+                UIGradient_8 = Instance.new("UIGradient"),
+                UICorner_18 = Instance.new("UICorner"),
+                Notifications = Instance.new("Frame"),
+                UIListLayout_18 = Instance.new("UIListLayout"),
+                CategoryButton = Instance.new("Frame"),
+                InnerContent = Instance.new("Frame"),
+                UIListLayout_19 = Instance.new("UIListLayout"),
+                Image_2 = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_12 = Instance.new("UIAspectRatioConstraint"),
+                Title_3 = Instance.new("TextLabel"),
+                UITextSizeConstraint_4 = Instance.new("UITextSizeConstraint"),
+                SelectionShadow = Instance.new("Frame"),
+                UIGradient_9 = Instance.new("UIGradient"),
+                HoverFrame_6 = Instance.new("Frame"),
+                CategoryFrame = Instance.new("ScrollingFrame"),
+                Left = Instance.new("Frame"),
+                UIPadding_9 = Instance.new("UIPadding"),
+                UIListLayout_20 = Instance.new("UIListLayout"),
+                Right = Instance.new("Frame"),
+                UIListLayout_21 = Instance.new("UIListLayout"),
+                UIPadding_10 = Instance.new("UIPadding"),
+                UIPadding_11 = Instance.new("UIPadding"),
+                Section = Instance.new("Frame"),
+                Border = Instance.new("Frame"),
+                SectionTitle = Instance.new("TextLabel"),
+                UITextSizeConstraint_5 = Instance.new("UITextSizeConstraint"),
+                UICorner_19 = Instance.new("UICorner"),
+                Content_8 = Instance.new("Frame"),
+                UIPadding_12 = Instance.new("UIPadding"),
+                UIListLayout_22 = Instance.new("UIListLayout"),
+                DropShadow_16 = Instance.new("ImageLabel"),
+                CheatBase = Instance.new("Frame"),
+                Content_9 = Instance.new("Frame"),
+                UIListLayout_23 = Instance.new("UIListLayout"),
+                Text_7 = Instance.new("Frame"),
+                Text_8 = Instance.new("TextLabel"),
+                Desc = Instance.new("TextLabel"),
+                ElementContent = Instance.new("Frame"),
+                UIListLayout_24 = Instance.new("UIListLayout"),
+                Notification = Instance.new("Frame"),
+                Main = Instance.new("Frame"),
+                DropShadowHolder_15 = Instance.new("Frame"),
+                DropShadow_17 = Instance.new("ImageLabel"),
+                Content_10 = Instance.new("Frame"),
+                UIListLayout_25 = Instance.new("UIListLayout"),
+                Line_4 = Instance.new("Frame"),
+                Buttons_2 = Instance.new("Frame"),
+                UIListLayout_26 = Instance.new("UIListLayout"),
+                Close = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_13 = Instance.new("UIAspectRatioConstraint"),
+                Text_9 = Instance.new("Frame"),
+                UIListLayout_27 = Instance.new("UIListLayout"),
+                Title_4 = Instance.new("TextLabel"),
+                Desc_2 = Instance.new("TextLabel"),
+                UIPadding_13 = Instance.new("UIPadding"),
+                UICorner_20 = Instance.new("UICorner"),
+                UIAspectRatioConstraint_14 = Instance.new("UIAspectRatioConstraint"),
+                Notification_2 = Instance.new("Frame"),
+                UICorner_21 = Instance.new("UICorner"),
+                Prompt = Instance.new("Frame"),
+                Main_2 = Instance.new("Frame"),
+                UICorner_22 = Instance.new("UICorner"),
+                DropShadowHolder_16 = Instance.new("Frame"),
+                DropShadow_18 = Instance.new("ImageLabel"),
+                Content_11 = Instance.new("Frame"),
+                UIListLayout_28 = Instance.new("UIListLayout"),
+                Line_5 = Instance.new("Frame"),
+                Buttons_3 = Instance.new("Frame"),
+                UIListLayout_29 = Instance.new("UIListLayout"),
+                Accept = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_15 = Instance.new("UIAspectRatioConstraint"),
+                Close_2 = Instance.new("ImageLabel"),
+                UIAspectRatioConstraint_16 = Instance.new("UIAspectRatioConstraint"),
+                Text_10 = Instance.new("Frame"),
+                UIListLayout_30 = Instance.new("UIListLayout"),
+                Title_5 = Instance.new("TextLabel"),
+                Desc_3 = Instance.new("TextLabel"),
+                UIPadding_14 = Instance.new("UIPadding"),
+                Notification_3 = Instance.new("Frame"),
+                UICorner_23 = Instance.new("UICorner"),
+                UIAspectRatioConstraint_17 = Instance.new("UIAspectRatioConstraint")
+            }
+
+            --Properties:
+
+            Gui.UIObjects.Name = "UIObjects"
+
+            Gui.Cheats.Name = "Cheats"
+            Gui.Cheats.Parent = Gui.UIObjects
+
+            Gui.Button.Name = "Button"
+            Gui.Button.Parent = Gui.Cheats
+            Gui.Button.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Button.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            Gui.Button.BorderSizePixel = 0
+            Gui.Button.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Button.ZIndex = 110
+
+            Gui.UICorner.CornerRadius = UDim.new(0.100000001, 0)
+            Gui.UICorner.Parent = Gui.Button
+
+            Gui.DropShadowHolder.Name = "DropShadowHolder"
+            Gui.DropShadowHolder.Parent = Gui.Button
+            Gui.DropShadowHolder.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder.BorderSizePixel = 0
+            Gui.DropShadowHolder.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder.ZIndex = 0
+
+            Gui.DropShadow.Name = "DropShadow"
+            Gui.DropShadow.Parent = Gui.DropShadowHolder
+            Gui.DropShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow.BackgroundTransparency = 1.000
+            Gui.DropShadow.BorderSizePixel = 0
+            Gui.DropShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow.Size = UDim2.new(1, 34, 1, 34)
+            Gui.DropShadow.ZIndex = 109
+            Gui.DropShadow.Image = "rbxassetid://6014261993"
+            Gui.DropShadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow.ImageTransparency = 0.500
+            Gui.DropShadow.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Text.Name = "Text"
+            Gui.Text.Parent = Gui.Button
+            Gui.Text.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Text.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text.BackgroundTransparency = 1.000
+            Gui.Text.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Text.Size = UDim2.new(0.899999976, 0, 0.6, 0)
+            Gui.Text.ZIndex = 112
+            Gui.Text.Font = Enum.Font.GothamSemibold
+            Gui.Text.Text = "BUTTON WITHOUT TITLE OR DESC"
+            Gui.Text.TextColor3 = Color3.fromRGB(100, 100, 100)
+            Gui.Text.TextScaled = true
+            Gui.Text.TextSize = 14.000
+            Gui.Text.TextWrapped = true
+
+            Gui.HoverFrame.Name = "HoverFrame"
+            Gui.HoverFrame.Parent = Gui.Button
+            Gui.HoverFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+            Gui.HoverFrame.BackgroundTransparency = 1.000
+            Gui.HoverFrame.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            Gui.HoverFrame.BorderSizePixel = 0
+            Gui.HoverFrame.Size = UDim2.new(1, 0, 1, 0)
+            Gui.HoverFrame.ZIndex = 111
+
+            Gui.UICorner_2.CornerRadius = UDim.new(0.100000001, 0)
+            Gui.UICorner_2.Parent = Gui.HoverFrame
+
+            Gui.Checkbox.Name = "Checkbox"
+            Gui.Checkbox.Parent = Gui.Cheats
+            Gui.Checkbox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Checkbox.BorderSizePixel = 0
+            Gui.Checkbox.Size = UDim2.new(0.779999971, 0, 0.779999971, 0)
+            Gui.Checkbox.ZIndex = 110
+
+            Gui.UIAspectRatioConstraint.Parent = Gui.Checkbox
+
+            Gui.Selection.Name = "Selection"
+            Gui.Selection.Parent = Gui.Checkbox
+            Gui.Selection.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Selection.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            Gui.Selection.BackgroundTransparency = 1.000
+            Gui.Selection.BorderSizePixel = 0
+            Gui.Selection.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Selection.ZIndex = 112
+
+            Gui.UICorner_3.CornerRadius = UDim.new(0.200000003, 0)
+            Gui.UICorner_3.Parent = Gui.Selection
+
+            Gui.UIGradient.Color =
+                ColorSequence.new {
+                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(158, 158, 158))
+            }
+            Gui.UIGradient.Rotation = 45
+            Gui.UIGradient.Parent = Gui.Selection
+
+            Gui.HoverFrame_2.Name = "HoverFrame"
+            Gui.HoverFrame_2.Parent = Gui.Checkbox
+            Gui.HoverFrame_2.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+            Gui.HoverFrame_2.BackgroundTransparency = 1.000
+            Gui.HoverFrame_2.BorderSizePixel = 0
+            Gui.HoverFrame_2.Size = UDim2.new(1, 0, 1, 0)
+            Gui.HoverFrame_2.ZIndex = 111
+
+            Gui.UICorner_4.CornerRadius = UDim.new(0.200000003, 0)
+            Gui.UICorner_4.Parent = Gui.Checkbox
+
+            Gui.Toggle.Name = "Toggle"
+            Gui.Toggle.Parent = Gui.Cheats
+            Gui.Toggle.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Toggle.BorderSizePixel = 0
+            Gui.Toggle.Size = UDim2.new(0.300000012, 0, 0.600000024, 0)
+            Gui.Toggle.ZIndex = 110
+
+            Gui.UIPadding.Parent = Gui.Toggle
+            Gui.UIPadding.PaddingBottom = UDim.new(0, 2)
+            Gui.UIPadding.PaddingLeft = UDim.new(0, 2)
+            Gui.UIPadding.PaddingRight = UDim.new(0, 2)
+            Gui.UIPadding.PaddingTop = UDim.new(0, 2)
+
+            Gui.UIGradient_2.Color =
+                ColorSequence.new {
+                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(163, 163, 163))
+            }
+            Gui.UIGradient_2.Rotation = 45
+            Gui.UIGradient_2.Parent = Gui.Toggle
+
+            Gui.UICorner_5.Parent = Gui.Toggle
+
+            Gui.DropShadowHolder_2.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_2.Parent = Gui.Toggle
+            Gui.DropShadowHolder_2.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_2.BorderSizePixel = 0
+            Gui.DropShadowHolder_2.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_2.ZIndex = 0
+
+            Gui.DropShadow_2.Name = "DropShadow"
+            Gui.DropShadow_2.Parent = Gui.DropShadowHolder_2
+            Gui.DropShadow_2.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_2.BackgroundTransparency = 1.000
+            Gui.DropShadow_2.BorderSizePixel = 0
+            Gui.DropShadow_2.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_2.Size = UDim2.new(1, 30, 1, 30)
+            Gui.DropShadow_2.ZIndex = 109
+            Gui.DropShadow_2.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_2.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_2.ImageTransparency = 0.500
+            Gui.DropShadow_2.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_2.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Content.Name = "Content"
+            Gui.Content.Parent = Gui.Toggle
+            Gui.Content.AnchorPoint = Vector2.new(0.5, 0)
+            Gui.Content.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content.BackgroundTransparency = 1.000
+            Gui.Content.Position = UDim2.new(0.5, 0, 0, 0)
+            Gui.Content.Size = UDim2.new(0.949999988, 0, 1, 0)
+
+            Gui.Frame.Parent = Gui.Content
+            Gui.Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Frame.BorderSizePixel = 0
+            Gui.Frame.Position = UDim2.new(0.200000003, 0, 0.5, 0)
+            Gui.Frame.Size = UDim2.new(0.5, 0, 1, 0)
+            Gui.Frame.ZIndex = 112
+
+            Gui.UICorner_6.CornerRadius = UDim.new(1, 0)
+            Gui.UICorner_6.Parent = Gui.Frame
+
+            Gui.UIAspectRatioConstraint_2.Parent = Gui.Frame
+
+            Gui.HoverFrame_3.Name = "HoverFrame"
+            Gui.HoverFrame_3.Parent = Gui.Toggle
+            Gui.HoverFrame_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.HoverFrame_3.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+            Gui.HoverFrame_3.BackgroundTransparency = 1.000
+            Gui.HoverFrame_3.BorderSizePixel = 0
+            Gui.HoverFrame_3.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.HoverFrame_3.Size = UDim2.new(1, 4, 1, 4)
+            Gui.HoverFrame_3.ZIndex = 111
+
+            Gui.UIPadding_2.Parent = Gui.HoverFrame_3
+            Gui.UIPadding_2.PaddingBottom = UDim.new(0, 2)
+            Gui.UIPadding_2.PaddingLeft = UDim.new(0, 2)
+            Gui.UIPadding_2.PaddingRight = UDim.new(0, 2)
+            Gui.UIPadding_2.PaddingTop = UDim.new(0, 2)
+
+            Gui.UIGradient_3.Color =
+                ColorSequence.new {
+                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(163, 163, 163))
+            }
+            Gui.UIGradient_3.Rotation = 45
+            Gui.UIGradient_3.Parent = Gui.HoverFrame_3
+
+            Gui.UICorner_7.Parent = Gui.HoverFrame_3
+
+            Gui.Textbox.Name = "Textbox"
+            Gui.Textbox.Parent = Gui.Cheats
+            Gui.Textbox.AnchorPoint = Vector2.new(0, 0.5)
+            Gui.Textbox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Textbox.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            Gui.Textbox.BorderSizePixel = 0
+            Gui.Textbox.Position = UDim2.new(0, 0, 0.5, 0)
+            Gui.Textbox.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Textbox.ZIndex = 110
+
+            Gui.DropShadowHolder_3.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_3.Parent = Gui.Textbox
+            Gui.DropShadowHolder_3.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_3.BorderSizePixel = 0
+            Gui.DropShadowHolder_3.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_3.ZIndex = 0
+
+            Gui.DropShadow_3.Name = "DropShadow"
+            Gui.DropShadow_3.Parent = Gui.DropShadowHolder_3
+            Gui.DropShadow_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_3.BackgroundTransparency = 1.000
+            Gui.DropShadow_3.BorderSizePixel = 0
+            Gui.DropShadow_3.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_3.Size = UDim2.new(1, 34, 1, 34)
+            Gui.DropShadow_3.ZIndex = 109
+            Gui.DropShadow_3.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_3.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_3.ImageTransparency = 0.500
+            Gui.DropShadow_3.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_3.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.UICorner_8.CornerRadius = UDim.new(0.100000001, 0)
+            Gui.UICorner_8.Parent = Gui.Textbox
+
+            Gui.Text_2.Name = "Text"
+            Gui.Text_2.Parent = Gui.Textbox
+            Gui.Text_2.Active = false
+            Gui.Text_2.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Text_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_2.BackgroundTransparency = 1.000
+            Gui.Text_2.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Text_2.Selectable = false
+            Gui.Text_2.Size = UDim2.new(0.899999976, 0, 0.5, 0)
+            Gui.Text_2.ZIndex = 111
+            Gui.Text_2.ClearTextOnFocus = false
+            Gui.Text_2.Font = Enum.Font.GothamSemibold
+            Gui.Text_2.Text = ""
+            Gui.Text_2.TextColor3 = Color3.fromRGB(100, 100, 100)
+            Gui.Text_2.TextScaled = true
+            Gui.Text_2.TextSize = 14.000
+            Gui.Text_2.TextWrapped = true
+
+            Gui.UITextSizeConstraint.Parent = Gui.Text_2
+            Gui.UITextSizeConstraint.MaxTextSize = 14
+            Gui.UITextSizeConstraint.MinTextSize = 14
+
+            Gui.Keybind.Name = "Keybind"
+            Gui.Keybind.Parent = Gui.Cheats
+            Gui.Keybind.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Keybind.BorderSizePixel = 0
+            Gui.Keybind.Size = UDim2.new(0.200000003, 0, 1, 0)
+            Gui.Keybind.ZIndex = 110
+
+            Gui.UICorner_9.CornerRadius = UDim.new(0.100000001, 0)
+            Gui.UICorner_9.Parent = Gui.Keybind
+
+            Gui.DropShadowHolder_4.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_4.Parent = Gui.Keybind
+            Gui.DropShadowHolder_4.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_4.BorderSizePixel = 0
+            Gui.DropShadowHolder_4.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_4.ZIndex = 0
+
+            Gui.DropShadow_4.Name = "DropShadow"
+            Gui.DropShadow_4.Parent = Gui.DropShadowHolder_4
+            Gui.DropShadow_4.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_4.BackgroundTransparency = 1.000
+            Gui.DropShadow_4.BorderSizePixel = 0
+            Gui.DropShadow_4.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_4.Size = UDim2.new(1, 32, 1, 32)
+            Gui.DropShadow_4.ZIndex = 109
+            Gui.DropShadow_4.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_4.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_4.ImageTransparency = 0.500
+            Gui.DropShadow_4.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_4.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Text_3.Name = "Text"
+            Gui.Text_3.Parent = Gui.Keybind
+            Gui.Text_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Text_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_3.BackgroundTransparency = 1.000
+            Gui.Text_3.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Text_3.Size = UDim2.new(0.899999976, 0, 0.75, 0)
+            Gui.Text_3.ZIndex = 112
+            Gui.Text_3.Font = Enum.Font.GothamSemibold
+            Gui.Text_3.Text = "..."
+            Gui.Text_3.TextColor3 = Color3.fromRGB(100, 100, 100)
+            Gui.Text_3.TextSize = 14.000
+
+            Gui.HoverFrame_4.Name = "HoverFrame"
+            Gui.HoverFrame_4.Parent = Gui.Keybind
+            Gui.HoverFrame_4.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+            Gui.HoverFrame_4.BackgroundTransparency = 1.000
+            Gui.HoverFrame_4.BorderSizePixel = 0
+            Gui.HoverFrame_4.Size = UDim2.new(1, 0, 1, 0)
+            Gui.HoverFrame_4.ZIndex = 111
+
+            Gui.UICorner_10.CornerRadius = UDim.new(0.100000001, 0)
+            Gui.UICorner_10.Parent = Gui.HoverFrame_4
+
+            Gui.ColorPicker.Name = "ColorPicker"
+            Gui.ColorPicker.Parent = Gui.Cheats
+            Gui.ColorPicker.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.ColorPicker.BackgroundTransparency = 1.000
+            Gui.ColorPicker.BorderSizePixel = 0
+            Gui.ColorPicker.Position = UDim2.new(0.600000024, -8, 0, 0)
+            Gui.ColorPicker.Size = UDim2.new(1, 0, 1, 0)
+            Gui.ColorPicker.ZIndex = 200
+
+            Gui.UIListLayout.Parent = Gui.ColorPicker
+            Gui.UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+            Gui.UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout.Padding = UDim.new(0, 5)
+
+            Gui.Text_4.Name = "Text"
+            Gui.Text_4.Parent = Gui.ColorPicker
+            Gui.Text_4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_4.BackgroundTransparency = 1.000
+            Gui.Text_4.Size = UDim2.new(0.699999988, 0, 0.800000012, 0)
+            Gui.Text_4.ZIndex = 110
+            Gui.Text_4.Image = "rbxassetid://7881709447"
+            Gui.Text_4.ImageColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Text_4.ScaleType = Enum.ScaleType.Slice
+            Gui.Text_4.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Text_4.SliceScale = 0.005
+
+            Gui.DropShadowHolder_5.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_5.Parent = Gui.Text_4
+            Gui.DropShadowHolder_5.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_5.BorderSizePixel = 0
+            Gui.DropShadowHolder_5.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_5.ZIndex = 0
+
+            Gui.DropShadow_5.Name = "DropShadow"
+            Gui.DropShadow_5.Parent = Gui.DropShadowHolder_5
+            Gui.DropShadow_5.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_5.BackgroundTransparency = 1.000
+            Gui.DropShadow_5.BorderSizePixel = 0
+            Gui.DropShadow_5.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_5.Size = UDim2.new(1, 15, 1, 15)
+            Gui.DropShadow_5.ZIndex = 108
+            Gui.DropShadow_5.Image = "rbxassetid://6015897843"
+            Gui.DropShadow_5.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_5.ImageTransparency = 0.500
+            Gui.DropShadow_5.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_5.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Label.Name = "Label"
+            Gui.Label.Parent = Gui.Text_4
+            Gui.Label.Active = false
+            Gui.Label.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Label.BackgroundTransparency = 1.000
+            Gui.Label.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Label.Selectable = false
+            Gui.Label.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
+            Gui.Label.ZIndex = 112
+            Gui.Label.Font = Enum.Font.Gotham
+            Gui.Label.Text = ""
+            Gui.Label.TextColor3 = Color3.fromRGB(100, 100, 100)
+            Gui.Label.TextSize = 11.000
+            Gui.Label.TextWrapped = true
+
+            Gui.Preview.Name = "Preview"
+            Gui.Preview.Parent = Gui.ColorPicker
+            Gui.Preview.Active = false
+            Gui.Preview.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Preview.BackgroundTransparency = 1.000
+            Gui.Preview.Selectable = false
+            Gui.Preview.Size = UDim2.new(1, 0, 0.800000012, 0)
+            Gui.Preview.ZIndex = 112
+            Gui.Preview.Image = "rbxassetid://7881709447"
+            Gui.Preview.ScaleType = Enum.ScaleType.Slice
+            Gui.Preview.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Preview.SliceScale = 0.005
+
+            Gui.DropShadowHolder_6.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_6.Parent = Gui.Preview
+            Gui.DropShadowHolder_6.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_6.BorderSizePixel = 0
+            Gui.DropShadowHolder_6.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_6.ZIndex = 0
+
+            Gui.DropShadow_6.Name = "DropShadow"
+            Gui.DropShadow_6.Parent = Gui.DropShadowHolder_6
+            Gui.DropShadow_6.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_6.BackgroundTransparency = 1.000
+            Gui.DropShadow_6.BorderSizePixel = 0
+            Gui.DropShadow_6.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_6.Size = UDim2.new(1, 15, 1, 15)
+            Gui.DropShadow_6.ZIndex = 110
+            Gui.DropShadow_6.Image = "rbxassetid://6015897843"
+            Gui.DropShadow_6.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_6.ImageTransparency = 0.500
+            Gui.DropShadow_6.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_6.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.UIAspectRatioConstraint_3.Parent = Gui.Preview
+
+            Gui.Hover.Name = "Hover"
+            Gui.Hover.Parent = Gui.Preview
+            Gui.Hover.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Hover.BackgroundTransparency = 1.000
+            Gui.Hover.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Hover.ZIndex = 113
+            Gui.Hover.Image = "rbxassetid://7881709447"
+            Gui.Hover.ImageColor3 = Color3.fromRGB(47, 47, 47)
+            Gui.Hover.ImageTransparency = 1.000
+            Gui.Hover.ScaleType = Enum.ScaleType.Slice
+            Gui.Hover.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Hover.SliceScale = 0.005
+
+            Gui.Slider.Name = "Slider"
+            Gui.Slider.Parent = Gui.Cheats
+            Gui.Slider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Slider.BackgroundTransparency = 1.000
+            Gui.Slider.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.Drag.Name = "Drag"
+            Gui.Drag.Parent = Gui.Slider
+            Gui.Drag.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            Gui.Drag.BorderSizePixel = 0
+            Gui.Drag.LayoutOrder = -1
+            Gui.Drag.Size = UDim2.new(0.75, 0, 0.200000003, 0)
+            Gui.Drag.ZIndex = 110
+
+            Gui.UICorner_11.CornerRadius = UDim.new(1, 0)
+            Gui.UICorner_11.Parent = Gui.Drag
+
+            Gui.Frame_2.Parent = Gui.Drag
+            Gui.Frame_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Frame_2.BorderSizePixel = 0
+            Gui.Frame_2.LayoutOrder = -1
+            Gui.Frame_2.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Frame_2.ZIndex = 110
+
+            Gui.UICorner_12.CornerRadius = UDim.new(1, 0)
+            Gui.UICorner_12.Parent = Gui.Frame_2
+
+            Gui.UIGradient_4.Offset = Vector2.new(0.5, 0)
+            Gui.UIGradient_4.Transparency =
+                NumberSequence.new {
+                NumberSequenceKeypoint.new(0.00, 0.00),
+                NumberSequenceKeypoint.new(0.01, 1.00),
+                NumberSequenceKeypoint.new(1.00, 1.00)
+            }
+            Gui.UIGradient_4.Parent = Gui.Frame_2
+
+            Gui.UIListLayout_2.Parent = Gui.Drag
+            Gui.UIListLayout_2.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_2.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_2.Padding = UDim.new(0.0500000007, 0)
+
+            Gui.KeyInput.Name = "KeyInput"
+            Gui.KeyInput.Parent = Gui.Slider
+            Gui.KeyInput.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.KeyInput.BorderSizePixel = 0
+            Gui.KeyInput.Size = UDim2.new(0.4, 0, 0.699999988, 0)
+            Gui.KeyInput.ZIndex = 110
+
+            Gui.UICorner_13.CornerRadius = UDim.new(0.100000001, 0)
+            Gui.UICorner_13.Parent = Gui.KeyInput
+
+            Gui.DropShadowHolder_7.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_7.Parent = Gui.KeyInput
+            Gui.DropShadowHolder_7.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_7.BorderSizePixel = 0
+            Gui.DropShadowHolder_7.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_7.ZIndex = 0
+
+            Gui.DropShadow_7.Name = "DropShadow"
+            Gui.DropShadow_7.Parent = Gui.DropShadowHolder_7
+            Gui.DropShadow_7.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_7.BackgroundTransparency = 1.000
+            Gui.DropShadow_7.BorderSizePixel = 0
+            Gui.DropShadow_7.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_7.Size = UDim2.new(1, 25, 1, 25)
+            Gui.DropShadow_7.ZIndex = 109
+            Gui.DropShadow_7.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_7.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_7.ImageTransparency = 0.500
+            Gui.DropShadow_7.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_7.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Text_5.Name = "Text"
+            Gui.Text_5.Parent = Gui.KeyInput
+            Gui.Text_5.Active = false
+            Gui.Text_5.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Text_5.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_5.BackgroundTransparency = 1.000
+            Gui.Text_5.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Text_5.Selectable = false
+            Gui.Text_5.Size = UDim2.new(0.699999988, 0, 0.699999988, 0)
+            Gui.Text_5.ZIndex = 111
+            Gui.Text_5.Font = Enum.Font.GothamSemibold
+            Gui.Text_5.Text = "10"
+            Gui.Text_5.TextColor3 = Color3.fromRGB(100, 100, 100)
+            Gui.Text_5.TextSize = 14.000
+            Gui.Text_5.TextScaled = true
+            Gui.Text_5.TextWrapped = true
+
+            Gui.UIListLayout_3.Parent = Gui.Slider
+            Gui.UIListLayout_3.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_3.HorizontalAlignment = Enum.HorizontalAlignment.Right
+            Gui.UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_3.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_3.Padding = UDim.new(0.0500000007, 0)
+
+            Gui.Dropdown.Name = "Dropdown"
+            Gui.Dropdown.Parent = Gui.Cheats
+            Gui.Dropdown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Dropdown.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.MainHolder.Name = "MainHolder"
+            Gui.MainHolder.Parent = Gui.Dropdown
+            Gui.MainHolder.AnchorPoint = Vector2.new(0, 0.5)
+            Gui.MainHolder.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.MainHolder.BorderSizePixel = 0
+            Gui.MainHolder.Size = UDim2.new(1, 0, 0.850000024, 0)
+            Gui.MainHolder.ZIndex = 111
+
+            Gui.UICorner_14.CornerRadius = UDim.new(0.100000001, 0)
+            Gui.UICorner_14.Parent = Gui.MainHolder
+
+            Gui.DropShadowHolder_8.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_8.Parent = Gui.MainHolder
+            Gui.DropShadowHolder_8.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_8.BorderSizePixel = 0
+            Gui.DropShadowHolder_8.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_8.ZIndex = 0
+
+            Gui.DropShadow_8.Name = "DropShadow"
+            Gui.DropShadow_8.Parent = Gui.DropShadowHolder_8
+            Gui.DropShadow_8.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_8.BackgroundTransparency = 1.000
+            Gui.DropShadow_8.BorderSizePixel = 0
+            Gui.DropShadow_8.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_8.Size = UDim2.new(1, 25, 1, 25)
+            Gui.DropShadow_8.ZIndex = 109
+            Gui.DropShadow_8.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_8.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_8.ImageTransparency = 0.500
+            Gui.DropShadow_8.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_8.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Content_2.Name = "Content"
+            Gui.Content_2.Parent = Gui.MainHolder
+            Gui.Content_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_2.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.Text_6.Name = "Text"
+            Gui.Text_6.Parent = Gui.Content_2
+            Gui.Text_6.AnchorPoint = Vector2.new(0, 0.5)
+            Gui.Text_6.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_6.BackgroundTransparency = 1.000
+            Gui.Text_6.Position = UDim2.new(0, 0, 0.5, 0)
+            Gui.Text_6.Size = UDim2.new(0.800000012, 0, 0.600000024, 0)
+            Gui.Text_6.ZIndex = 113
+            Gui.Text_6.Font = Enum.Font.Gotham
+            Gui.Text_6.Text = "None"
+            Gui.Text_6.TextColor3 = Color3.fromRGB(100, 100, 100)
+            Gui.Text_6.TextScaled = true
+            Gui.Text_6.TextSize = 14.000
+            Gui.Text_6.TextWrapped = true
+            Gui.Text_6.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.UITextSizeConstraint_2.Parent = Gui.Text_6
+            Gui.UITextSizeConstraint_2.MaxTextSize = 13
+
+            Gui.UIPadding_3.Parent = Gui.Content_2
+            Gui.UIPadding_3.PaddingLeft = UDim.new(0, 4)
+
+            Gui.UIListLayout_4.Parent = Gui.Content_2
+            Gui.UIListLayout_4.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_4.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_4.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_4.VerticalAlignment = Enum.VerticalAlignment.Center
+
+            Gui.Icon.Name = "Icon"
+            Gui.Icon.Parent = Gui.Content_2
+            Gui.Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Icon.Size = UDim2.new(0.699999988, 0, 0.699999988, 0)
+
+            Gui.UIAspectRatioConstraint_4.Parent = Gui.Icon
+
+            Gui.Holder.Name = "Holder"
+            Gui.Holder.Parent = Gui.Icon
+            Gui.Holder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Holder.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.Icon_2.Name = "Icon"
+            Gui.Icon_2.Parent = Gui.Holder
+            Gui.Icon_2.BackgroundTransparency = 1.000
+            Gui.Icon_2.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Icon_2.ZIndex = 111
+            Gui.Icon_2.Image = "rbxassetid://7072706663"
+            Gui.Icon_2.ImageColor3 = Color3.fromRGB(100, 100, 100)
+            Gui.Icon_2.ScaleType = Enum.ScaleType.Fit
+
+            Gui.UIAspectRatioConstraint_5.Parent = Gui.Holder
+
+            Gui.UIListLayout_5.Parent = Gui.Dropdown
+            Gui.UIListLayout_5.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_5.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_5.Padding = UDim.new(0.200000003, 0)
+
+            Gui.OptionHolder.Name = "OptionHolder"
+            Gui.OptionHolder.Parent = Gui.Dropdown
+            Gui.OptionHolder.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.OptionHolder.BorderSizePixel = 0
+            Gui.OptionHolder.Position = UDim2.new(0, 0, 1.5, 0)
+            Gui.OptionHolder.Size = UDim2.new(1, 0, 0, 0)
+            Gui.OptionHolder.ZIndex = 112
+
+            Gui.Cover.Name = "Cover"
+            Gui.Cover.Parent = Gui.OptionHolder
+            Gui.Cover.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Cover.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Gui.Cover.BorderSizePixel = 0
+            Gui.Cover.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Cover.Size = UDim2.new(1, 4, 1, 0)
+            Gui.Cover.ZIndex = 123
+
+            Gui.DropShadow_9.Name = "DropShadow"
+            Gui.DropShadow_9.Parent = Gui.Cover
+            Gui.DropShadow_9.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_9.BackgroundTransparency = 1.000
+            Gui.DropShadow_9.BorderSizePixel = 0
+            Gui.DropShadow_9.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_9.Size = UDim2.new(1, 50, 1, 50)
+            Gui.DropShadow_9.ZIndex = 111
+            Gui.DropShadow_9.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_9.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_9.ImageTransparency = 1.000
+            Gui.DropShadow_9.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_9.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.UICorner_15.CornerRadius = UDim.new(0.0500000007, 0)
+            Gui.UICorner_15.Parent = Gui.Cover
+
+            Gui.UIPadding_4.Parent = Gui.OptionHolder
+            Gui.UIPadding_4.PaddingLeft = UDim.new(0, 2)
+            Gui.UIPadding_4.PaddingRight = UDim.new(0, 2)
+
+            Gui.UICorner_16.CornerRadius = UDim.new(0.0500000007, 0)
+            Gui.UICorner_16.Parent = Gui.OptionHolder
+
+            Gui.ContentHolder.Name = "ContentHolder"
+            Gui.ContentHolder.Parent = Gui.OptionHolder
+            Gui.ContentHolder.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.ContentHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.ContentHolder.BackgroundTransparency = 1.000
+            Gui.ContentHolder.ClipsDescendants = true
+            Gui.ContentHolder.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.ContentHolder.Size = UDim2.new(1, 4, 1, 0)
+
+            Gui.Content_3.Name = "Content"
+            Gui.Content_3.Parent = Gui.ContentHolder
+            Gui.Content_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_3.BackgroundTransparency = 1.000
+            Gui.Content_3.BorderSizePixel = 0
+            Gui.Content_3.ClipsDescendants = false
+            Gui.Content_3.Selectable = false
+            Gui.Content_3.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Content_3.ZIndex = 113
+            Gui.Content_3.AutomaticCanvasSize = Enum.AutomaticSize.Y
+            Gui.Content_3.BottomImage = ""
+            Gui.Content_3.CanvasSize = UDim2.new(0, 0, 0, 0)
+            Gui.Content_3.ScrollBarThickness = 2
+            Gui.Content_3.TopImage = ""
+
+            Gui.UIListLayout_6.Parent = Gui.Content_3
+            Gui.UIListLayout_6.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_6.SortOrder = Enum.SortOrder.LayoutOrder
+
+            Gui.Bottom.Name = "Bottom"
+            Gui.Bottom.Parent = Gui.Dropdown
+            Gui.Bottom.Active = false
+            Gui.Bottom.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Bottom.BackgroundTransparency = 1.000
+            Gui.Bottom.Selectable = false
+            Gui.Bottom.Size = UDim2.new(1, 0, 0, 0)
+            Gui.Bottom.ZIndex = 120
+            Gui.Bottom.AutoButtonColor = false
+            Gui.Bottom.Image = "rbxassetid://7890831727"
+            Gui.Bottom.ImageColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Bottom.ScaleType = Enum.ScaleType.Slice
+            Gui.Bottom.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Bottom.SliceScale = 0.003
+
+            Gui.Current.Name = "Current"
+            Gui.Current.Parent = Gui.Bottom
+            Gui.Current.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Current.BackgroundTransparency = 1.000
+            Gui.Current.Position = UDim2.new(0, 0, 0, 2)
+            Gui.Current.Size = UDim2.new(1, 0, 1, -4)
+            Gui.Current.ZIndex = 122
+            Gui.Current.Font = Enum.Font.Gotham
+            Gui.Current.Text = "Empyrean Eegg"
+            Gui.Current.TextColor3 = Color3.fromRGB(200, 200, 200)
+            Gui.Current.TextSize = 14.000
+            Gui.Current.TextWrapped = true
+
+            Gui.Select.Name = "Select"
+            Gui.Select.Parent = Gui.Bottom
+            Gui.Select.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Select.BackgroundTransparency = 1.000
+            Gui.Select.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Select.ZIndex = 120
+            Gui.Select.Image = "rbxassetid://7890831727"
+            Gui.Select.ImageColor3 = Color3.fromRGB(255, 0, 0)
+            Gui.Select.ImageTransparency = 1.000
+            Gui.Select.ScaleType = Enum.ScaleType.Slice
+            Gui.Select.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Select.SliceScale = 0.003
+
+            Gui.Slot.Name = "Slot"
+            Gui.Slot.Parent = Gui.Dropdown
+            Gui.Slot.Active = false
+            Gui.Slot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Slot.BackgroundTransparency = 1.000
+            Gui.Slot.Selectable = false
+            Gui.Slot.Size = UDim2.new(1, 0, 0, 0)
+            Gui.Slot.ZIndex = 120
+            Gui.Slot.AutoButtonColor = false
+            Gui.Slot.Image = "rbxassetid://7890925834"
+            Gui.Slot.ImageColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Slot.ScaleType = Enum.ScaleType.Slice
+            Gui.Slot.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Slot.SliceScale = 0.003
+
+            Gui.Line.Name = "Line"
+            Gui.Line.Parent = Gui.Slot
+            Gui.Line.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Gui.Line.BorderSizePixel = 0
+            Gui.Line.Position = UDim2.new(0, 0, 1, -1)
+            Gui.Line.Size = UDim2.new(1, 0, 0, 1)
+            Gui.Line.Visible = false
+            Gui.Line.ZIndex = 122
+
+            Gui.Select_2.Name = "Select"
+            Gui.Select_2.Parent = Gui.Slot
+            Gui.Select_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Select_2.BackgroundTransparency = 1.000
+            Gui.Select_2.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Select_2.ZIndex = 121
+            Gui.Select_2.Image = "rbxassetid://7890925834"
+            Gui.Select_2.ImageColor3 = Color3.fromRGB(255, 0, 0)
+            Gui.Select_2.ImageTransparency = 1.000
+            Gui.Select_2.ScaleType = Enum.ScaleType.Slice
+            Gui.Select_2.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Select_2.SliceScale = 0.003
+
+            Gui.Current_2.Name = "Current"
+            Gui.Current_2.Parent = Gui.Slot
+            Gui.Current_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Current_2.BackgroundTransparency = 1.000
+            Gui.Current_2.Position = UDim2.new(0, 0, 0, 2)
+            Gui.Current_2.Size = UDim2.new(1, 0, 1, -4)
+            Gui.Current_2.ZIndex = 122
+            Gui.Current_2.Font = Enum.Font.Gotham
+            Gui.Current_2.Text = "Empyrean Eegg"
+            Gui.Current_2.TextColor3 = Color3.fromRGB(200, 200, 200)
+            Gui.Current_2.TextSize = 14.000
+            Gui.Current_2.TextWrapped = true
+
+            Gui.Top.Name = "Top"
+            Gui.Top.Parent = Gui.Dropdown
+            Gui.Top.Active = false
+            Gui.Top.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Top.BackgroundTransparency = 1.000
+            Gui.Top.Selectable = false
+            Gui.Top.Size = UDim2.new(1, 0, 0, 0)
+            Gui.Top.ZIndex = 120
+            Gui.Top.AutoButtonColor = false
+            Gui.Top.Image = "http://www.roblox.com/asset/?id=8374820043"
+            Gui.Top.ImageColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.Top.ScaleType = Enum.ScaleType.Slice
+            Gui.Top.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Top.SliceScale = 0.003
+
+            Gui.Line_2.Name = "Line"
+            Gui.Line_2.Parent = Gui.Top
+            Gui.Line_2.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Gui.Line_2.BorderSizePixel = 0
+            Gui.Line_2.Position = UDim2.new(0, 0, 1, -1)
+            Gui.Line_2.Size = UDim2.new(1, 0, 0, 1)
+            Gui.Line_2.Visible = false
+            Gui.Line_2.ZIndex = 122
+
+            Gui.Select_3.Name = "Select"
+            Gui.Select_3.Parent = Gui.Top
+            Gui.Select_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Select_3.BackgroundTransparency = 1.000
+            Gui.Select_3.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Select_3.ZIndex = 121
+            Gui.Select_3.Image = "http://www.roblox.com/asset/?id=8374820043"
+            Gui.Select_3.ImageColor3 = Color3.fromRGB(255, 0, 0)
+            Gui.Select_3.ImageTransparency = 1.000
+            Gui.Select_3.ScaleType = Enum.ScaleType.Slice
+            Gui.Select_3.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Select_3.SliceScale = 0.003
+
+            Gui.Current_3.Name = "Current"
+            Gui.Current_3.Parent = Gui.Top
+            Gui.Current_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Current_3.BackgroundTransparency = 1.000
+            Gui.Current_3.Position = UDim2.new(0, 0, 0, 2)
+            Gui.Current_3.Size = UDim2.new(1, 0, 1, -4)
+            Gui.Current_3.ZIndex = 122
+            Gui.Current_3.Font = Enum.Font.Gotham
+            Gui.Current_3.Text = "Empyrean Eegg"
+            Gui.Current_3.TextColor3 = Color3.fromRGB(200, 200, 200)
+            Gui.Current_3.TextSize = 14.000
+            Gui.Current_3.TextWrapped = true
+
+            Gui.Objects.Name = "Objects"
+            Gui.Objects.Parent = Gui.UIObjects
+
+            Gui.Category.Name = "Category"
+            Gui.Category.Parent = Gui.Objects
+            Gui.Category.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            Gui.Category.BackgroundTransparency = 1.000
+            Gui.Category.BorderSizePixel = 0
+            Gui.Category.LayoutOrder = 1
+            Gui.Category.Size = UDim2.new(1, 0, 0.25, 0)
+            Gui.Category.ZIndex = 121
+
+            Gui.HoverFrame_5.Name = "HoverFrame"
+            Gui.HoverFrame_5.Parent = Gui.Category
+            Gui.HoverFrame_5.BackgroundColor3 = Color3.fromRGB(33, 33, 33)
+            Gui.HoverFrame_5.BackgroundTransparency = 1.000
+            Gui.HoverFrame_5.BorderSizePixel = 0
+            Gui.HoverFrame_5.Size = UDim2.new(1, 0, 1, 0)
+            Gui.HoverFrame_5.ZIndex = 122
+
+            Gui.Content_4.Name = "Content"
+            Gui.Content_4.Parent = Gui.Category
+            Gui.Content_4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_4.BackgroundTransparency = 1.000
+            Gui.Content_4.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.Image.Name = "Image"
+            Gui.Image.Parent = Gui.Content_4
+            Gui.Image.BackgroundTransparency = 1.000
+            Gui.Image.Size = UDim2.new(0.400000006, 0, 0.400000006, 0)
+            Gui.Image.ZIndex = 123
+            Gui.Image.Image = "rbxassetid://8349124615"
+            Gui.Image.ImageColor3 = Color3.fromRGB(90, 90, 90)
+
+            Gui.UIAspectRatioConstraint_6.Parent = Gui.Image
+
+            Gui.Title.Name = "Title"
+            Gui.Title.Parent = Gui.Content_4
+            Gui.Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Title.BackgroundTransparency = 1.000
+            Gui.Title.Size = UDim2.new(0.800000012, 0, 0.219999999, 0)
+            Gui.Title.ZIndex = 123
+            Gui.Title.Font = Enum.Font.Gotham
+            Gui.Title.Text = "MISC"
+            Gui.Title.TextColor3 = Color3.fromRGB(90, 90, 90)
+            Gui.Title.TextScaled = true
+            Gui.Title.TextSize = 5.000
+            Gui.Title.TextWrapped = true
+
+            Gui.UITextSizeConstraint_3.Parent = Gui.Title
+            Gui.UITextSizeConstraint_3.MaxTextSize = 35
+            Gui.UITextSizeConstraint_3.MinTextSize = 10
+
+            Gui.UIListLayout_7.Parent = Gui.Content_4
+            Gui.UIListLayout_7.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_7.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_7.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_7.Padding = UDim.new(0.0500000007, 0)
+
+            Gui.CategoryContent.Name = "CategoryContent"
+            Gui.CategoryContent.Parent = Gui.Objects
+            Gui.CategoryContent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.CategoryContent.BackgroundTransparency = 1.000
+            Gui.CategoryContent.Position = UDim2.new(1, 0, 0, 0)
+            Gui.CategoryContent.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.Bar2Holder.Name = "Bar2Holder"
+            Gui.Bar2Holder.Parent = Gui.CategoryContent
+            Gui.Bar2Holder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Bar2Holder.BackgroundTransparency = 1.000
+            Gui.Bar2Holder.Size = UDim2.new(1, 8, 0.850000024, 0)
+
+            Gui.UIListLayout_8.Parent = Gui.Bar2Holder
+            Gui.UIListLayout_8.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_8.SortOrder = Enum.SortOrder.LayoutOrder
+
+            Gui.UIListLayout_9.Parent = Gui.CategoryContent
+            Gui.UIListLayout_9.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_9.SortOrder = Enum.SortOrder.LayoutOrder
+
+            Gui.UIPadding_5.Parent = Gui.CategoryContent
+            Gui.UIPadding_5.PaddingLeft = UDim.new(0, 4)
+            Gui.UIPadding_5.PaddingRight = UDim.new(0, 4)
+
+            Gui.Window.Name = "Window"
+            Gui.Window.Parent = Gui.Objects
+            Gui.Window.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Window.BackgroundTransparency = 1.000
+            Gui.Window.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.Watermark.Name = "Watermark"
+            Gui.Watermark.Parent = Gui.Window
+            Gui.Watermark.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Watermark.BackgroundTransparency = 1.000
+            Gui.Watermark.Size = UDim2.new(0.5, 0, 0.0199999996, 0)
+            Gui.Watermark.Font = Enum.Font.Gotham
+            Gui.Watermark.Text = "hydrahub v2 | nil | nil"
+            Gui.Watermark.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Watermark.TextSize = 14.000
+            Gui.Watermark.TextStrokeTransparency = 0.800
+            Gui.Watermark.TextXAlignment = Enum.TextXAlignment.Left
+            Gui.Watermark.Position = UDim2.new(0, 0, 0, 0)
+
+            Gui.UIPadding_6.Parent = Gui.Window
+            Gui.UIPadding_6.PaddingBottom = UDim.new(0, 8)
+            Gui.UIPadding_6.PaddingLeft = UDim.new(0, 8)
+            Gui.UIPadding_6.PaddingRight = UDim.new(0, 8)
+            Gui.UIPadding_6.PaddingTop = UDim.new(0, 8)
+
+            Gui.MainUI.Name = "MainUI"
+            Gui.MainUI.Parent = Gui.Window
+            Gui.MainUI.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.MainUI.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.MainUI.Position = UDim2.new(0.5, 0, 0.5, 0)
+            --Gui.MainUI.Size = UDim2.new(0.47, 0, 0.75, 0)
+            Gui.MainUI.Size = UDim2.new(0, 851, 0, 488)
+            Gui.MainUI.ZIndex = 100
+
+            Gui.DropShadowHolder_9.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_9.Parent = Gui.MainUI
+            Gui.DropShadowHolder_9.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_9.BorderSizePixel = 0
+            Gui.DropShadowHolder_9.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_9.ZIndex = 0
+
+            Gui.DropShadow_10.Name = "DropShadow"
+            Gui.DropShadow_10.Parent = Gui.DropShadowHolder_9
+            Gui.DropShadow_10.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_10.BackgroundTransparency = 1.000
+            Gui.DropShadow_10.BorderSizePixel = 0
+            Gui.DropShadow_10.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_10.Size = UDim2.new(1, 45, 1, 45)
+            Gui.DropShadow_10.ZIndex = 99
+            Gui.DropShadow_10.Image = "rbxassetid://6015897843"
+            Gui.DropShadow_10.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_10.ImageTransparency = 0.500
+            Gui.DropShadow_10.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_10.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.UICorner_17.CornerRadius = UDim.new(0.0199999996, 0)
+            Gui.UICorner_17.Parent = Gui.MainUI
+
+            Gui.Sidebar.Name = "Sidebar"
+            Gui.Sidebar.Parent = Gui.MainUI
+            Gui.Sidebar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Sidebar.BackgroundTransparency = 1.000
+            Gui.Sidebar.Size = UDim2.new(0.109999999, 0, 1, 0)
+
+            Gui.ContentHolder_2.Name = "ContentHolder"
+            Gui.ContentHolder_2.Parent = Gui.Sidebar
+            Gui.ContentHolder_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.ContentHolder_2.BackgroundTransparency = 1.000
+            Gui.ContentHolder_2.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.UserInfo.Name = "UserInfo"
+            Gui.UserInfo.Parent = Gui.ContentHolder_2
+            Gui.UserInfo.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            Gui.UserInfo.BackgroundTransparency = 0.5
+            Gui.UserInfo.ClipsDescendants = true
+            Gui.UserInfo.Size = UDim2.new(1.85, 0, 0.25, 0)
+            Gui.UserInfo.Position = UDim2.new(0, 0, 0.75, 0)
+            Gui.UserInfo.ZIndex = 150
+
+            local UICorner_UserInfo = Instance.new("UICorner")
+            UICorner_UserInfo.CornerRadius = UDim.new(0.1, 0)
+            UICorner_UserInfo.Parent = Gui.UserInfo
+
+            local UserIcon = Instance.new("ImageLabel")
+            UserIcon.Name = "UserIcon"
+            UserIcon.Parent = Gui.UserInfo
+            UserIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            UserIcon.BackgroundTransparency = 1.000
+            UserIcon.Position = UDim2.new(0.05, 0, 0.2, 0)
+            UserIcon.Size = UDim2.new(0.3, 0, 0.6, 0)
+            UserIcon.ZIndex = 151
+            UserIcon.Image = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
+            
+            local UICorner_UserIcon = Instance.new("UICorner")
+            UICorner_UserIcon.CornerRadius = UDim.new(1, 0)
+            UICorner_UserIcon.Parent = UserIcon
+
+            Gui.Content_5.Name = "Content"
+            Gui.Content_5.Parent = Gui.UserInfo
+            Gui.Content_5.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_5.BackgroundTransparency = 1.000
+            Gui.Content_5.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.Rank.Name = "Rank"
+            Gui.Rank.Parent = Gui.Content_5
+            Gui.Rank.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Rank.BackgroundTransparency = 1.000
+            Gui.Rank.Position = UDim2.new(0.4, 0, 0.5, 0)
+            Gui.Rank.Size = UDim2.new(0.6, 0, 0.4, 0)
+            Gui.Rank.ZIndex = 152
+            Gui.Rank.Font = Enum.Font.Gotham
+            Gui.Rank.Text = "UserId"
+            Gui.Rank.TextColor3 = Color3.fromRGB(150, 150, 150)
+            Gui.Rank.TextSize = 12.000
+            Gui.Rank.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.Title_2.Name = "Title"
+            Gui.Title_2.Parent = Gui.Content_5
+            Gui.Title_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Title_2.BackgroundTransparency = 1.000
+            Gui.Title_2.Position = UDim2.new(0.4, 0, 0.1, 0)
+            Gui.Title_2.Size = UDim2.new(0.6, 0, 0.4, 0)
+            Gui.Title_2.ZIndex = 152
+            Gui.Title_2.Font = Enum.Font.GothamSemibold
+            Gui.Title_2.Text = "Username"
+            Gui.Title_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Title_2.TextSize = 14.000
+            Gui.Title_2.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.Line_3.Name = "Line"
+            Gui.Line_3.Parent = Gui.UserInfo
+            Gui.Line_3.BackgroundColor3 = Color3.fromRGB(74, 74, 74)
+            Gui.Line_3.BorderSizePixel = 0
+            Gui.Line_3.Size = UDim2.new(1, 0, 0, 1)
+            Gui.Line_3.ZIndex = 123
+
+            Gui.Fill.Name = "Fill"
+            Gui.Fill.Parent = Gui.UserInfo
+            Gui.Fill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Fill.BackgroundTransparency = 1.000
+            Gui.Fill.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Fill.ZIndex = 122
+            Gui.Fill.Image = "rbxassetid://7881868371"
+            Gui.Fill.ImageColor3 = Color3.fromRGB(32, 32, 32)
+            Gui.Fill.ScaleType = Enum.ScaleType.Slice
+            Gui.Fill.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Fill.SliceScale = 0.010
+
+            Gui.Texture.Name = "Texture"
+            Gui.Texture.Parent = Gui.UserInfo
+            Gui.Texture.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Texture.BackgroundTransparency = 1.000
+            Gui.Texture.Size = UDim2.new(10, 0, 10, 0)
+            Gui.Texture.ZIndex = 123
+            Gui.Texture.Image = "rbxasset://textures/loading/darkLoadingTexture.png"
+            Gui.Texture.ImageColor3 = Color3.fromRGB(188, 188, 188)
+            Gui.Texture.ImageTransparency = 0.850
+            Gui.Texture.ScaleType = Enum.ScaleType.Tile
+            Gui.Texture.TileSize = UDim2.new(0, 300, 0, 300)
+
+            Gui.UIListLayout_11.Parent = Gui.ContentHolder_2
+            Gui.UIListLayout_11.SortOrder = Enum.SortOrder.LayoutOrder
+
+            Gui.Cheats_2.Name = "Cheats"
+            Gui.Cheats_2.Parent = Gui.ContentHolder_2
+            Gui.Cheats_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Cheats_2.BackgroundTransparency = 1.000
+            Gui.Cheats_2.LayoutOrder = -1
+            Gui.Cheats_2.Size = UDim2.new(1, 0, 0.850000024, 0)
+
+            Gui.UIListLayout_12.Parent = Gui.Cheats_2
+            Gui.UIListLayout_12.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_12.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_12.Padding = UDim.new(0.029, 0)
+
+            Gui.UIPadding_8.Parent = Gui.Cheats_2
+            Gui.UIPadding_8.PaddingLeft = UDim.new(0, 4)
+            Gui.UIPadding_8.PaddingRight = UDim.new(0, 4)
+            Gui.UIPadding_8.PaddingTop = UDim.new(0, 16)
+
+            Gui.Logo.Name = "Logo"
+            Gui.Logo.Parent = Gui.Cheats_2
+            Gui.Logo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Logo.BackgroundTransparency = 1.000
+            Gui.Logo.LayoutOrder = -5
+            Gui.Logo.Size = UDim2.new(1, 0, 0.15, 0)
+            Gui.Logo.ZIndex = 122
+            Gui.Logo.Image = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
+            Gui.Logo.ImageColor3 = Color3.fromRGB(255, 0, 0)
+            Gui.Logo.ScaleType = Enum.ScaleType.Fit
+
+            Gui.UIGradient_5.Color =
+                ColorSequence.new {
+                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(163, 163, 163))
+            }
+            Gui.UIGradient_5.Rotation = 45
+            Gui.UIGradient_5.Parent = Gui.Logo
+
+            Gui.CheatHolder.Name = "CheatHolder"
+            Gui.CheatHolder.Parent = Gui.Cheats_2
+            Gui.CheatHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.CheatHolder.BackgroundTransparency = 1.000
+            Gui.CheatHolder.Size = UDim2.new(1, 8, 0.699999988, 0)
+
+            Gui.UIListLayout_13.Parent = Gui.CheatHolder
+            Gui.UIListLayout_13.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_13.SortOrder = Enum.SortOrder.LayoutOrder
+
+            Gui.Fill_2.Name = "Fill"
+            Gui.Fill_2.Parent = Gui.Sidebar
+            Gui.Fill_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Fill_2.BackgroundTransparency = 1.000
+            Gui.Fill_2.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Fill_2.ZIndex = 120
+            Gui.Fill_2.Image = "rbxassetid://7881302920"
+            Gui.Fill_2.ImageColor3 = Color3.fromRGB(10, 10, 10)
+            Gui.Fill_2.ScaleType = Enum.ScaleType.Slice
+            Gui.Fill_2.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Fill_2.SliceScale = 0.020
+
+            Gui.DivLine.Name = "DivLine"
+            Gui.DivLine.Parent = Gui.Fill_2
+            Gui.DivLine.BackgroundColor3 = Color3.fromRGB(74, 74, 74)
+            Gui.DivLine.BorderSizePixel = 0
+            Gui.DivLine.Position = UDim2.new(1, 0, 0, 0)
+            Gui.DivLine.Size = UDim2.new(0, 1, 0.850000024, 0)
+            Gui.DivLine.ZIndex = 130
+
+            Gui.Tab2.Name = "Tab2"
+            Gui.Tab2.Parent = Gui.Sidebar
+            Gui.Tab2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Tab2.BackgroundTransparency = 1.000
+            Gui.Tab2.Position = UDim2.new(1, 0, 0, 0)
+            Gui.Tab2.Size = UDim2.new(0.850000024, 0, 1, 0)
+            Gui.Tab2.ZIndex = 120
+            Gui.Tab2.Image = "rbxassetid://7881302920"
+            Gui.Tab2.ImageColor3 = Color3.fromRGB(10, 10, 10)
+            Gui.Tab2.ScaleType = Enum.ScaleType.Slice
+            Gui.Tab2.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Tab2.SliceScale = 0.020
+
+            Gui.Shadow.Name = "Shadow"
+            Gui.Shadow.Parent = Gui.Tab2
+            Gui.Shadow.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.Shadow.BorderSizePixel = 0
+            Gui.Shadow.Position = UDim2.new(1, 0, 0, 0)
+            Gui.Shadow.Size = UDim2.new(0.101426959, 0, 1, 0)
+            Gui.Shadow.ZIndex = 107
+
+            Gui.UIGradient_6.Transparency =
+                NumberSequence.new {
+                NumberSequenceKeypoint.new(0.00, 0.73),
+                NumberSequenceKeypoint.new(0.60, 1.00),
+                NumberSequenceKeypoint.new(1.00, 1.00)
+            }
+            Gui.UIGradient_6.Parent = Gui.Shadow
+
+            Gui.Sidebar2.Name = "Sidebar2"
+            Gui.Sidebar2.Parent = Gui.Sidebar
+            Gui.Sidebar2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Sidebar2.BackgroundTransparency = 1.000
+            Gui.Sidebar2.ClipsDescendants = true
+            Gui.Sidebar2.Position = UDim2.new(1, 0, 0, 0)
+            Gui.Sidebar2.Size = UDim2.new(0.850000024, 0, 1, 0)
+
+            Gui.UIAspectRatioConstraint_7.Parent = Gui.MainUI
+            Gui.UIAspectRatioConstraint_7.AspectRatio = 1.7
+
+            Gui.ColorPickerOverlay.Name = "ColorPickerOverlay"
+            Gui.ColorPickerOverlay.Parent = Gui.MainUI
+            Gui.ColorPickerOverlay.Active = false
+            Gui.ColorPickerOverlay.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.ColorPickerOverlay.BackgroundTransparency = 1.000
+            Gui.ColorPickerOverlay.ClipsDescendants = true
+            Gui.ColorPickerOverlay.Selectable = false
+            Gui.ColorPickerOverlay.Size = UDim2.new(1, 0, 1, 0)
+            Gui.ColorPickerOverlay.Visible = false
+            Gui.ColorPickerOverlay.ZIndex = 200
+            Gui.ColorPickerOverlay.AutoButtonColor = false
+            Gui.ColorPickerOverlay.Image = "rbxassetid://7880418493"
+            Gui.ColorPickerOverlay.ImageColor3 = Color3.fromRGB(18, 18, 18)
+            Gui.ColorPickerOverlay.ImageTransparency = 1.000
+            Gui.ColorPickerOverlay.ScaleType = Enum.ScaleType.Slice
+            Gui.ColorPickerOverlay.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.ColorPickerOverlay.SliceScale = 0.010
+
+            Gui.Content_6.Name = "Content"
+            Gui.Content_6.Parent = Gui.ColorPickerOverlay
+            Gui.Content_6.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Content_6.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_6.BackgroundTransparency = 1.000
+            Gui.Content_6.Position = UDim2.new(0.5, 0, 1.5, 0)
+            Gui.Content_6.Size = UDim2.new(0.5, 0, 0.899999976, 0)
+            Gui.Content_6.ZIndex = 201
+
+            Gui.MainWindow.Name = "MainWindow"
+            Gui.MainWindow.Parent = Gui.Content_6
+            Gui.MainWindow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.MainWindow.LayoutOrder = 1
+            Gui.MainWindow.Size = UDim2.new(1, 0, 0.699999988, 0)
+
+            Gui.Wheel.Name = "Wheel"
+            Gui.Wheel.Parent = Gui.MainWindow
+            Gui.Wheel.AnchorPoint = Vector2.new(0, 0.5)
+            Gui.Wheel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Wheel.BackgroundTransparency = 1.000
+            Gui.Wheel.Position = UDim2.new(0, 0, 0.5, 0)
+            Gui.Wheel.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
+            Gui.Wheel.ZIndex = 203
+            Gui.Wheel.Image = "http://www.roblox.com/asset/?id=6020299385"
+
+            Gui.Hitbox.Name = "Hitbox"
+            Gui.Hitbox.Parent = Gui.Wheel
+            Gui.Hitbox.Active = false
+            Gui.Hitbox.AnchorPoint = Vector2.new(0.5, 0)
+            Gui.Hitbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Hitbox.BackgroundTransparency = 1.000
+            Gui.Hitbox.Position = UDim2.new(0.5, 0, 0, 0)
+            Gui.Hitbox.Selectable = false
+            Gui.Hitbox.Size = UDim2.new(1.29999995, 0, 1.29999995, 0)
+            Gui.Hitbox.ZIndex = 205
+            Gui.Hitbox.Image = "rbxassetid://7890831727"
+            Gui.Hitbox.ImageTransparency = 0.999
+            Gui.Hitbox.ScaleType = Enum.ScaleType.Slice
+            Gui.Hitbox.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Hitbox.SliceScale = 0.003
+
+            Gui.Shadow_2.Name = "Shadow"
+            Gui.Shadow_2.Parent = Gui.Wheel
+            Gui.Shadow_2.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Shadow_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Shadow_2.BackgroundTransparency = 1.000
+            Gui.Shadow_2.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Shadow_2.Size = UDim2.new(1.29999995, 0, 1.32000005, 0)
+            Gui.Shadow_2.ZIndex = 202
+            Gui.Shadow_2.Image = "rbxassetid://7892079145"
+            Gui.Shadow_2.ImageTransparency = 0.550
+
+            Gui.UIAspectRatioConstraint_8.Parent = Gui.Wheel
+
+            Gui.Pointer.Name = "Pointer"
+            Gui.Pointer.Parent = Gui.Wheel
+            Gui.Pointer.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Pointer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Pointer.BackgroundTransparency = 1.000
+            Gui.Pointer.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Pointer.Size = UDim2.new(0.100000001, 0, 0.100000001, 0)
+            Gui.Pointer.ZIndex = 204
+            Gui.Pointer.Image = "rbxassetid://7892266163"
+            Gui.Pointer.ImageColor3 = Color3.fromRGB(136, 136, 136)
+
+            Gui.UIListLayout_14.Parent = Gui.MainWindow
+            Gui.UIListLayout_14.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_14.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_14.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_14.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_14.Padding = UDim.new(0.200000003, 0)
+
+            Gui.Saturation.Name = "Saturation"
+            Gui.Saturation.Parent = Gui.MainWindow
+            Gui.Saturation.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Saturation.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Saturation.BackgroundTransparency = 1.000
+            Gui.Saturation.BorderSizePixel = 0
+            Gui.Saturation.Position = UDim2.new(0.800000012, 0, 0.5, 0)
+            Gui.Saturation.Size = UDim2.new(0.0340000018, 0, 1, 0)
+            Gui.Saturation.ZIndex = 202
+            Gui.Saturation.Image = "rbxassetid://3570695787"
+            Gui.Saturation.ImageColor3 = Color3.fromRGB(19, 255, 131)
+            Gui.Saturation.ScaleType = Enum.ScaleType.Slice
+            Gui.Saturation.SliceCenter = Rect.new(100, 100, 100, 100)
+            Gui.Saturation.SliceScale = 0.020
+
+            Gui.DropShadowHolder_10.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_10.Parent = Gui.Saturation
+            Gui.DropShadowHolder_10.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_10.BorderSizePixel = 0
+            Gui.DropShadowHolder_10.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_10.ZIndex = 0
+
+            Gui.DropShadow_11.Name = "DropShadow"
+            Gui.DropShadow_11.Parent = Gui.DropShadowHolder_10
+            Gui.DropShadow_11.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_11.BackgroundTransparency = 1.000
+            Gui.DropShadow_11.BorderSizePixel = 0
+            Gui.DropShadow_11.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_11.Size = UDim2.new(1, 12, 1, 12)
+            Gui.DropShadow_11.ZIndex = 201
+            Gui.DropShadow_11.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_11.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_11.ImageTransparency = 0.500
+            Gui.DropShadow_11.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_11.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Pointer_2.Name = "Pointer"
+            Gui.Pointer_2.Parent = Gui.Saturation
+            Gui.Pointer_2.AnchorPoint = Vector2.new(0.5, 0)
+            Gui.Pointer_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Pointer_2.BackgroundTransparency = 1.000
+            Gui.Pointer_2.Position = UDim2.new(0.5, 0, 0, 0)
+            Gui.Pointer_2.Size = UDim2.new(1.29999995, 0, 0, 4)
+            Gui.Pointer_2.ZIndex = 204
+            Gui.Pointer_2.Image = "rbxassetid://7890831727"
+            Gui.Pointer_2.ScaleType = Enum.ScaleType.Slice
+            Gui.Pointer_2.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Pointer_2.SliceScale = 0.003
+
+            Gui.UIGradient_7.Color =
+                ColorSequence.new {
+                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))
+            }
+            Gui.UIGradient_7.Rotation = 90
+            Gui.UIGradient_7.Parent = Gui.Saturation
+
+            Gui.Hitbox_2.Name = "Hitbox"
+            Gui.Hitbox_2.Parent = Gui.Saturation
+            Gui.Hitbox_2.Active = false
+            Gui.Hitbox_2.AnchorPoint = Vector2.new(0.5, 0)
+            Gui.Hitbox_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Hitbox_2.BackgroundTransparency = 1.000
+            Gui.Hitbox_2.Position = UDim2.new(0.5, 0, 0, 0)
+            Gui.Hitbox_2.Selectable = false
+            Gui.Hitbox_2.Size = UDim2.new(1.29999995, 0, 1.29999995, 0)
+            Gui.Hitbox_2.ZIndex = 205
+            Gui.Hitbox_2.Image = "rbxassetid://7890831727"
+            Gui.Hitbox_2.ImageTransparency = 0.999
+            Gui.Hitbox_2.ScaleType = Enum.ScaleType.Slice
+            Gui.Hitbox_2.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Hitbox_2.SliceScale = 0.003
+
+            Gui.UIListLayout_15.Parent = Gui.Content_6
+            Gui.UIListLayout_15.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_15.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_15.Padding = UDim.new(0.0199999996, 0)
+
+            Gui.ClrDisplay.Name = "ClrDisplay"
+            Gui.ClrDisplay.Parent = Gui.Content_6
+            Gui.ClrDisplay.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.ClrDisplay.LayoutOrder = 2
+            Gui.ClrDisplay.Size = UDim2.new(1, 0, 0.100000001, 0)
+
+            Gui.UIListLayout_16.Parent = Gui.ClrDisplay
+            Gui.UIListLayout_16.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_16.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_16.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_16.Padding = UDim.new(0.0500000007, 0)
+
+            Gui.RGB.Name = "RGB"
+            Gui.RGB.Parent = Gui.ClrDisplay
+            Gui.RGB.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.RGB.BackgroundTransparency = 1.000
+            Gui.RGB.Size = UDim2.new(0.600000024, 0, 0.800000012, 0)
+            Gui.RGB.ZIndex = 202
+            Gui.RGB.Image = "rbxassetid://7880418493"
+            Gui.RGB.ImageColor3 = Color3.fromRGB(32, 32, 32)
+            Gui.RGB.ScaleType = Enum.ScaleType.Slice
+            Gui.RGB.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.RGB.SliceScale = 0.010
+
+            Gui.Textbox_2.Name = "Textbox"
+            Gui.Textbox_2.Parent = Gui.RGB
+            Gui.Textbox_2.Active = true
+            Gui.Textbox_2.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Textbox_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Textbox_2.BackgroundTransparency = 1.000
+            Gui.Textbox_2.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Textbox_2.Selectable = true
+            Gui.Textbox_2.Size = UDim2.new(0.850000024, 0, 0.850000024, 0)
+            Gui.Textbox_2.ZIndex = 202
+            Gui.Textbox_2.Font = Enum.Font.Gotham
+            Gui.Textbox_2.Text = "2, 39, 20"
+            Gui.Textbox_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Textbox_2.TextSize = 14.000
+
+            Gui.DropShadowHolder_11.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_11.Parent = Gui.RGB
+            Gui.DropShadowHolder_11.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_11.BorderSizePixel = 0
+            Gui.DropShadowHolder_11.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_11.ZIndex = 0
+
+            Gui.DropShadow_12.Name = "DropShadow"
+            Gui.DropShadow_12.Parent = Gui.DropShadowHolder_11
+            Gui.DropShadow_12.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_12.BackgroundTransparency = 1.000
+            Gui.DropShadow_12.BorderSizePixel = 0
+            Gui.DropShadow_12.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_12.Size = UDim2.new(1, 24, 1, 24)
+            Gui.DropShadow_12.ZIndex = 201
+            Gui.DropShadow_12.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_12.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_12.ImageTransparency = 0.500
+            Gui.DropShadow_12.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_12.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Header.Name = "Header"
+            Gui.Header.Parent = Gui.RGB
+            Gui.Header.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Header.BackgroundTransparency = 1.000
+            Gui.Header.Position = UDim2.new(0, 0, -0.400000006, 0)
+            Gui.Header.Size = UDim2.new(1, 0, 0.300000012, 0)
+            Gui.Header.ZIndex = 201
+            Gui.Header.Font = Enum.Font.Gotham
+            Gui.Header.Text = "rgb"
+            Gui.Header.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Header.TextSize = 14.000
+            Gui.Header.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.Hex.Name = "Hex"
+            Gui.Hex.Parent = Gui.ClrDisplay
+            Gui.Hex.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Hex.BackgroundTransparency = 1.000
+            Gui.Hex.LayoutOrder = 1
+            Gui.Hex.Size = UDim2.new(0.349999994, 0, 0.800000012, 0)
+            Gui.Hex.ZIndex = 202
+            Gui.Hex.Image = "rbxassetid://7880418493"
+            Gui.Hex.ImageColor3 = Color3.fromRGB(32, 32, 32)
+            Gui.Hex.ScaleType = Enum.ScaleType.Slice
+            Gui.Hex.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Hex.SliceScale = 0.010
+
+            Gui.DropShadowHolder_12.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_12.Parent = Gui.Hex
+            Gui.DropShadowHolder_12.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_12.BorderSizePixel = 0
+            Gui.DropShadowHolder_12.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_12.ZIndex = 0
+
+            Gui.DropShadow_13.Name = "DropShadow"
+            Gui.DropShadow_13.Parent = Gui.DropShadowHolder_12
+            Gui.DropShadow_13.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_13.BackgroundTransparency = 1.000
+            Gui.DropShadow_13.BorderSizePixel = 0
+            Gui.DropShadow_13.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_13.Size = UDim2.new(1, 24, 1, 24)
+            Gui.DropShadow_13.ZIndex = 201
+            Gui.DropShadow_13.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_13.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_13.ImageTransparency = 0.500
+            Gui.DropShadow_13.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_13.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Textbox_3.Name = "Textbox"
+            Gui.Textbox_3.Parent = Gui.Hex
+            Gui.Textbox_3.Active = true
+            Gui.Textbox_3.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Textbox_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Textbox_3.BackgroundTransparency = 1.000
+            Gui.Textbox_3.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Textbox_3.Selectable = true
+            Gui.Textbox_3.Size = UDim2.new(0.850000024, 0, 0.850000024, 0)
+            Gui.Textbox_3.ZIndex = 202
+            Gui.Textbox_3.Font = Enum.Font.Gotham
+            Gui.Textbox_3.Text = "#22714"
+            Gui.Textbox_3.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Textbox_3.TextSize = 14.000
+
+            Gui.Header_2.Name = "Header"
+            Gui.Header_2.Parent = Gui.Hex
+            Gui.Header_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Header_2.BackgroundTransparency = 1.000
+            Gui.Header_2.Position = UDim2.new(0, 0, -0.400000006, 0)
+            Gui.Header_2.Size = UDim2.new(1, 0, 0.300000012, 0)
+            Gui.Header_2.ZIndex = 201
+            Gui.Header_2.Font = Enum.Font.Gotham
+            Gui.Header_2.Text = "hex"
+            Gui.Header_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Header_2.TextSize = 14.000
+            Gui.Header_2.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.UIAspectRatioConstraint_9.Parent = Gui.Content_6
+            Gui.UIAspectRatioConstraint_9.AspectRatio = 0.884
+
+            Gui.Buttons.Name = "Buttons"
+            Gui.Buttons.Parent = Gui.Content_6
+            Gui.Buttons.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Buttons.LayoutOrder = 3
+            Gui.Buttons.Size = UDim2.new(1, 0, 0.100000001, 0)
+
+            Gui.Confirm.Name = "Confirm"
+            Gui.Confirm.Parent = Gui.Buttons
+            Gui.Confirm.Active = false
+            Gui.Confirm.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Confirm.BackgroundTransparency = 1.000
+            Gui.Confirm.Selectable = false
+            Gui.Confirm.Size = UDim2.new(0.75, 0, 0.649999976, 0)
+            Gui.Confirm.ZIndex = 201
+            Gui.Confirm.Image = "rbxassetid://7881709447"
+            Gui.Confirm.ImageColor3 = Color3.fromRGB(50, 50, 50)
+            Gui.Confirm.ScaleType = Enum.ScaleType.Slice
+            Gui.Confirm.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Confirm.SliceScale = 0.005
+
+            Gui.Confirm_2.Name = "Confirm"
+            Gui.Confirm_2.Parent = Gui.Confirm
+            Gui.Confirm_2.AnchorPoint = Vector2.new(0.5, 0)
+            Gui.Confirm_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Confirm_2.BackgroundTransparency = 1.000
+            Gui.Confirm_2.Position = UDim2.new(0.5, 0, 0, 0)
+            Gui.Confirm_2.Size = UDim2.new(0.600000024, 0, 1, 0)
+            Gui.Confirm_2.ZIndex = 205
+            Gui.Confirm_2.Font = Enum.Font.GothamSemibold
+            Gui.Confirm_2.Text = "Confirm Selection"
+            Gui.Confirm_2.TextColor3 = Color3.fromRGB(36, 36, 36)
+            Gui.Confirm_2.TextSize = 14.000
+
+            Gui.DropShadowHolder_13.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_13.Parent = Gui.Confirm
+            Gui.DropShadowHolder_13.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_13.BorderSizePixel = 0
+            Gui.DropShadowHolder_13.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_13.ZIndex = 0
+
+            Gui.DropShadow_14.Name = "DropShadow"
+            Gui.DropShadow_14.Parent = Gui.DropShadowHolder_13
+            Gui.DropShadow_14.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_14.BackgroundTransparency = 1.000
+            Gui.DropShadow_14.BorderSizePixel = 0
+            Gui.DropShadow_14.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_14.Size = UDim2.new(1, 24, 1, 24)
+            Gui.DropShadow_14.ZIndex = 201
+            Gui.DropShadow_14.Image = "rbxassetid://6015897843"
+            Gui.DropShadow_14.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_14.ImageTransparency = 0.200
+            Gui.DropShadow_14.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_14.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Checkmark.Name = "Checkmark"
+            Gui.Checkmark.Parent = Gui.Confirm
+            Gui.Checkmark.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Checkmark.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Checkmark.BackgroundTransparency = 1.000
+            Gui.Checkmark.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            Gui.Checkmark.Position = UDim2.new(0.100000001, 0, 0.5, 0)
+            Gui.Checkmark.Size = UDim2.new(0.200000003, 0, 0.899999976, 0)
+            Gui.Checkmark.ZIndex = 203
+            Gui.Checkmark.Image = "rbxassetid://7072706620"
+            Gui.Checkmark.ImageColor3 = Color3.fromRGB(36, 36, 36)
+            Gui.Checkmark.ScaleType = Enum.ScaleType.Fit
+
+            Gui.UIAspectRatioConstraint_10.Parent = Gui.Checkmark
+
+            Gui.OtherFill.Name = "OtherFill"
+            Gui.OtherFill.Parent = Gui.Confirm
+            Gui.OtherFill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.OtherFill.BackgroundTransparency = 1.000
+            Gui.OtherFill.Size = UDim2.new(1, 0, 1, 0)
+            Gui.OtherFill.ZIndex = 202
+            Gui.OtherFill.Image = "rbxassetid://7881709447"
+            Gui.OtherFill.ImageColor3 = Color3.fromRGB(60, 150, 107)
+            Gui.OtherFill.ScaleType = Enum.ScaleType.Slice
+            Gui.OtherFill.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.OtherFill.SliceScale = 0.005
+
+            Gui.UIListLayout_17.Parent = Gui.Buttons
+            Gui.UIListLayout_17.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_17.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_17.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_17.Padding = UDim.new(0.0500000007, 0)
+
+            Gui.Cancel.Name = "Cancel"
+            Gui.Cancel.Parent = Gui.Buttons
+            Gui.Cancel.Active = false
+            Gui.Cancel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Cancel.BackgroundTransparency = 1.000
+            Gui.Cancel.LayoutOrder = 1
+            Gui.Cancel.Selectable = false
+            Gui.Cancel.Size = UDim2.new(0.200000003, 0, 0.649999976, 0)
+            Gui.Cancel.ZIndex = 201
+            Gui.Cancel.Image = "rbxassetid://7881709447"
+            Gui.Cancel.ImageColor3 = Color3.fromRGB(50, 50, 50)
+            Gui.Cancel.ScaleType = Enum.ScaleType.Slice
+            Gui.Cancel.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.Cancel.SliceScale = 0.005
+
+            Gui.OtherFill_2.Name = "OtherFill"
+            Gui.OtherFill_2.Parent = Gui.Cancel
+            Gui.OtherFill_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.OtherFill_2.BackgroundTransparency = 1.000
+            Gui.OtherFill_2.Size = UDim2.new(1, 0, 1, 0)
+            Gui.OtherFill_2.ZIndex = 202
+            Gui.OtherFill_2.Image = "rbxassetid://7881709447"
+            Gui.OtherFill_2.ImageColor3 = Color3.fromRGB(170, 89, 91)
+            Gui.OtherFill_2.ScaleType = Enum.ScaleType.Slice
+            Gui.OtherFill_2.SliceCenter = Rect.new(512, 512, 512, 512)
+            Gui.OtherFill_2.SliceScale = 0.005
+
+            Gui.DropShadowHolder_14.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_14.Parent = Gui.Cancel
+            Gui.DropShadowHolder_14.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_14.BorderSizePixel = 0
+            Gui.DropShadowHolder_14.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_14.ZIndex = 0
+
+            Gui.DropShadow_15.Name = "DropShadow"
+            Gui.DropShadow_15.Parent = Gui.DropShadowHolder_14
+            Gui.DropShadow_15.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_15.BackgroundTransparency = 1.000
+            Gui.DropShadow_15.BorderSizePixel = 0
+            Gui.DropShadow_15.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_15.Size = UDim2.new(1, 24, 1, 24)
+            Gui.DropShadow_15.ZIndex = 201
+            Gui.DropShadow_15.Image = "rbxassetid://6015897843"
+            Gui.DropShadow_15.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_15.ImageTransparency = 0.200
+            Gui.DropShadow_15.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_15.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Checkmark_2.Name = "Checkmark"
+            Gui.Checkmark_2.Parent = Gui.Cancel
+            Gui.Checkmark_2.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Checkmark_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Checkmark_2.BackgroundTransparency = 1.000
+            Gui.Checkmark_2.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            Gui.Checkmark_2.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.Checkmark_2.Size = UDim2.new(0.400000006, 0, 0.899999976, 0)
+            Gui.Checkmark_2.ZIndex = 203
+            Gui.Checkmark_2.Image = "rbxassetid://7072725342"
+            Gui.Checkmark_2.ImageColor3 = Color3.fromRGB(36, 36, 36)
+            Gui.Checkmark_2.ScaleType = Enum.ScaleType.Fit
+
+            Gui.UIAspectRatioConstraint_11.Parent = Gui.Checkmark_2
+
+            Gui.Content_7.Name = "Content"
+            Gui.Content_7.Parent = Gui.MainUI
+            Gui.Content_7.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_7.BackgroundTransparency = 1.000
+            Gui.Content_7.ClipsDescendants = true
+            Gui.Content_7.Position = UDim2.new(0.204050004, 0, 0, 0)
+            Gui.Content_7.Size = UDim2.new(0.796000004, 0, 1, 0)
+
+            Gui.Shadow_3.Name = "Shadow"
+            Gui.Shadow_3.Parent = Gui.Content_7
+            Gui.Shadow_3.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+            Gui.Shadow_3.BorderSizePixel = 0
+            Gui.Shadow_3.Position = UDim2.new(-0.0192201305, 0, 0, 0)
+            Gui.Shadow_3.Size = UDim2.new(1.01922011, 0, 1, 0)
+            Gui.Shadow_3.Visible = false
+            Gui.Shadow_3.ZIndex = 120
+
+            Gui.UIGradient_8.Rotation = 90
+            Gui.UIGradient_8.Transparency =
+                NumberSequence.new {
+                NumberSequenceKeypoint.new(0.00, 1.00),
+                NumberSequenceKeypoint.new(0.96, 1.00),
+                NumberSequenceKeypoint.new(1.00, 0.00)
+            }
+            Gui.UIGradient_8.Parent = Gui.Shadow_3
+
+            Gui.UICorner_18.CornerRadius = UDim.new(0.0199999996, 0)
+            Gui.UICorner_18.Parent = Gui.Shadow_3
+
+            Gui.Notifications.Name = "Notifications"
+            Gui.Notifications.Parent = Gui.Window
+            Gui.Notifications.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Notifications.BackgroundTransparency = 1.000
+            Gui.Notifications.Position = UDim2.new(0.850000024, 0, 0, 0)
+            Gui.Notifications.Size = UDim2.new(0.150000006, 0, 1, 0)
+
+            Gui.UIListLayout_18.Parent = Gui.Notifications
+            Gui.UIListLayout_18.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_18.VerticalAlignment = Enum.VerticalAlignment.Bottom
+
+            Gui.CategoryButton.Name = "CategoryButton"
+            Gui.CategoryButton.Parent = Gui.Objects
+            Gui.CategoryButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            Gui.CategoryButton.BackgroundTransparency = 1.000
+            Gui.CategoryButton.BorderSizePixel = 0
+            Gui.CategoryButton.Size = UDim2.new(1, 0, 0.200000003, 0)
+            Gui.CategoryButton.ZIndex = 121
+
+            Gui.InnerContent.Name = "InnerContent"
+            Gui.InnerContent.Parent = Gui.CategoryButton
+            Gui.InnerContent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.InnerContent.BackgroundTransparency = 1.000
+            Gui.InnerContent.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.UIListLayout_19.Parent = Gui.InnerContent
+            Gui.UIListLayout_19.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_19.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_19.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_19.Padding = UDim.new(0, 5)
+
+            Gui.Image_2.Name = "Image"
+            Gui.Image_2.Parent = Gui.InnerContent
+            Gui.Image_2.BackgroundTransparency = 1.000
+            Gui.Image_2.Size = UDim2.new(0.400000006, 0, 0.400000006, 0)
+            Gui.Image_2.ZIndex = 124
+            Gui.Image_2.Image = "rbxassetid://8343977772"
+            Gui.Image_2.ImageColor3 = Color3.fromRGB(90, 90, 90)
+
+            Gui.UIAspectRatioConstraint_12.Parent = Gui.Image_2
+
+            Gui.Title_3.Name = "Title"
+            Gui.Title_3.Parent = Gui.InnerContent
+            Gui.Title_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Title_3.BackgroundTransparency = 1.000
+            Gui.Title_3.Size = UDim2.new(0.800000012, 0, 0.219999999, 0)
+            Gui.Title_3.ZIndex = 124
+            Gui.Title_3.Font = Enum.Font.Gotham
+            Gui.Title_3.Text = "AIMBOT"
+            Gui.Title_3.TextColor3 = Color3.fromRGB(90, 90, 90)
+            Gui.Title_3.TextScaled = true
+            Gui.Title_3.TextSize = 5.000
+            Gui.Title_3.TextWrapped = true
+
+            Gui.UITextSizeConstraint_4.Parent = Gui.Title_3
+            Gui.UITextSizeConstraint_4.MaxTextSize = 15
+            Gui.UITextSizeConstraint_4.MinTextSize = 10
+
+            Gui.SelectionShadow.Name = "SelectionShadow"
+            Gui.SelectionShadow.Parent = Gui.CategoryButton
+            Gui.SelectionShadow.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Gui.SelectionShadow.BackgroundTransparency = 1.000
+            Gui.SelectionShadow.BorderSizePixel = 0
+            Gui.SelectionShadow.Size = UDim2.new(1, 0, 1, 0)
+            Gui.SelectionShadow.ZIndex = 123
+
+            Gui.UIGradient_9.Transparency =
+                NumberSequence.new {
+                NumberSequenceKeypoint.new(0.00, 0.00),
+                NumberSequenceKeypoint.new(0.60, 1.00),
+                NumberSequenceKeypoint.new(1.00, 1.00)
+            }
+            Gui.UIGradient_9.Parent = Gui.SelectionShadow
+
+            Gui.HoverFrame_6.Name = "HoverFrame"
+            Gui.HoverFrame_6.Parent = Gui.CategoryButton
+            Gui.HoverFrame_6.BackgroundColor3 = Color3.fromRGB(33, 33, 33)
+            Gui.HoverFrame_6.BackgroundTransparency = 1.000
+            Gui.HoverFrame_6.BorderSizePixel = 0
+            Gui.HoverFrame_6.Size = UDim2.new(1, 0, 1, 0)
+            Gui.HoverFrame_6.ZIndex = 122
+
+            Gui.CategoryFrame.Name = "CategoryFrame"
+            Gui.CategoryFrame.Parent = Gui.Objects
+            Gui.CategoryFrame.Active = true
+            Gui.CategoryFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.CategoryFrame.BackgroundTransparency = 1.000
+            Gui.CategoryFrame.Position = UDim2.new(0, 0, 1, 0)
+            Gui.CategoryFrame.Size = UDim2.new(1, 0, 1, 0)
+            Gui.CategoryFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+            Gui.CategoryFrame.CanvasSize = UDim2.new(0, 0, 0.5, 0)
+            Gui.CategoryFrame.ScrollBarThickness = 0
+
+            Gui.Left.Name = "Left"
+            Gui.Left.Parent = Gui.CategoryFrame
+            Gui.Left.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Left.BackgroundTransparency = 1.000
+            Gui.Left.Size = UDim2.new(0.5, 0, 1, 0)
+            Gui.Left.AutomaticSize = Enum.AutomaticSize.Y
+
+            Gui.UIPadding_9.Parent = Gui.Left
+            Gui.UIPadding_9.PaddingBottom = UDim.new(0, 16)
+            Gui.UIPadding_9.PaddingLeft = UDim.new(0, 16)
+            Gui.UIPadding_9.PaddingRight = UDim.new(0, 16)
+            Gui.UIPadding_9.PaddingTop = UDim.new(0, 32)
+
+            Gui.UIListLayout_20.Parent = Gui.Left
+            Gui.UIListLayout_20.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_20.Padding = UDim.new(0, 35)
+
+            Gui.Right.Name = "Right"
+            Gui.Right.Parent = Gui.CategoryFrame
+            Gui.Right.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Right.BackgroundTransparency = 1.000
+            Gui.Right.Position = UDim2.new(0.5, 0, 0, 0)
+            Gui.Right.Size = UDim2.new(0.5, 0, 1, 0)
+            Gui.Right.AutomaticSize = Enum.AutomaticSize.Y
+
+            Gui.UIListLayout_21.Parent = Gui.Right
+            Gui.UIListLayout_21.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_21.Padding = UDim.new(0, 35)
+
+            Gui.UIPadding_10.Parent = Gui.Right
+            Gui.UIPadding_10.PaddingBottom = UDim.new(0, 16)
+            Gui.UIPadding_10.PaddingLeft = UDim.new(0, 16)
+            Gui.UIPadding_10.PaddingRight = UDim.new(0, 16)
+            Gui.UIPadding_10.PaddingTop = UDim.new(0, 32)
+
+            Gui.UIPadding_11.Parent = Gui.CategoryFrame
+            Gui.UIPadding_11.PaddingBottom = UDim.new(0, 8)
+            Gui.UIPadding_11.PaddingLeft = UDim.new(0, 8)
+            Gui.UIPadding_11.PaddingRight = UDim.new(0, 8)
+            Gui.UIPadding_11.PaddingTop = UDim.new(0, 8)
+
+            Gui.Section.Name = "Section"
+            Gui.Section.Parent = Gui.Objects
+            Gui.Section.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Section.BackgroundTransparency = 1.000
+            Gui.Section.Size = UDim2.new(1, 0, 0, 0)
+            Gui.Section.ZIndex = 101
+            --Gui.Section.AutomaticSize = Enum.AutomaticSize.Y
+
+            Gui.Border.Name = "Border"
+            Gui.Border.Parent = Gui.Section
+            Gui.Border.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+            Gui.Border.BorderSizePixel = 0
+            Gui.Border.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Border.ZIndex = 107
+
+            Gui.SectionTitle.Name = "SectionTitle"
+            Gui.SectionTitle.Parent = Gui.Border
+            Gui.SectionTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.SectionTitle.BackgroundTransparency = 1.000
+            Gui.SectionTitle.LayoutOrder = -1
+            Gui.SectionTitle.Position = UDim2.new(0, 0, 0, -25)
+            Gui.SectionTitle.Size = UDim2.new(1, 0, 0, 20)
+            Gui.SectionTitle.ZIndex = 110
+            Gui.SectionTitle.Font = Enum.Font.GothamBold
+            Gui.SectionTitle.Text = "TEXT BOXES"
+            Gui.SectionTitle.TextColor3 = Color3.fromRGB(60, 60, 60)
+            Gui.SectionTitle.TextScaled = true
+            Gui.SectionTitle.TextSize = 14.000
+            Gui.SectionTitle.TextWrapped = true
+            Gui.SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.UITextSizeConstraint_5.Parent = Gui.SectionTitle
+            Gui.UITextSizeConstraint_5.MaxTextSize = 14
+            Gui.UITextSizeConstraint_5.MinTextSize = 10
+
+            Gui.UICorner_19.CornerRadius = UDim.new(0, 2)
+            Gui.UICorner_19.Parent = Gui.Border
+
+            Gui.Content_8.Name = "Content"
+            Gui.Content_8.Parent = Gui.Border
+            Gui.Content_8.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_8.BackgroundTransparency = 1.000
+            Gui.Content_8.Size = UDim2.new(1, 0, 1, 0)
+            --Gui.Content_8.AutomaticSize = Enum.AutomaticSize.Y
+
+            Gui.UIPadding_12.Parent = Gui.Content_8
+            Gui.UIPadding_12.PaddingBottom = UDim.new(0, 8)
+            Gui.UIPadding_12.PaddingLeft = UDim.new(0, 8)
+            Gui.UIPadding_12.PaddingRight = UDim.new(0, 8)
+            Gui.UIPadding_12.PaddingTop = UDim.new(0, 8)
+
+            Gui.UIListLayout_22.Parent = Gui.Content_8
+            Gui.UIListLayout_22.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_22.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_22.Padding = UDim.new(0, 10)
+
+            Gui.DropShadow_16.Name = "DropShadow"
+            Gui.DropShadow_16.Parent = Gui.Section
+            Gui.DropShadow_16.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_16.BackgroundTransparency = 1.000
+            Gui.DropShadow_16.BorderSizePixel = 0
+            Gui.DropShadow_16.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_16.Size = UDim2.new(1, 47, 1, 47)
+            Gui.DropShadow_16.ZIndex = 105
+            Gui.DropShadow_16.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_16.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_16.ImageTransparency = 0.500
+            Gui.DropShadow_16.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_16.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.CheatBase.Name = "CheatBase"
+            Gui.CheatBase.Parent = Gui.Objects
+            Gui.CheatBase.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.CheatBase.LayoutOrder = 1
+            Gui.CheatBase.Size = UDim2.new(1, 0, 0, 30)
+
+            Gui.Content_9.Name = "Content"
+            Gui.Content_9.Parent = Gui.CheatBase
+            Gui.Content_9.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_9.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.UIListLayout_23.Parent = Gui.Content_9
+            Gui.UIListLayout_23.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_23.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_23.VerticalAlignment = Enum.VerticalAlignment.Center
+
+            Gui.Text_7.Name = "Text"
+            Gui.Text_7.Parent = Gui.Content_9
+            Gui.Text_7.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_7.Size = UDim2.new(0.5, 0, 1, 0)
+
+            Gui.Text_8.Name = "Text"
+            Gui.Text_8.Parent = Gui.Text_7
+            Gui.Text_8.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Text_8.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_8.BackgroundTransparency = 1.000
+            Gui.Text_8.Position = UDim2.new(0.5, 0, 0.25, 0)
+            Gui.Text_8.Size = UDim2.new(0.899999976, 0, 0.5, 0)
+            Gui.Text_8.Visible = false
+            Gui.Text_8.ZIndex = 111
+            Gui.Text_8.Font = Enum.Font.GothamSemibold
+            Gui.Text_8.Text = "Title"
+            Gui.Text_8.TextColor3 = Color3.fromRGB(100, 100, 100)
+            Gui.Text_8.TextSize = 18.000
+            Gui.Text_8.TextWrapped = true
+            Gui.Text_8.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.Desc.Name = "Desc"
+            Gui.Desc.Parent = Gui.Text_8
+            Gui.Desc.AnchorPoint = Vector2.new(0.5, 0)
+            Gui.Desc.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Desc.BackgroundTransparency = 1.000
+            Gui.Desc.Position = UDim2.new(0.75, 0, 1.12, 0)
+            Gui.Desc.Size = UDim2.new(1.5, 0, 0.5, 0)
+            Gui.Desc.Visible = false
+            Gui.Desc.ZIndex = 111
+            Gui.Desc.Font = Enum.Font.Gotham
+            Gui.Desc.Text = "Short description"
+            Gui.Desc.TextColor3 = Color3.fromRGB(60, 60, 60)
+            Gui.Desc.TextSize = 12.000
+            Gui.Desc.TextWrapped = true
+            Gui.Desc.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.ElementContent.Name = "ElementContent"
+            Gui.ElementContent.Parent = Gui.Content_9
+            Gui.ElementContent.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.ElementContent.Size = UDim2.new(0.5, 0, 1, 0)
+
+            Gui.UIListLayout_24.Parent = Gui.ElementContent
+            Gui.UIListLayout_24.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_24.HorizontalAlignment = Enum.HorizontalAlignment.Right
+            Gui.UIListLayout_24.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_24.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_24.Padding = UDim.new(0.0500000007, 0)
+
+            Gui.Notification.Name = "Notification"
+            Gui.Notification.Parent = Gui.Objects
+            Gui.Notification.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Gui.Notification.BackgroundTransparency = 1.000
+            Gui.Notification.BorderSizePixel = 0
+            Gui.Notification.Size = UDim2.new(1, 0, 0.150000006, 0)
+            Gui.Notification.ZIndex = 10
+
+            Gui.Main.Name = "Main"
+            Gui.Main.Parent = Gui.Notification
+            Gui.Main.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Gui.Main.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.DropShadowHolder_15.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_15.Parent = Gui.Main
+            Gui.DropShadowHolder_15.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_15.BorderSizePixel = 0
+            Gui.DropShadowHolder_15.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_15.ZIndex = 0
+
+            Gui.DropShadow_17.Name = "DropShadow"
+            Gui.DropShadow_17.Parent = Gui.DropShadowHolder_15
+            Gui.DropShadow_17.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_17.BackgroundTransparency = 1.000
+            Gui.DropShadow_17.BorderSizePixel = 0
+            Gui.DropShadow_17.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_17.Size = UDim2.new(1, 47, 1, 47)
+            Gui.DropShadow_17.ZIndex = 0
+            Gui.DropShadow_17.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_17.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_17.ImageTransparency = 0.500
+            Gui.DropShadow_17.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_17.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Content_10.Name = "Content"
+            Gui.Content_10.Parent = Gui.Main
+            Gui.Content_10.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_10.BackgroundTransparency = 1.000
+            Gui.Content_10.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.UIListLayout_25.Parent = Gui.Content_10
+            Gui.UIListLayout_25.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_25.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_25.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_25.Padding = UDim.new(0.0299999993, 0)
+
+            Gui.Line_4.Name = "Line"
+            Gui.Line_4.Parent = Gui.Content_10
+            Gui.Line_4.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Gui.Line_4.BorderSizePixel = 0
+            Gui.Line_4.LayoutOrder = -1
+            Gui.Line_4.Size = UDim2.new(0, 1, 1, 0)
+            Gui.Line_4.ZIndex = 11
+
+            Gui.Buttons_2.Name = "Buttons"
+            Gui.Buttons_2.Parent = Gui.Content_10
+            Gui.Buttons_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Buttons_2.BackgroundTransparency = 1.000
+            Gui.Buttons_2.BorderSizePixel = 0
+            Gui.Buttons_2.Size = UDim2.new(0.189999998, -1, 1, 0)
+
+            Gui.UIListLayout_26.Parent = Gui.Buttons_2
+            Gui.UIListLayout_26.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_26.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_26.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_26.Padding = UDim.new(0.05, 0)
+
+            Gui.Close.Name = "Close"
+            Gui.Close.Parent = Gui.Buttons_2
+            Gui.Close.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Close.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Close.BackgroundTransparency = 1.000
+            Gui.Close.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            Gui.Close.Position = UDim2.new(0.100000001, 0, 0.5, 0)
+            Gui.Close.Size = UDim2.new(0.5, 0, 1, 0)
+            Gui.Close.ZIndex = 203
+            Gui.Close.Image = "rbxassetid://7072725342"
+            Gui.Close.ScaleType = Enum.ScaleType.Fit
+
+            Gui.UIAspectRatioConstraint_13.Parent = Gui.Close
+
+            Gui.Text_9.Name = "Text"
+            Gui.Text_9.Parent = Gui.Content_10
+            Gui.Text_9.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_9.BackgroundTransparency = 1.000
+            Gui.Text_9.LayoutOrder = -2
+            Gui.Text_9.Size = UDim2.new(0.75, 0, 1, 0)
+
+            Gui.UIListLayout_27.Parent = Gui.Text_9
+            Gui.UIListLayout_27.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_27.VerticalAlignment = Enum.VerticalAlignment.Center
+
+            Gui.Title_4.Name = "Title"
+            Gui.Title_4.Parent = Gui.Text_9
+            Gui.Title_4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Title_4.BackgroundTransparency = 1.000
+            Gui.Title_4.Size = UDim2.new(1, 0, 0.400000006, 0)
+            Gui.Title_4.ZIndex = 12
+            Gui.Title_4.Font = Enum.Font.GothamSemibold
+            Gui.Title_4.Text = "Notification"
+            Gui.Title_4.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Title_4.TextSize = 20.000
+            Gui.Title_4.TextWrapped = true
+            Gui.Title_4.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.Desc_2.Name = "Desc"
+            Gui.Desc_2.Parent = Gui.Text_9
+            Gui.Desc_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Desc_2.BackgroundTransparency = 1.000
+            Gui.Desc_2.Size = UDim2.new(1, 0, 0.400000006, 0)
+            Gui.Desc_2.ZIndex = 12
+            Gui.Desc_2.Font = Enum.Font.Gotham
+            Gui.Desc_2.Text = "You got no choice dude"
+            Gui.Desc_2.TextColor3 = Color3.fromRGB(150, 150, 150)
+            Gui.Desc_2.TextSize = 14.000
+            Gui.Desc_2.TextWrapped = true
+            Gui.Desc_2.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.UIPadding_13.Parent = Gui.Text_9
+            Gui.UIPadding_13.PaddingBottom = UDim.new(0, 4)
+            Gui.UIPadding_13.PaddingLeft = UDim.new(0, 8)
+            Gui.UIPadding_13.PaddingRight = UDim.new(0, 4)
+            Gui.UIPadding_13.PaddingTop = UDim.new(0, 4)
+
+            Gui.UICorner_20.CornerRadius = UDim.new(0.0500000007, 0)
+            Gui.UICorner_20.Parent = Gui.Main
+
+            Gui.UIAspectRatioConstraint_14.Parent = Gui.Main
+            Gui.UIAspectRatioConstraint_14.AspectRatio = 2.788
+
+            Gui.Notification_2.Name = "Notification"
+            Gui.Notification_2.Parent = Gui.Main
+            Gui.Notification_2.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+            Gui.Notification_2.BorderSizePixel = 0
+            Gui.Notification_2.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Notification_2.ZIndex = 20
+
+            Gui.UICorner_21.CornerRadius = UDim.new(0.0500000007, 0)
+            Gui.UICorner_21.Parent = Gui.Notification_2
+
+            Gui.Prompt.Name = "Prompt"
+            Gui.Prompt.Parent = Gui.Objects
+            Gui.Prompt.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Gui.Prompt.BackgroundTransparency = 1.000
+            Gui.Prompt.Size = UDim2.new(1, 0, 0.150000006, 0)
+            Gui.Prompt.ZIndex = 10
+
+            Gui.Main_2.Name = "Main"
+            Gui.Main_2.Parent = Gui.Prompt
+            Gui.Main_2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            Gui.Main_2.BorderSizePixel = 0
+            Gui.Main_2.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.UICorner_22.CornerRadius = UDim.new(0.0500000007, 0)
+            Gui.UICorner_22.Parent = Gui.Main_2
+
+            Gui.DropShadowHolder_16.Name = "DropShadowHolder"
+            Gui.DropShadowHolder_16.Parent = Gui.Main_2
+            Gui.DropShadowHolder_16.BackgroundTransparency = 1.000
+            Gui.DropShadowHolder_16.BorderSizePixel = 0
+            Gui.DropShadowHolder_16.Size = UDim2.new(1, 0, 1, 0)
+            Gui.DropShadowHolder_16.ZIndex = 0
+
+            Gui.DropShadow_18.Name = "DropShadow"
+            Gui.DropShadow_18.Parent = Gui.DropShadowHolder_16
+            Gui.DropShadow_18.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.DropShadow_18.BackgroundTransparency = 1.000
+            Gui.DropShadow_18.BorderSizePixel = 0
+            Gui.DropShadow_18.Position = UDim2.new(0.5, 0, 0.5, 0)
+            Gui.DropShadow_18.Size = UDim2.new(1, 47, 1, 47)
+            Gui.DropShadow_18.ZIndex = 0
+            Gui.DropShadow_18.Image = "rbxassetid://6014261993"
+            Gui.DropShadow_18.ImageColor3 = Color3.fromRGB(0, 0, 0)
+            Gui.DropShadow_18.ImageTransparency = 0.500
+            Gui.DropShadow_18.ScaleType = Enum.ScaleType.Slice
+            Gui.DropShadow_18.SliceCenter = Rect.new(49, 49, 450, 450)
+
+            Gui.Content_11.Name = "Content"
+            Gui.Content_11.Parent = Gui.Main_2
+            Gui.Content_11.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Content_11.BackgroundTransparency = 1.000
+            Gui.Content_11.Size = UDim2.new(1, 0, 1, 0)
+
+            Gui.UIListLayout_28.Parent = Gui.Content_11
+            Gui.UIListLayout_28.FillDirection = Enum.FillDirection.Horizontal
+            Gui.UIListLayout_28.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_28.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_28.Padding = UDim.new(0.0299999993, 0)
+
+            Gui.Line_5.Name = "Line"
+            Gui.Line_5.Parent = Gui.Content_11
+            Gui.Line_5.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Gui.Line_5.BorderSizePixel = 0
+            Gui.Line_5.LayoutOrder = -1
+            Gui.Line_5.Size = UDim2.new(0, 1, 1, 0)
+            Gui.Line_5.ZIndex = 11
+
+            Gui.Buttons_3.Name = "Buttons"
+            Gui.Buttons_3.Parent = Gui.Content_11
+            Gui.Buttons_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Buttons_3.BackgroundTransparency = .999
+            Gui.Buttons_3.BorderSizePixel = 0
+            Gui.Buttons_3.Size = UDim2.new(0.189999998, -1, 1, 0)
+
+            Gui.UIListLayout_29.Parent = Gui.Buttons_3
+            Gui.UIListLayout_29.HorizontalAlignment = Enum.HorizontalAlignment.Center
+            Gui.UIListLayout_29.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_29.VerticalAlignment = Enum.VerticalAlignment.Center
+            Gui.UIListLayout_29.Padding = UDim.new(0.300000012, 0)
+
+            Gui.Accept.Name = "Accept"
+            Gui.Accept.Parent = Gui.Buttons_3
+            Gui.Accept.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Accept.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Accept.BackgroundTransparency = 1.000
+            Gui.Accept.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            Gui.Accept.Position = UDim2.new(0.100000001, 0, 0.5, 0)
+            Gui.Accept.Size = UDim2.new(0.5, 0, 1, 0)
+            Gui.Accept.ZIndex = 203
+            Gui.Accept.Image = "rbxassetid://7072706620"
+            Gui.Accept.ScaleType = Enum.ScaleType.Fit
+
+            Gui.UIAspectRatioConstraint_15.Parent = Gui.Accept
+
+            Gui.Close_2.Name = "Close"
+            Gui.Close_2.Parent = Gui.Buttons_3
+            Gui.Close_2.AnchorPoint = Vector2.new(0.5, 0.5)
+            Gui.Close_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Close_2.BackgroundTransparency = 1.000
+            Gui.Close_2.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            Gui.Close_2.Position = UDim2.new(0.100000001, 0, 0.5, 0)
+            Gui.Close_2.Size = UDim2.new(0.5, 0, 1, 0)
+            Gui.Close_2.ZIndex = 203
+            Gui.Close_2.Image = "rbxassetid://7072725342"
+            Gui.Close_2.ScaleType = Enum.ScaleType.Fit
+
+            Gui.UIAspectRatioConstraint_16.Parent = Gui.Close_2
+
+            Gui.Text_10.Name = "Text"
+            Gui.Text_10.Parent = Gui.Content_11
+            Gui.Text_10.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Text_10.BackgroundTransparency = 1.000
+            Gui.Text_10.LayoutOrder = -2
+            Gui.Text_10.Size = UDim2.new(0.75, 0, 1, 0)
+
+            Gui.UIListLayout_30.Parent = Gui.Text_10
+            Gui.UIListLayout_30.SortOrder = Enum.SortOrder.LayoutOrder
+            Gui.UIListLayout_30.VerticalAlignment = Enum.VerticalAlignment.Center
+
+            Gui.Title_5.Name = "Title"
+            Gui.Title_5.Parent = Gui.Text_10
+            Gui.Title_5.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Title_5.BackgroundTransparency = 1.000
+            Gui.Title_5.Size = UDim2.new(1, 0, 0.400000006, 0)
+            Gui.Title_5.ZIndex = 12
+            Gui.Title_5.Font = Enum.Font.GothamSemibold
+            Gui.Title_5.Text = "Prompt"
+            Gui.Title_5.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Title_5.TextSize = 20.000
+            Gui.Title_5.TextWrapped = true
+            Gui.Title_5.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.Desc_3.Name = "Desc"
+            Gui.Desc_3.Parent = Gui.Text_10
+            Gui.Desc_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Gui.Desc_3.BackgroundTransparency = 1.000
+            Gui.Desc_3.Size = UDim2.new(1, 0, 0.400000006, 0)
+            Gui.Desc_3.ZIndex = 12
+            Gui.Desc_3.Font = Enum.Font.Gotham
+            Gui.Desc_3.Text = "Would you like to start autofarm?"
+            Gui.Desc_3.TextColor3 = Color3.fromRGB(150, 150, 150)
+            Gui.Desc_3.TextSize = 14.000
+            Gui.Desc_3.TextWrapped = true
+            Gui.Desc_3.TextXAlignment = Enum.TextXAlignment.Left
+
+            Gui.UIPadding_14.Parent = Gui.Text_10
+            Gui.UIPadding_14.PaddingBottom = UDim.new(0, 4)
+            Gui.UIPadding_14.PaddingLeft = UDim.new(0, 8)
+            Gui.UIPadding_14.PaddingRight = UDim.new(0, 4)
+            Gui.UIPadding_14.PaddingTop = UDim.new(0, 4)
+
+            Gui.Notification_3.Name = "Notification"
+            Gui.Notification_3.Parent = Gui.Main_2
+            Gui.Notification_3.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+            Gui.Notification_3.BorderSizePixel = 0
+            Gui.Notification_3.Size = UDim2.new(1, 0, 1, 0)
+            Gui.Notification_3.ZIndex = 20
+
+            Gui.UICorner_23.CornerRadius = UDim.new(0.0500000007, 0)
+            Gui.UICorner_23.Parent = Gui.Notification_3
+
+            Gui.UIAspectRatioConstraint_17.Parent = Gui.Main_2
+            Gui.UIAspectRatioConstraint_17.AspectRatio = 2.788
+
+            return Gui.UIObjects
         end
-    end)
-return o end end,[17]=function()local c,d,e,f,g=b(17)local h,i,j,k=game:GetService'UserInputService',game:GetService'Players'.LocalPlayer:GetMouse(),game:GetService'Workspace'.CurrentCamera,d.Parent.Parent local l,m,n,o,p=e(k.Packages.Flipper),e(k.Creator),e(k.Acrylic),e(d.Parent.Assets),d.Parent local q,r,s=l.Spring.new,l.Instant.new,m.New return function(t)local u,v,w,x,y,z=e(k),{Minimized=false,Maximized=false,Size=t.Size,CurrentPos=0,Position=UDim2.fromOffset(j.ViewportSize.X/2-t.Size.X.Offset/2,j.ViewportSize.Y/2-t.Size.Y.Offset/2)},false local A,B=false local C=false v.AcrylicPaint=n.AcrylicPaint()local D,E=s('Frame',{Size=UDim2.fromOffset(4,0),BackgroundColor3=Color3.fromRGB(76,194,255),Position=UDim2.fromOffset(0,17),AnchorPoint=Vector2.new(0,0.5),ThemeTag={BackgroundColor3='Accent'}},{s('UICorner',{CornerRadius=UDim.new(0,2)})}),s('Frame',{Size=UDim2.fromOffset(20,20),BackgroundTransparency=1,Position=UDim2.new(1,-20,1,-20)})v.TabHolder=s('ScrollingFrame',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,ScrollBarImageTransparency=1,ScrollBarThickness=0,BorderSizePixel=0,CanvasSize=UDim2.fromScale(0,0),ScrollingDirection=Enum.ScrollingDirection.Y},{s('UIListLayout',{Padding=UDim.new(0,4)})})local F=s('Frame',{Size=UDim2.new(0,t.TabWidth,1,-66),Position=UDim2.new(0,12,0,54),BackgroundTransparency=1,ClipsDescendants=true},{v.TabHolder,D})v.TabDisplay=s('TextLabel',{RichText=true,Text='Tab',TextTransparency=0,FontFace=Font.new('rbxassetid://12187365364',Enum.FontWeight.SemiBold,Enum.FontStyle.Normal),TextSize=28,TextXAlignment='Left',TextYAlignment='Center',Size=UDim2.new(1,-16,0,28),Position=UDim2.fromOffset(t.TabWidth+26,56),BackgroundTransparency=1,ThemeTag={TextColor3='Text'}})v.ContainerHolder=s('CanvasGroup',{Size=UDim2.new(1,-t.TabWidth-32,1,-102),Position=UDim2.fromOffset(t.TabWidth+26,90),BackgroundTransparency=1})v.Root=s('Frame',{BackgroundTransparency=1,Size=v.Size,Position=v.Position,Parent=t.Parent},{v.AcrylicPaint.Frame,v.TabDisplay,v.ContainerHolder,F,E})v.TitleBar=e(d.Parent.TitleBar){Title=t.Title,SubTitle=t.SubTitle,Parent=v.Root,Window=v}if e(k).UseAcrylic then v.AcrylicPaint.AddParent(v.Root)end local G,H=l.GroupMotor.new{X=v.Size.X.Offset,Y=v.Size.Y.Offset},l.GroupMotor.new{X=v.Position.X.Offset,Y=v.Position.Y.Offset}v.SelectorPosMotor=l.SingleMotor.new(17)v.SelectorSizeMotor=l.SingleMotor.new(0)v.ContainerBackMotor=l.SingleMotor.new(0)v.ContainerPosMotor=l.SingleMotor.new(94)G:onStep(function(I)v.Root.Size=UDim2.new(0,I.X,0,I.Y)end)H:onStep(function(I)v.Root.Position=UDim2.new(0,I.X,0,I.Y)end)local I,J=0,0 v.SelectorPosMotor:onStep(function(K)D.Position=UDim2.new(0,0,0,K+17)local L=tick()local M=L-J if I~=nil then v.SelectorSizeMotor:setGoal(q((math.abs(K-I)/(M*60))+16))I=K end J=L end)v.SelectorSizeMotor:onStep(function(K)D.Size=UDim2.new(0,4,0,K)end)v.ContainerBackMotor:onStep(function(K)v.ContainerHolder.GroupTransparency=K end)v.ContainerPosMotor:onStep(function(K)v.ContainerHolder.Position=UDim2.fromOffset(t.TabWidth+26,K)end)local K,L v.Maximize=function(M,N,O)v.Maximized=M v.TitleBar.MaxButton.Frame.Icon.Image=M and o.Restore or o.Max if M then K=v.Size.X.Offset L=v.Size.Y.Offset end local P,Q=M and j.ViewportSize.X or K,M and j.ViewportSize.Y or L G:setGoal{X=l[O and'Instant'or'Spring'].new(P,{frequency=6}),Y=l[O and'Instant'or'Spring'].new(Q,{frequency=6})}v.Size=UDim2.fromOffset(P,Q)if not N then H:setGoal{X=q(M and 0 or v.Position.X.Offset,{frequency=6}),Y=q(M and 0 or v.Position.Y.Offset,{frequency=6})}end end m.AddSignal(v.TitleBar.Frame.InputBegan,function(M)if M.UserInputType==Enum.UserInputType.MouseButton1 or M.UserInputType==Enum.UserInputType.Touch then w=true y=M.Position z=v.Root.Position if v.Maximized then z=UDim2.fromOffset(i.X-(i.X*((K-100)/v.Root.AbsoluteSize.X)),i.Y-(i.Y*(L/v.Root.AbsoluteSize.Y)))end M.Changed:Connect(function()if M.UserInputState==Enum.UserInputState.End then w=false end end)end end)m.AddSignal(v.TitleBar.Frame.InputChanged,function(M)if M.UserInputType==Enum.UserInputType.MouseMovement or M.UserInputType==Enum.UserInputType.Touch then x=M end end)m.AddSignal(E.InputBegan,function(M)if M.UserInputType==Enum.UserInputType.MouseButton1 or M.UserInputType==Enum.UserInputType.Touch then A=true B=M.Position end end)m.AddSignal(h.InputChanged,function(M)if M==x and w then local N=M.Position-y v.Position=UDim2.fromOffset(z.X.Offset+N.X,z.Y.Offset+N.Y)H:setGoal{X=r(v.Position.X.Offset),Y=r(v.Position.Y.Offset)}if v.Maximized then v.Maximize(false,true,true)end end if(M.UserInputType==Enum.UserInputType.MouseMovement or M.UserInputType==Enum.UserInputType.Touch)and A then local N,O=M.Position-B,v.Size local P=Vector3.new(O.X.Offset,O.Y.Offset,0)+Vector3.new(1,1,0)*N local Q=Vector2.new(math.clamp(P.X,470,2048),math.clamp(P.Y,380,2048))G:setGoal{X=l.Instant.new(Q.X),Y=l.Instant.new(Q.Y)}end end)m.AddSignal(h.InputEnded,function(M)if A==true or M.UserInputType==Enum.UserInputType.Touch then A=false v.Size=UDim2.fromOffset(G:getValue().X,G:getValue().Y)end end)m.AddSignal(v.TabHolder.UIListLayout:GetPropertyChangedSignal'AbsoluteContentSize',function()v.TabHolder.CanvasSize=UDim2.new(0,0,0,v.TabHolder.UIListLayout.AbsoluteContentSize.Y)end)m.AddSignal(h.InputBegan,function(M)if type(u.MinimizeKeybind)=='table'and u.MinimizeKeybind.Type=='Keybind'and not h:GetFocusedTextBox()then if M.KeyCode.Name==u.MinimizeKeybind.Value then v:Minimize()end elseif M.KeyCode==u.MinimizeKey and not h:GetFocusedTextBox()then v:Minimize()end end)function v.Minimize(M)v.Minimized=not v.Minimized v.Root.Visible=not v.Minimized if not C then C=true local N=u.MinimizeKeybind and u.MinimizeKeybind.Value or u.MinimizeKey.Name u:Notify{Title='Interface',Content='Press '..N..' to toggle the inteface.',Duration=6}end end function v.Destroy(M)if e(k).UseAcrylic then v.AcrylicPaint.Model:Destroy()end v.Root:Destroy()end local M=e(p.Dialog):Init(v)function v.Dialog(N,O)local P=M:Create()P.Title.Text=O.Title local Q=s('TextLabel',{FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',Text=O.Content,TextColor3=Color3.fromRGB(255,255,255),TextSize=14,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Top,Size=UDim2.new(1,-40,1,0),Position=UDim2.fromOffset(20,60),BackgroundTransparency=1,Parent=P.Root,ClipsDescendants=false,ThemeTag={TextColor3='Text'}})s('UISizeConstraint',{MinSize=Vector2.new(300,165),MaxSize=Vector2.new(620,math.huge),Parent=P.Root})P.Root.Size=UDim2.fromOffset(Q.TextBounds.X+40,165)if Q.TextBounds.X+40>v.Size.X.Offset-120 then P.Root.Size=UDim2.fromOffset(v.Size.X.Offset-120,165)Q.TextWrapped=true P.Root.Size=UDim2.fromOffset(v.Size.X.Offset-120,Q.TextBounds.Y+150)end for R,S in next,O.Buttons do P:Button(S.Title,S.Callback)end P:Open()end local N=e(p.Tab):Init(v)function v.AddTab(O,P)return N:New(P.Title,P.Icon,v.TabHolder)end function v.SelectTab(O,P)N:SelectTab(1)end m.AddSignal(v.TabHolder:GetPropertyChangedSignal'CanvasPosition',function()I=N:GetCurrentTabPos()+16 J=0 v.SelectorPosMotor:setGoal(r(N:GetCurrentTabPos()))end)
-    task.spawn(function()
-        repeat task.wait() until v.TitleBar and v.TitleBar.MinButton
-        v.TitleBar.MinButton.SetCallback(function()
-            v.Minimized = not v.Minimized
-            for _, c in ipairs(v.Root:GetChildren()) do
-                if c.Name ~= "TitleBar" and c.Name ~= "AcrylicBlur" then
-                    c.Visible = not v.Minimized
+
+        return initObj()
+    end
+
+    local UIObjects = getObjects()
+    UIObjects.Parent = script
+
+    for i, v in pairs(script.UIObjects:GetChildren()) do
+        v.Parent = v.Parent.Parent
+    end
+
+    script.UIObjects:Destroy()
+
+    function objGen.new(objectType, cheatName)
+        if objectType == "Cheat" then
+            if script.Cheats:FindFirstChild(cheatName) then
+                return script.Cheats[cheatName]:Clone()
+            else
+                error("Invalid cheatType")
+            end
+        end
+
+        if script.Objects:FindFirstChild(objectType) then
+            return script.Objects[objectType]:Clone()
+        else
+            error("Invalid objectType")
+        end
+    end
+
+    return objGen
+end
+
+local objectGenerator = getObjGen()
+
+
+local function initUtils()
+    local utils = {}
+    local camera = workspace.Camera.ViewportSize
+    local centre = Vector2.new(camera.X/2, camera.Y/2)
+
+    utils.OffsetToScale = function(Offset)
+        return ({Offset[1] / camera.X, Offset[2] / camera.Y})
+    end
+
+    utils.ScaleToOffset = function(Scale)
+        local X = Scale[1] * camera.X
+        local Y = Scale[2] * camera.Y
+        return X , Y
+    end
+
+    utils.CheckBoundary = function(Boundary,Object,Change)
+        if Boundary then
+            local Size = Boundary.AbsoluteSize
+            local Position = Boundary.AbsolutePosition
+            
+            local Min = -(Size-Position) + Size
+            local Max = (Size+Position) - Object.AbsoluteSize
+            
+            local ObjPos = Object.Position
+            local X , Y = utils.ScaleToOffset({ObjPos.X.Scale,ObjPos.Y.Scale})
+            
+            local GuiVector = Vector2.new(ObjPos.X.Offset+Change.X+X,ObjPos.Y.Offset+Change.Y+Y)
+            
+            X = math.clamp(GuiVector.X,Min.X,Max.X)
+            Y = math.clamp(GuiVector.Y,Min.Y,Max.Y)
+            
+            return X , Y
+        end
+    end
+
+    utils.SortTable = function(Clippings , Current , Object)
+        Clippings = Clippings or {}
+        Current = Current or {}
+        local Suitable
+        local CurrentDist
+        
+        pcall(function()
+            if Object then
+                for _ , v in ipairs(Current) do
+                    if table.find(Clippings,v) and v.ZIndex <= Object.ZIndex then
+                        if not CurrentDist then
+                            CurrentDist = (Object.AbsolutePosition-v.AbsolutePosition).Magnitude
+                            Suitable = v
+                        else
+                            local Dist = (Object.AbsolutePosition-v.AbsolutePosition).Magnitude
+                            if Dist < CurrentDist then
+                                CurrentDist = Dist
+                                Suitable = v
+                            end
+                        end
+                    end
                 end
             end
-            if v.Minimized then
-                v.Root.Size = UDim2.new(0, v.Root.Size.X.Offset, 0, 42)
-            else
-                v.Root.Size = v.Size
-            end
         end)
+        
+        return Suitable
+    end
 
-        local sg = v.Root.Parent
-        local ex = Instance.new("ImageButton")
-        ex.Name = "AigaExternalMin"
-        ex.Size = UDim2.fromOffset(50, 50)
-        ex.Position = UDim2.new(0.98, 0, 0.05, 0)
-        ex.AnchorPoint = Vector2.new(1, 0)
-        ex.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        ex.Image = 'rbxthumb://type=Asset&id=86868808077613&w=150&h=150'
-        ex.Parent = sg
-        local cr = Instance.new("UICorner") cr.CornerRadius = UDim.new(0, 10) cr.Parent = ex
-        local st = Instance.new("UIStroke") st.Color = Color3.fromRGB(255, 0, 0) st.Thickness = 2 st.Parent = ex
-        ex.MouseButton1Click:Connect(function() v.Root.Visible = not v.Root.Visible end)
-
-        local lp = v.Root:FindFirstChild("LeftPanel", true) or v.Root:FindFirstChild("Frame", true)
-        if lp and lp.Name ~= "TitleBar" then
-            local pf = Instance.new("Frame")
-            pf.Size = UDim2.new(1, -20, 0, 60)
-            pf.Position = UDim2.new(0, 10, 1, -70)
-            pf.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-            pf.Parent = lp
-            local pfc = Instance.new("UICorner") pfc.CornerRadius = UDim.new(0, 8) pfc.Parent = pf
-            local av = Instance.new("ImageLabel")
-            av.Size = UDim2.fromOffset(40, 40)
-            av.Position = UDim2.new(0, 10, 0.5, 0)
-            av.AnchorPoint = Vector2.new(0, 0.5)
-            av.BackgroundTransparency = 1
-            av.Image = 'rbxthumb://type=AvatarHeadShot&id=' .. game:GetService("Players").LocalPlayer.UserId .. '&w=150&h=150'
-            av.Parent = pf
-            local avc = Instance.new("UICorner") avc.CornerRadius = UDim.new(1, 0) avc.Parent = av
-            local info = Instance.new("TextLabel")
-            info.Size = UDim2.new(1, -50, 1, 0)
-            info.Position = UDim2.new(0, 48, 0, 0)
-            info.BackgroundTransparency = 1
-            info.TextColor3 = Color3.fromRGB(255, 255, 255)
-            info.TextSize = 10
-            info.Text = game:GetService("Players").LocalPlayer.Name .. "\nID: " .. game:GetService("Players").LocalPlayer.UserId
-            info.Parent = pf
+    utils.Side = function(E)
+        if E >= -135 and E <= -45 then
+            return 'Left'
+        elseif E <= 45 and E > -45 then
+            return 'Down'
+        elseif E  <= 135 and E > 45 then
+            return 'Right'
+        else 
+            return 'Up'
         end
+    end
+
+
+    utils.Snap = function(B,C,Target)
+        local aPos = C.AbsolutePosition - centre
+        local bPos = B.AbsolutePosition - centre
+        local bPos = aPos - bPos
+        
+        
+        local Dot = math.deg(math.atan2(bPos.X, bPos.Y))
+        
+        local SideGot = utils.Side(Dot)
+        local Size = B.Size
+        local CSize = C.Size
+        
+        local CSizeX,CSizeY= table.unpack(utils.OffsetToScale({CSize.X.Offset,CSize.Y.Offset})) 
+        CSizeX = CSizeX + CSize.X.Scale
+        CSizeY = CSizeY + CSize.Y.Scale
+        
+        local Size1,Size2 = table.unpack(utils.OffsetToScale({Size.X.Offset,Size.Y.Offset}))
+        Size1 = Size1 + Size.X.Scale
+        Size2 = Size2 + Size.Y.Scale
+        
+        local Size = {Size1,Size2}
+
+        local Pos1,Pos2 = table.unpack(utils.OffsetToScale({B.Position.X.Offset,B.Position.Y.Offset}))
+        local X =  (Target and utils.OffsetToScale({Target.X.Offset,0})[1])  or utils.OffsetToScale({C.Position.X.Offset,0})[1]
+        local Y =  (Target and utils.OffsetToScale({0,Target.Y.Offset})[2])  or utils.OffsetToScale({0,C.Position.Y.Offset})[2]
+        
+        if SideGot == 'Up' then
+            local Pos = UDim2.new(X,0,Pos2+B.Position.Y.Scale,0)
+            Size[2] = Size[2] + CSizeY-Size2
+            return Pos+ UDim2.new(0,0,-Size[2],0)
+        elseif SideGot == 'Down' then
+            local Pos = UDim2.new(X,0,Pos2+B.Position.Y.Scale,0)
+            return Pos+ UDim2.new(0,0,Size[2],0)
+        elseif SideGot == 'Left' then
+            local Pos = UDim2.new(Pos1+B.Position.X.Scale,0,Y,0)
+            Size[1] = Size[1] + CSizeX-Size1
+            return Pos+ UDim2.new(-Size[1],0,0,0)
+        elseif SideGot == 'Right' then
+            local Pos = UDim2.new(Pos1+B.Position.X.Scale,0,Y,0)
+            return Pos+ UDim2.new(Size[1],0,0,0)
+        end
+    end
+
+    return utils
+    
+end
+
+local function getDragIt()
+    local RS = game:GetService("RunService")
+    local IsClient = RS:IsClient()
+
+    if IsClient then
+        local UIS = game:GetService("UserInputService")
+        local TWS = game:GetService("TweenService")
+        local Utils = initUtils()
+
+        local Player = game.Players.LocalPlayer
+        local Mouse = Player:GetMouse()
+        local drag = {}
+        local Events = {}
+        local Holding = false
+        local Hovering = false
+        local camera = workspace.Camera.ViewportSize
+        local centre = Vector2.new(camera.X / 2, camera.Y / 2)
+        local Tween
+        local RenderConnection
+
+        local GuiObject = {}
+        GuiObject.__index = GuiObject
+        local Objects = {}
+        local Settings = {
+            HoverIcon = nil,
+            DraggingIcon = nil,
+            PriorityIcon = nil, -- This Defines the Icon to which more priority should be given , "Hover" for HoverIcon "Dragging" for DraggingIcon
+            Priority = "Snapping" -- This Defines whether "Clipping" or "Snapping" should be more prioritized.
+        }
+
+        function GuiObject:SetData(Data)
+            for i, v in pairs(Data) do
+                self[i] = v
+            end
+        end
+
+        function GuiObject:Destroy()
+            local Index = table.find(Objects, self)
+            if Index then
+                if Events[self] then
+                    for _, v in ipairs(Events[self]) do
+                        if v then
+                            v:Destroy()
+                        end
+                    end
+                    Events[self] = nil
+                end
+                if self._InputCheck then
+                    self._InputCheck:Disconnect()
+                    self._InputCheck = nil
+                end
+
+                table.remove(Objects, Index)
+                if #Objects == 0 and RenderConnection then
+                    RenderConnection:Disconnect()
+                    RenderConnection = nil
+                end
+            end
+        end
+
+        function GuiObject:GetDistanceFromUI(UI)
+            local aPos = UI.AbsolutePosition - centre
+            local bPos = self.Object.AbsolutePosition - centre
+            local bPos = aPos - bPos
+
+            local Dot = math.deg(math.atan2(bPos.X, bPos.Y))
+
+            local Side = Utils.Side(Dot)
+            if Side == "Up" then
+            elseif Side == "Down" then
+            elseif Side == "Left" then
+            elseif Side == "Right" then
+            end
+        end
+
+        coroutine.wrap(
+            function()
+                while Settings.HoverIcon do
+                    RS.RenderStepped:Wait()
+                    if Settings.PriorityIcon == "Hover" or not Holding then
+                        local CanSet = true
+                        for _, v in ipairs(Objects) do
+                            if v.CanDrag then
+                                CanSet = false
+                                break
+                            end
+                        end
+
+                        if CanSet then
+                            local MousePos = Vector2.new(Mouse.X, Mouse.Y)
+                            local Guis = Player.PlayerGui:GetGuiObjectsAtPosition(MousePos.X, MousePos.Y)
+                            if #Guis >= 1 then
+                                Hovering = true
+                                if Settings.HoverIcon then
+                                    Mouse.Icon = Settings.HoverIcon
+                                end
+                            else
+                                Hovering = false
+                                Mouse.Icon = ""
+                            end
+                        end
+                    end
+                end
+            end
+        )()
+
+        drag.Drag = function(Gui, setTo, Boundary, Clippings, AutoClip, ResponseTime, Snappings)
+            local self = {}
+            self.Boundary = Boundary
+            self.Object = Gui
+            self.Clippings = Clippings
+            self.CanDrag = false
+            self.OldPosition = nil
+            self.Clipped = nil
+            self.AutoClip = AutoClip
+            self.ResponseTime = (ResponseTime and math.abs(ResponseTime))
+            self.Snappings = Snappings
+            self.Snapped = nil
+
+            self._InputCheck =
+                setTo.InputBegan:Connect(
+                function(Input)
+                    if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        local CanSet = false
+                        for _, v in ipairs(Objects) do
+                            if v.CanDrag then
+                                CanSet = true
+                                break
+                            end
+                        end
+
+                        local Event = Events[self]
+
+                        if not CanSet then
+                            self.CanDrag = true
+                            Event[1]:Fire()
+
+                            local Connection
+                            Connection =
+                                Input.Changed:Connect(
+                                function()
+                                    if Input.UserInputState == Enum.UserInputState.End then
+                                        self.CanDrag = false
+                                        Event[2]:Fire()
+                                        Connection:Disconnect()
+                                    end
+                                end
+                            )
+                        end
+                    end
+                end
+            )
+
+            local DragStart = Instance.new("BindableEvent")
+            local DragEnd = Instance.new("BindableEvent")
+
+            self.DragStart = DragStart.Event
+            self.DragEnd = DragEnd.Event
+
+            Events[self] = {DragStart, DragEnd}
+
+            setmetatable(self, GuiObject)
+
+            table.insert(Objects, self)
+
+            return self
+        end
+
+        drag.InputBegan =
+            UIS.InputBegan:Connect(
+            function(Input, gp)
+                if gp then
+                    return
+                end
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    for _, v in ipairs(Objects) do
+                        if v.CanDrag then
+                            v.OldPosition = Vector2.new(Mouse.X, Mouse.Y)
+                        end
+                    end
+                    RenderConnection =
+                        RS.RenderStepped:Connect(
+                        function(DT)
+                            local MousePos = Vector2.new(Mouse.X, Mouse.Y)
+                            local Possible = 0
+                            for _, v in ipairs(Objects) do
+                                if v.CanDrag then
+                                    Possible = Possible + 1
+                                    local Position = v.Object.Position
+                                    local Change = MousePos - v.OldPosition
+
+                                    local ScaleX, ScaleY = Utils.ScaleToOffset({Position.X.Scale, Position.Y.Scale})
+                                    local NewPos =
+                                        UDim2.new(
+                                        0,
+                                        Position.X.Offset + Change.X + ScaleX,
+                                        0,
+                                        Position.Y.Offset + Change.Y + ScaleY
+                                    )
+
+                                    if v.Boundary then
+                                        local X, Y = Utils.CheckBoundary(v.Boundary, v.Object, Change)
+                                        NewPos = UDim2.new(0, X, 0, Y)
+                                    end
+                                    local Alpha
+                                    if v.ResponseTime then
+                                        Alpha = DT * 7 * v.ResponseTime
+                                    else
+                                        Alpha = 1
+                                    end
+                                    v._Target = NewPos
+                                    v.Object.Position = v.Object.Position:Lerp(NewPos, Alpha)
+                                    v.OldPosition = v.OldPosition:Lerp(MousePos, Alpha)
+
+                                    local Guis = Player.PlayerGui:GetGuiObjectsAtPosition(MousePos.X, MousePos.Y)
+                                    local Sorted = Utils.SortTable(v.Clippings, Guis, v.Object)
+                                    if Sorted then
+                                        v.Clipped = Sorted
+                                    else
+                                        if not v.AutoClip then
+                                            v.Clipped = nil
+                                        end
+                                    end
+                                    if v.Snappings then
+                                        local Closest
+                                        local ChosenSnap
+                                        for _, snap in ipairs(v.Snappings) do
+                                            if not Closest then
+                                                Closest =
+                                                    (v.Object.AbsolutePosition - snap.AbsolutePosition).Magnitude
+                                                ChosenSnap = snap
+                                            else
+                                                local CurrentMag =
+                                                    (v.Object.AbsolutePosition - snap.AbsolutePosition).Magnitude
+                                                if CurrentMag < Closest then
+                                                    Closest = CurrentMag
+                                                    ChosenSnap = snap
+                                                end
+                                            end
+                                        end
+                                        if Closest then
+                                            local X, Y =
+                                                Utils.ScaleToOffset(
+                                                {ChosenSnap.Size.X.Scale, ChosenSnap.Size.Y.Scale}
+                                            )
+                                            X = X + ChosenSnap.Size.X.Offset
+                                            Y = Y + ChosenSnap.Size.X.Offset
+
+                                            local Right =
+                                                (v.Object.AbsolutePosition -
+                                                (ChosenSnap.AbsolutePosition + Vector2.new(X))).Magnitude *
+                                                0.0264583333
+                                            local Left =
+                                                (v.Object.AbsolutePosition -
+                                                (ChosenSnap.AbsolutePosition - Vector2.new(X))).Magnitude *
+                                                0.0264583333
+                                            local Top =
+                                                (v.Object.AbsolutePosition -
+                                                (ChosenSnap.AbsolutePosition + Vector2.new(0, Y))).Magnitude *
+                                                0.0264583333
+                                            local Bottom =
+                                                (v.Object.AbsolutePosition -
+                                                (ChosenSnap.AbsolutePosition - Vector2.new(0, Y))).Magnitude *
+                                                0.0264583333
+
+                                            if
+                                                (Closest * 0.0264583333) <= 3.5 or Top <= 2.5 or Right <= 2.5 or
+                                                    Left <= 2.5 and Bottom <= 2.5
+                                                then -- Converting the Pixels to CM for easy comparing
+                                                v.Snap = ChosenSnap
+                                            else
+                                                v.Snap = nil
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                            if
+                                Possible ~= 0 and (Settings.PriorityIcon == "Dragging" or not Hovering) and
+                                    Settings.DraggingIcon
+                                then
+                                Mouse.Icon = Settings.DraggingIcon
+                            end
+                        end
+                    )
+                end
+            end
+        )
+
+        drag.InputEnd =
+            UIS.InputEnded:Connect(
+            function(Input)
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    if RenderConnection then
+                        RenderConnection:Disconnect()
+                        RenderConnection = nil
+                        Mouse.Icon = ""
+                        for _, v in ipairs(Objects) do
+                            coroutine.wrap(
+                                function()
+                                    if v.Clipped and (not v.Snap or Settings.Priority == "Clipping") then
+                                        if v.ResponseTime then
+                                            if v.ResponseTime > 0 then
+                                                for i = 1, 10 do
+                                                    RS.RenderStepped:Wait()
+                                                    v.Object.Position =
+                                                        v.Object.Position:Lerp(v.Clipped.Position, i / 10)
+                                                end
+                                            end
+                                        else
+                                            v.Object.Position = v.Clipped.Position
+                                        end
+                                        v.Object.Rotation = v.Clipped.Rotation
+                                    end
+                                    if v.Snap and (not v.Clipped or Settings.Priority == "Snapping") then
+                                        local Target = Utils.Snap(v.Snap, v.Object, v._Target)
+                                        if v.ResponseTime then
+                                            for i = 1, 10 do
+                                                RS.RenderStepped:Wait()
+
+                                                v.Object.Position = v.Object.Position:Lerp(Target, i / 10)
+                                            end
+                                        else
+                                            v.Object.Position = Target
+                                        end
+                                        v.Snap = nil
+                                    end
+                                end
+                            )()
+                            if v.CanDrag then
+                                v.OldPosition = nil
+                            end
+                        end
+                    end
+                end
+            end
+        )
+
+        return drag
+    end
+end
+
+local Draggable = getDragIt()
+
+local function getEffect()
+
+    local module = {}
+
+    local TweenService = game:GetService("TweenService")
+    local TI = TweenInfo.new(.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+
+    module.ButtonHoverEffect = function(ui, req)
+        local HoverEvent = Instance.new("BindableEvent")
+        local conns = {}
+
+        --// effect here
+        local function Start()
+            TweenService:Create(
+                ui.HoverFrame,
+                TI,
+                {
+                    BackgroundTransparency = .5
+                }
+            ):Play()
+        end
+
+        local function End()
+            TweenService:Create(
+                ui.HoverFrame,
+                TI,
+                {
+                    BackgroundTransparency = 1
+                }
+            ):Play()
+        end
+
+        local hovering = false
+
+        table.insert(
+            conns,
+            ui.InputBegan:Connect(
+                function(input, gp)
+                    if gp == true or input.UserInputType ~= Enum.UserInputType.MouseMovement then
+                        return
+                    end
+
+                    if req then
+                        if req() == false then
+                            return
+                        end
+                    end
+
+                    hovering = true
+
+                    Start()
+                    HoverEvent:Fire()
+                end
+            )
+        )
+
+        table.insert(
+            conns,
+            ui.InputEnded:Connect(
+                function(input, gp)
+                    if gp == true or input.UserInputType ~= Enum.UserInputType.MouseMovement then
+                        return
+                    end
+
+                    if req then
+                        if req() == false then
+                            return
+                        end
+                    end
+
+                    hovering = false
+
+                    End()
+                end
+            )
+        )
+
+        return {
+            Event = HoverEvent.Event,
+            Disconnect = function()
+                for i, v in pairs(conns) do
+                    conns:Disconnect()
+                end
+
+                End()
+            end
+        }
+    end
+
+    module.ButtonClickEffect = function(ui, req)
+        local ClickEvent = Instance.new("BindableEvent")
+        local conns = {}
+
+        --// effect here
+        local function Start()
+            TweenService:Create(
+                ui,
+                TI,
+                {
+                    BackgroundTransparency = .5
+                }
+            ):Play()
+        end
+
+        local function End()
+            TweenService:Create(
+                ui,
+                TI,
+                {
+                    BackgroundTransparency = 1
+                }
+            ):Play()
+        end
+
+        table.insert(
+            conns,
+            ui.InputBegan:Connect(
+                function(input, gp)
+                    if gp == true or input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                        return
+                    end
+
+                    if req then
+                        if req() == false then
+                            return
+                        end
+                    end
+
+                    Start()
+                end
+            )
+        )
+
+        table.insert(
+            conns,
+            ui.InputEnded:Connect(
+                function(input, gp)
+                    if gp == true or input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                        return
+                    end
+
+                    End()
+
+                    if req then
+                        if req() == false then
+                            return
+                        end
+                    end
+
+                    ClickEvent:Fire()
+                end
+            )
+        )
+
+        return {
+            Event = ClickEvent.Event,
+            Disconnect = function()
+                for i, v in pairs(conns) do
+                    conns:Disconnect()
+                end
+
+                End()
+            end
+        }
+    end
+
+    return module
+end
+
+local EffectLib = getEffect()
+local CircleClick = function(Button)
+    local circle = Instance.new("Frame");
+    Instance.new("UICorner", circle);
+    
+    circle.UICorner.CornerRadius = UDim.new(1, 0);
+    circle.AnchorPoint = Vector2.new(0.5, 0.5);
+    circle.BackgroundColor3 = Color3.fromRGB(0,0,0);
+    circle.Position = UDim2.new(0, game.Players.LocalPlayer:GetMouse().X - Button.AbsolutePosition.X, 0, game.Players.LocalPlayer:GetMouse().Y - Button.AbsolutePosition.Y);
+    circle.Size = UDim2.new(0, 1, 0, 1);
+    circle.Transparency = .8;
+    circle.ZIndex = 999
+    
+    circle.Parent = Button;
+    
+    local finalGoal = {};
+    finalGoal.Size = UDim2.new(0, (Button.AbsoluteSize.X), 0, (Button.AbsoluteSize.X));
+    finalGoal.Transparency = 1;
+    
+    game.Debris:AddItem(circle,.4)
+    
+    local tween = game:GetService("TweenService"):Create(circle, TweenInfo.new(.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), finalGoal);
+    tween:Play();
+end
+
+--// Util
+local function getLayoutOrder(UI)
+    local layoutTable = {0}
+
+    for i, v in pairs(UI:GetChildren()) do
+        if v:IsA("GuiObject") then
+            table.insert(layoutTable, v.LayoutOrder)
+        end
+    end
+
+    return math.max(unpack(layoutTable)) + 1
+end
+
+--// Services
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local TweenService = game:GetService("TweenService")
+local TI = TweenInfo.new(.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+
+-->> setup UILib table
+local UILibNames = {
+    "Window",
+    "Category",
+    "Button",
+    "Section"
+}
+
+for i, v in pairs(UILibNames) do
+    UILibrary[v] = {}
+    UILibrary[v].__index = UILibrary[v]
+end
+
+function UILibrary.new(gameName, userId, rank)
+    local GUI = Instance.new("ScreenGui")
+    GUI.Name = HttpService:GenerateGUID(false)
+    GUI.Parent =
+        RunService:IsStudio() == false and game:GetService("CoreGui") or LocalPlayer:WaitForChild("PlayerGui")
+    GUI.ResetOnSpawn = false
+    GUI.ZIndexBehavior = Enum.ZIndexBehavior.Global
+
+    local window = objectGenerator.new("Window")
+    window.Parent = GUI
+
+    --// make UI draggable
+    -->> LogoHitbox
+
+    local Frame = Instance.new("Frame")
+    Frame.BackgroundTransparency = 1
+    Frame.Size = UDim2.fromScale(2, 2)
+
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.Position = UDim2.fromScale(.5, .5)
+
+    local AspectRatio = Instance.new("UIAspectRatioConstraint", Frame)
+    AspectRatio.AspectRatio = 1.2
+
+    Frame.Parent = window.MainUI.Sidebar.ContentHolder.Cheats.Logo
+    Frame.ZIndex = 300
+
+    local Drag = Draggable.Drag(window.MainUI, Frame)
+
+    --// Customize the GUI
+    window.Watermark.Text = ("hydrahub v2 | %s | %s"):format(userId, gameName)
+    local userinfo = window.MainUI.Sidebar.ContentHolder.UserInfo.Content
+    userinfo.Rank.Text = rank
+    userinfo.Title.Text = game.Players.LocalPlayer.Name
+    window.MainUI.Sidebar.ContentHolder.UserInfo.UserIcon.Image = "rbxthumb://type=AvatarHeadShot&id="..game.Players.LocalPlayer.UserId.."&w=150&h=150"
+    
+    --// Minimize Button
+    local MinimizeBtn = Instance.new("TextButton")
+    MinimizeBtn.Name = "MinimizeBtn"
+    MinimizeBtn.Parent = GUI
+    MinimizeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    MinimizeBtn.Position = UDim2.new(0, 20, 0, 20)
+    MinimizeBtn.Size = UDim2.new(0, 40, 0, 40)
+    MinimizeBtn.ZIndex = 999
+    MinimizeBtn.Font = Enum.Font.GothamBold
+    MinimizeBtn.Text = "-"
+    MinimizeBtn.TextColor3 = Color3.fromRGB(255, 0, 0)
+    MinimizeBtn.TextSize = 24.000
+    
+    local MinimizeCorner = Instance.new("UICorner")
+    MinimizeCorner.CornerRadius = UDim.new(0.2, 0)
+    MinimizeCorner.Parent = MinimizeBtn
+    
+    local isMinimized = false
+    MinimizeBtn.MouseButton1Click:Connect(function()
+        isMinimized = not isMinimized
+        window.MainUI.Visible = not isMinimized
+        MinimizeBtn.Text = isMinimized and "+" or "-"
     end)
-return v end end,[18]=function()local c,d,e,f,g=b(18)local h=d.Parent local i,j,k=e(h.Themes),e(h.Packages.Flipper),{Registry={},Signals={},TransparencyMotors={},DefaultProperties={ScreenGui={ResetOnSpawn=false,ZIndexBehavior=Enum.ZIndexBehavior.Sibling},Frame={BackgroundColor3=Color3.new(1,1,1),BorderColor3=Color3.new(0,0,0),BorderSizePixel=0},ScrollingFrame={BackgroundColor3=Color3.new(1,1,1),BorderColor3=Color3.new(0,0,0),ScrollBarImageColor3=Color3.new(0,0,0)},TextLabel={BackgroundColor3=Color3.new(1,1,1),BorderColor3=Color3.new(0,0,0),Font=Enum.Font.SourceSans,Text='',TextColor3=Color3.new(0,0,0),BackgroundTransparency=1,TextSize=14},TextButton={BackgroundColor3=Color3.new(1,1,1),BorderColor3=Color3.new(0,0,0),AutoButtonColor=false,Font=Enum.Font.SourceSans,Text='',TextColor3=Color3.new(0,0,0),TextSize=14},TextBox={BackgroundColor3=Color3.new(1,1,1),BorderColor3=Color3.new(0,0,0),ClearTextOnFocus=false,Font=Enum.Font.SourceSans,Text='',TextColor3=Color3.new(0,0,0),TextSize=14},ImageLabel={BackgroundTransparency=1,BackgroundColor3=Color3.new(1,1,1),BorderColor3=Color3.new(0,0,0),BorderSizePixel=0},ImageButton={BackgroundColor3=Color3.new(1,1,1),BorderColor3=Color3.new(0,0,0),AutoButtonColor=false},CanvasGroup={BackgroundColor3=Color3.new(1,1,1),BorderColor3=Color3.new(0,0,0),BorderSizePixel=0}}}local l=function(l,m)if m.ThemeTag then k.AddThemeObject(l,m.ThemeTag)end end function k.AddSignal(m,n)table.insert(k.Signals,m:Connect(n))end function k.Disconnect()for m=#k.Signals,1,-1 do local n=table.remove(k.Signals,m)n:Disconnect()end end function k.GetThemeProperty(m)if i[e(h).Theme][m]then return i[e(h).Theme][m]end return i.Dark[m]end function k.UpdateTheme()for m,n in next,k.Registry do for o,p in next,n.Properties do m[o]=k.GetThemeProperty(p)end end for o,p in next,k.TransparencyMotors do p:setGoal(j.Instant.new(k.GetThemeProperty'ElementTransparency'))end end function k.AddThemeObject(m,n)local o=#k.Registry+1 local p={Object=m,Properties=n,Idx=o}k.Registry[m]=p k.UpdateTheme()return m end function k.OverrideTag(m,n)k.Registry[m].Properties=n k.UpdateTheme()end function k.New(m,n,o)local p=Instance.new(m)for q,r in next,k.DefaultProperties[m]or{}do p[q]=r end for s,t in next,n or{}do if s~='ThemeTag'then p[s]=t end end for u,v in next,o or{}do v.Parent=p end l(p,n)return p end function k.SpringMotor(m,n,o,p,s)p=p or false s=s or false local t=j.SingleMotor.new(m)t:onStep(function(u)n[o]=u end)if s then table.insert(k.TransparencyMotors,t)end local u=function(u,v)v=v or false if not p then if not v then if o=='BackgroundTransparency'and e(h).DialogOpen then return end end end t:setGoal(j.Spring.new(u,{frequency=8}))end return t,u end return k end,[19]=function()local c,d,e,f,g=b(19)local h={}for i,j in next,d:GetChildren()do table.insert(h,e(j))end return h end,[20]=function()local c,d,e,f,g=b(20)local h=d.Parent.Parent local i=e(h.Creator)local j,k,l=i.New,h.Components,{}l.__index=l l.__type='Button'function l.New(m,n)assert(n.Title,'Button - Missing Title')n.Callback=n.Callback or function()end local o=e(k.Element)(n.Title,n.Description,m.Container,true)local p=j('ImageLabel',{Image='rbxassetid://10709791437',Size=UDim2.fromOffset(16,16),AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-10,0.5,0),BackgroundTransparency=1,Parent=o.Frame,ThemeTag={ImageColor3='Text'}})i.AddSignal(o.Frame.MouseButton1Click,function()m.Library:SafeCallback(n.Callback)end)return o end return l end,[21]=function()local c,d,e,f,g=b(21)local h,i,j,k=game:GetService'UserInputService',game:GetService'TouchInputService',game:GetService'RunService',game:GetService'Players'local l,m=j.RenderStepped,k.LocalPlayer local n,o=m:GetMouse(),d.Parent.Parent local p=e(o.Creator)local s,t,u=p.New,o.Components,{}u.__index=u u.__type='Colorpicker'function u.New(v,w,x)local y=v.Library assert(x.Title,'Colorpicker - Missing Title')assert(x.Default,'AddColorPicker: Missing default value.')local z={Value=x.Default,Transparency=x.Transparency or 0,Type='Colorpicker',Title=type(x.Title)=='string'and x.Title or'Colorpicker',Callback=x.Callback or function(z)end}function z.SetHSVFromRGB(A,B)local C,D,E=Color3.toHSV(B)z.Hue=C z.Sat=D z.Vib=E end z:SetHSVFromRGB(z.Value)local A=e(t.Element)(x.Title,x.Description,v.Container,true)z.SetTitle=A.SetTitle z.SetDesc=A.SetDesc local B=s('Frame',{Size=UDim2.fromScale(1,1),BackgroundColor3=z.Value,Parent=A.Frame},{s('UICorner',{CornerRadius=UDim.new(0,4)})})local aa,ab=s('ImageLabel',{Size=UDim2.fromOffset(26,26),Position=UDim2.new(1,-10,0.5,0),AnchorPoint=Vector2.new(1,0.5),Parent=A.Frame,Image='http://www.roblox.com/asset/?id=14204231522',ImageTransparency=0.45,ScaleType=Enum.ScaleType.Tile,TileSize=UDim2.fromOffset(40,40)},{s('UICorner',{CornerRadius=UDim.new(0,4)}),B}),function()local C=e(t.Dialog):Create()C.Title.Text=z.Title C.Root.Size=UDim2.fromOffset(430,330)local D,E,F,G,H,I=z.Hue,z.Sat,z.Vib,z.Transparency,function()local D=e(t.Textbox)()D.Frame.Parent=C.Root D.Frame.Size=UDim2.new(0,90,0,32)return D end,function(D,E)return s('TextLabel',{FontFace=Font.new('rbxasset://fonts/families/GothamSSm.json',Enum.FontWeight.Medium,Enum.FontStyle.Normal),Text=D,TextColor3=Color3.fromRGB(255,255,255),TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,Size=UDim2.new(1,0,0,32),Position=E,BackgroundTransparency=1,Parent=C.Root,ThemeTag={TextColor3='Text'}})end local J,K=function()local J=Color3.fromHSV(D,E,F)return{R=math.floor(J.r*255),G=math.floor(J.g*255),B=math.floor(J.b*255)}end,s('ImageLabel',{Size=UDim2.new(0,18,0,18),ScaleType=Enum.ScaleType.Fit,AnchorPoint=Vector2.new(0.5,0.5),BackgroundTransparency=1,Image='http://www.roblox.com/asset/?id=4805639000'})local L,M=s('ImageLabel',{Size=UDim2.fromOffset(180,160),Position=UDim2.fromOffset(20,55),Image='rbxassetid://4155801252',BackgroundColor3=z.Value,BackgroundTransparency=0,Parent=C.Root},{s('UICorner',{CornerRadius=UDim.new(0,4)}),K}),s('Frame',{BackgroundColor3=z.Value,Size=UDim2.fromScale(1,1),BackgroundTransparency=z.Transparency},{s('UICorner',{CornerRadius=UDim.new(0,4)})})local N,O=s('ImageLabel',{Image='http://www.roblox.com/asset/?id=14204231522',ImageTransparency=0.45,ScaleType=Enum.ScaleType.Tile,TileSize=UDim2.fromOffset(40,40),BackgroundTransparency=1,Position=UDim2.fromOffset(112,220),Size=UDim2.fromOffset(88,24),Parent=C.Root},{s('UICorner',{CornerRadius=UDim.new(0,4)}),s('UIStroke',{Thickness=2,Transparency=0.75}),M}),s('Frame',{BackgroundColor3=z.Value,Size=UDim2.fromScale(1,1),BackgroundTransparency=0},{s('UICorner',{CornerRadius=UDim.new(0,4)})})local P,Q=s('ImageLabel',{Image='http://www.roblox.com/asset/?id=14204231522',ImageTransparency=0.45,ScaleType=Enum.ScaleType.Tile,TileSize=UDim2.fromOffset(40,40),BackgroundTransparency=1,Position=UDim2.fromOffset(20,220),Size=UDim2.fromOffset(88,24),Parent=C.Root},{s('UICorner',{CornerRadius=UDim.new(0,4)}),s('UIStroke',{Thickness=2,Transparency=0.75}),O}),{}for R=0,1,0.1 do table.insert(Q,ColorSequenceKeypoint.new(R,Color3.fromHSV(R,1,1)))end local R,S=s('UIGradient',{Color=ColorSequence.new(Q),Rotation=90}),s('Frame',{Size=UDim2.new(1,0,1,-10),Position=UDim2.fromOffset(0,5),BackgroundTransparency=1})local T,U,V=s('ImageLabel',{Size=UDim2.fromOffset(14,14),Image='http://www.roblox.com/asset/?id=12266946128',Parent=S,ThemeTag={ImageColor3='DialogInput'}}),s('Frame',{Size=UDim2.fromOffset(12,190),Position=UDim2.fromOffset(210,55),Parent=C.Root},{s('UICorner',{CornerRadius=UDim.new(1,0)}),R,S}),H()V.Frame.Position=UDim2.fromOffset(x.Transparency and 260 or 240,55)I('Hex',UDim2.fromOffset(x.Transparency and 360 or 340,55))local W=H()W.Frame.Position=UDim2.fromOffset(x.Transparency and 260 or 240,95)I('Red',UDim2.fromOffset(x.Transparency and 360 or 340,95))local X=H()X.Frame.Position=UDim2.fromOffset(x.Transparency and 260 or 240,135)I('Green',UDim2.fromOffset(x.Transparency and 360 or 340,135))local Y=H()Y.Frame.Position=UDim2.fromOffset(x.Transparency and 260 or 240,175)I('Blue',UDim2.fromOffset(x.Transparency and 360 or 340,175))local Z if x.Transparency then Z=H()Z.Frame.Position=UDim2.fromOffset(260,215)I('Alpha',UDim2.fromOffset(360,215))end local _,aa,ab if x.Transparency then local ac=s('Frame',{Size=UDim2.new(1,0,1,-10),Position=UDim2.fromOffset(0,5),BackgroundTransparency=1})aa=s('ImageLabel',{Size=UDim2.fromOffset(14,14),Image='http://www.roblox.com/asset/?id=12266946128',Parent=ac,ThemeTag={ImageColor3='DialogInput'}})ab=s('Frame',{Size=UDim2.fromScale(1,1)},{s('UIGradient',{Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(1,1)},Rotation=270}),s('UICorner',{CornerRadius=UDim.new(1,0)})})_=s('Frame',{Size=UDim2.fromOffset(12,190),Position=UDim2.fromOffset(230,55),Parent=C.Root,BackgroundTransparency=1},{s('UICorner',{CornerRadius=UDim.new(1,0)}),s('ImageLabel',{Image='http://www.roblox.com/asset/?id=14204231522',ImageTransparency=0.45,ScaleType=Enum.ScaleType.Tile,TileSize=UDim2.fromOffset(40,40),BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Parent=C.Root},{s('UICorner',{CornerRadius=UDim.new(1,0)})}),ab,ac})end local ac=function()L.BackgroundColor3=Color3.fromHSV(D,1,1)T.Position=UDim2.new(0,-1,D,-6)K.Position=UDim2.new(E,0,1-F,0)O.BackgroundColor3=Color3.fromHSV(D,E,F)V.Input.Text='#'..Color3.fromHSV(D,E,F):ToHex()W.Input.Text=J().R X.Input.Text=J().G Y.Input.Text=J().B if x.Transparency then ab.BackgroundColor3=Color3.fromHSV(D,E,F)O.BackgroundTransparency=G aa.Position=UDim2.new(0,-1,1-G,-6)Z.Input.Text=e(o):Round((1-G)*100,0)..'%'end end p.AddSignal(V.Input.FocusLost,function(ad)if ad then local ae,af=pcall(Color3.fromHex,V.Input.Text)if ae and typeof(af)=='Color3'then D,E,F=Color3.toHSV(af)end end ac()end)p.AddSignal(W.Input.FocusLost,function(ad)if ad then local ae=J()local af,ag=pcall(Color3.fromRGB,W.Input.Text,ae.G,ae.B)if af and typeof(ag)=='Color3'then if tonumber(W.Input.Text)<=255 then D,E,F=Color3.toHSV(ag)end end end ac()end)p.AddSignal(X.Input.FocusLost,function(ad)if ad then local ae=J()local af,ag=pcall(Color3.fromRGB,ae.R,X.Input.Text,ae.B)if af and typeof(ag)=='Color3'then if tonumber(X.Input.Text)<=255 then D,E,F=Color3.toHSV(ag)end end end ac()end)p.AddSignal(Y.Input.FocusLost,function(ad)if ad then local ae=J()local af,ag=pcall(Color3.fromRGB,ae.R,ae.G,Y.Input.Text)if af and typeof(ag)=='Color3'then if tonumber(Y.Input.Text)<=255 then D,E,F=Color3.toHSV(ag)end end end ac()end)if x.Transparency then p.AddSignal(Z.Input.FocusLost,function(ad)if ad then pcall(function()local ae=tonumber(Z.Input.Text)if ae>=0 and ae<=100 then G=1-ae*0.01 end end)end ac()end)end p.AddSignal(L.InputBegan,function(ad)if ad.UserInputType==Enum.UserInputType.MouseButton1 or ad.UserInputType==Enum.UserInputType.Touch then while h:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)do local ae=L.AbsolutePosition.X local af=ae+L.AbsoluteSize.X local ag,ah=math.clamp(n.X,ae,af),L.AbsolutePosition.Y local ai=ah+L.AbsoluteSize.Y local aj=math.clamp(n.Y,ah,ai)E=(ag-ae)/(af-ae)F=1-((aj-ah)/(ai-ah))ac()l:Wait()end end end)p.AddSignal(U.InputBegan,function(ad)if ad.UserInputType==Enum.UserInputType.MouseButton1 or ad.UserInputType==Enum.UserInputType.Touch then while h:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)do local ae=U.AbsolutePosition.Y local af=ae+U.AbsoluteSize.Y local ag=math.clamp(n.Y,ae,af)D=((ag-ae)/(af-ae))ac()l:Wait()end end end)if x.Transparency then p.AddSignal(_.InputBegan,function(ad)if ad.UserInputType==Enum.UserInputType.MouseButton1 then while h:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)do local ae=_.AbsolutePosition.Y local af=ae+_.AbsoluteSize.Y local ag=math.clamp(n.Y,ae,af)G=1-((ag-ae)/(af-ae))ac()l:Wait()end end end)end ac()C:Button('Done',function()z:SetValue({D,E,F},G)end)C:Button'Cancel'C:Open()end function z.Display(ac)z.Value=Color3.fromHSV(z.Hue,z.Sat,z.Vib)B.BackgroundColor3=z.Value B.BackgroundTransparency=z.Transparency u.Library:SafeCallback(z.Callback,z.Value)u.Library:SafeCallback(z.Changed,z.Value)end function z.SetValue(ac,ad,ae)local af=Color3.fromHSV(ad[1],ad[2],ad[3])z.Transparency=ae or 0 z:SetHSVFromRGB(af)z:Display()end function z.SetValueRGB(ac,ad,ae)z.Transparency=ae or 0 z:SetHSVFromRGB(ad)z:Display()end function z.OnChanged(ac,ad)z.Changed=ad ad(z.Value)end function z.Destroy(ac)A:Destroy()y.Options[w]=nil end p.AddSignal(A.Frame.MouseButton1Click,function()ab()end)z:Display()y.Options[w]=z return z end return u end,[22]=function()local aa,ab,ac,ad,ae=b(22)local af,ag,ah,ai,aj=game:GetService'TweenService',game:GetService'UserInputService',game:GetService'Players'.LocalPlayer:GetMouse(),game:GetService'Workspace'.CurrentCamera,ab.Parent.Parent local c,d=ac(aj.Creator),ac(aj.Packages.Flipper)local e,f,g=c.New,aj.Components,{}g.__index=g g.__type='Dropdown'function g.New(h,i,j)local k,l,m=h.Library,{Values=j.Values,Value=j.Default,Multi=j.Multi,Buttons={},Opened=false,Type='Dropdown',Callback=j.Callback or function()end},ac(f.Element)(j.Title,j.Description,h.Container,false)m.DescLabel.Size=UDim2.new(1,-170,0,14)l.SetTitle=m.SetTitle l.SetDesc=m.SetDesc local n,o=e('TextLabel',{FontFace=Font.new('rbxasset://fonts/families/GothamSSm.json',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Text='Value',TextColor3=Color3.fromRGB(255,255,255),TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,Size=UDim2.new(1,-30,0,14),Position=UDim2.new(0,8,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,TextTruncate=Enum.TextTruncate.AtEnd,ThemeTag={TextColor3='Text'}}),e('ImageLabel',{Image='rbxassetid://10709790948',Size=UDim2.fromOffset(16,16),AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-8,0.5,0),BackgroundTransparency=1,ThemeTag={ImageColor3='SubText'}})local p,s=e('TextButton',{Size=UDim2.fromOffset(160,30),Position=UDim2.new(1,-10,0.5,0),AnchorPoint=Vector2.new(1,0.5),BackgroundTransparency=0.9,Parent=m.Frame,ThemeTag={BackgroundColor3='DropdownFrame'}},{e('UICorner',{CornerRadius=UDim.new(0,5)}),e('UIStroke',{Transparency=0.5,ApplyStrokeMode=Enum.ApplyStrokeMode.Border,ThemeTag={Color='InElementBorder'}}),o,n}),e('UIListLayout',{Padding=UDim.new(0,3)})local t=e('ScrollingFrame',{Size=UDim2.new(1,-5,1,-10),Position=UDim2.fromOffset(5,5),BackgroundTransparency=1,BottomImage='rbxassetid://6889812791',MidImage='rbxassetid://6889812721',TopImage='rbxassetid://6276641225',ScrollBarImageColor3=Color3.fromRGB(255,255,255),ScrollBarImageTransparency=0.95,ScrollBarThickness=4,BorderSizePixel=0,CanvasSize=UDim2.fromScale(0,0)},{s})local u=e('Frame',{Size=UDim2.fromScale(1,0.6),ThemeTag={BackgroundColor3='DropdownHolder'}},{t,e('UICorner',{CornerRadius=UDim.new(0,7)}),e('UIStroke',{ApplyStrokeMode=Enum.ApplyStrokeMode.Border,ThemeTag={Color='DropdownBorder'}}),e('ImageLabel',{BackgroundTransparency=1,Image='http://www.roblox.com/asset/?id=5554236805',ScaleType=Enum.ScaleType.Slice,SliceCenter=Rect.new(23,23,277,277),Size=UDim2.fromScale(1,1)+UDim2.fromOffset(30,30),Position=UDim2.fromOffset(-15,-15),ImageColor3=Color3.fromRGB(0,0,0),ImageTransparency=0.1})})local v=e('Frame',{BackgroundTransparency=1,Size=UDim2.fromOffset(170,300),Parent=h.Library.GUI,Visible=false},{u,e('UISizeConstraint',{MinSize=Vector2.new(170,0)})})table.insert(k.OpenFrames,v)local w,x=function()local w=0 if ai.ViewportSize.Y-p.AbsolutePosition.Y<v.AbsoluteSize.Y-5 then w=v.AbsoluteSize.Y-5-(ai.ViewportSize.Y-p.AbsolutePosition.Y)+40 end v.Position=UDim2.fromOffset(p.AbsolutePosition.X-1,p.AbsolutePosition.Y-5-w)end,0 local y,z=function()if#l.Values>10 then v.Size=UDim2.fromOffset(x,392)else v.Size=UDim2.fromOffset(x,s.AbsoluteContentSize.Y+10)end end,function()t.CanvasSize=UDim2.fromOffset(0,s.AbsoluteContentSize.Y)end w()y()c.AddSignal(p:GetPropertyChangedSignal'AbsolutePosition',w)c.AddSignal(p.MouseButton1Click,function()l:Open()end)c.AddSignal(ag.InputBegan,function(A)if A.UserInputType==Enum.UserInputType.MouseButton1 or A.UserInputType==Enum.UserInputType.Touch then local B,C=u.AbsolutePosition,u.AbsoluteSize if ah.X<B.X or ah.X>B.X+C.X or ah.Y<(B.Y-20-1)or ah.Y>B.Y+C.Y then l:Close()end end end)local A=h.ScrollFrame function l.Open(B)l.Opened=true A.ScrollingEnabled=false v.Visible=true af:Create(u,TweenInfo.new(0.2,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size=UDim2.fromScale(1,1)}):Play()end function l.Close(B)l.Opened=false A.ScrollingEnabled=true u.Size=UDim2.fromScale(1,0.6)v.Visible=false end function l.Display(B)local C,D=l.Values,''if j.Multi then for E,F in next,C do if l.Value[F]then D=D..F..', 'end end D=D:sub(1,#D-2)else D=l.Value or''end n.Text=(D==''and'--'or D)end function l.GetActiveValues(B)if j.Multi then local C={}for D,E in next,l.Value do table.insert(C,D)end return C else return l.Value and 1 or 0 end end function l.BuildDropdownList(B)local C,D=l.Values,{}for E,F in next,t:GetChildren()do if not F:IsA'UIListLayout'then F:Destroy()end end local G=0 for H,I in next,C do local J={}G=G+1 local K,L=e('Frame',{Size=UDim2.fromOffset(4,14),BackgroundColor3=Color3.fromRGB(76,194,255),Position=UDim2.fromOffset(-1,16),AnchorPoint=Vector2.new(0,0.5),ThemeTag={BackgroundColor3='Accent'}},{e('UICorner',{CornerRadius=UDim.new(0,2)})}),e('TextLabel',{FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',Text=I,TextColor3=Color3.fromRGB(255,255,255),TextSize=13,TextXAlignment=Enum.TextXAlignment.Left,BackgroundColor3=Color3.fromRGB(255,255,255),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,Size=UDim2.fromScale(1,1),Position=UDim2.fromOffset(10,0),Name='ButtonLabel',ThemeTag={TextColor3='Text'}})local M,N=(e('TextButton',{Size=UDim2.new(1,-5,0,32),BackgroundTransparency=1,ZIndex=23,Text='',Parent=t,ThemeTag={BackgroundColor3='DropdownOption'}},{K,L,e('UICorner',{CornerRadius=UDim.new(0,6)})}))if j.Multi then N=l.Value[I]else N=l.Value==I end local O,P=c.SpringMotor(1,M,'BackgroundTransparency')local Q,R=c.SpringMotor(1,K,'BackgroundTransparency')local S=d.SingleMotor.new(6)S:onStep(function(T)K.Size=UDim2.new(0,4,0,T)end)c.AddSignal(M.MouseEnter,function()P(N and 0.85 or 0.89)end)c.AddSignal(M.MouseLeave,function()P(N and 0.89 or 1)end)c.AddSignal(M.MouseButton1Down,function()P(0.92)end)c.AddSignal(M.MouseButton1Up,function()P(N and 0.85 or 0.89)end)function J.UpdateButton(T)if j.Multi then N=l.Value[I]if N then P(0.89)end else N=l.Value==I P(N and 0.89 or 1)end S:setGoal(d.Spring.new(N and 14 or 6,{frequency=6}))R(N and 0 or 1)end L.InputBegan:Connect(function(T)if T.UserInputType==Enum.UserInputType.MouseButton1 or T.UserInputType==Enum.UserInputType.Touch then local U=not N if l:GetActiveValues()==1 and not U and not j.AllowNull then else if j.Multi then N=U l.Value[I]=N and true or nil else N=U l.Value=N and I or nil for V,W in next,D do W:UpdateButton()end end J:UpdateButton()l:Display()k:SafeCallback(l.Callback,l.Value)k:SafeCallback(l.Changed,l.Value)end end end)J:UpdateButton()l:Display()D[M]=J end x=0 for J,K in next,D do if J.ButtonLabel then if J.ButtonLabel.TextBounds.X>x then x=J.ButtonLabel.TextBounds.X end end end x=x+30 z()y()end function l.SetValues(B,C)if C then l.Values=C end l:BuildDropdownList()end function l.OnChanged(B,C)l.Changed=C C(l.Value)end function l.SetValue(B,C)if l.Multi then local D={}for E,F in next,C do if table.find(l.Values,E)then D[E]=true end end l.Value=D else if not C then l.Value=nil elseif table.find(l.Values,C)then l.Value=C end end l:BuildDropdownList()k:SafeCallback(l.Callback,l.Value)k:SafeCallback(l.Changed,l.Value)end function l.Destroy(B)m:Destroy()k.Options[i]=nil end l:BuildDropdownList()l:Display()local B={}if type(j.Default)=='string'then local C=table.find(l.Values,j.Default)if C then table.insert(B,C)end elseif type(j.Default)=='table'then for C,D in next,j.Default do local E=table.find(l.Values,D)if E then table.insert(B,E)end end elseif type(j.Default)=='number'and l.Values[j.Default]~=nil then table.insert(B,j.Default)end if next(B)then for C=1,#B do local D=B[C]if j.Multi then l.Value[l.Values[D]]=true else l.Value=l.Values[D]end if not j.Multi then break end end l:BuildDropdownList()l:Display()end k.Options[i]=l return l end return g end,[23]=function()local aa,ab,ac,ad,ae=b(23)local af=ab.Parent.Parent local ag=ac(af.Creator)local ah,ai,aj,c=ag.New,ag.AddSignal,af.Components,{}c.__index=c c.__type='Input'function c.New(d,e,f)local g=d.Library assert(f.Title,'Input - Missing Title')f.Callback=f.Callback or function()end local h,i={Value=f.Default or'',Numeric=f.Numeric or false,Finished=f.Finished or false,Callback=f.Callback or function(h)end,Type='Input'},ac(aj.Element)(f.Title,f.Description,d.Container,false)h.SetTitle=i.SetTitle h.SetDesc=i.SetDesc local j=ac(aj.Textbox)(i.Frame,true)j.Frame.Position=UDim2.new(1,-10,0.5,0)j.Frame.AnchorPoint=Vector2.new(1,0.5)j.Frame.Size=UDim2.fromOffset(160,30)j.Input.Text=f.Default or''j.Input.PlaceholderText=f.Placeholder or''local k=j.Input function h.SetValue(l,m)if f.MaxLength and#m>f.MaxLength then m=m:sub(1,f.MaxLength)end if h.Numeric then if(not tonumber(m))and m:len()>0 then m=h.Value end end h.Value=m k.Text=m g:SafeCallback(h.Callback,h.Value)g:SafeCallback(h.Changed,h.Value)end if h.Finished then ai(k.FocusLost,function(l)if not l then return end h:SetValue(k.Text)end)else ai(k:GetPropertyChangedSignal'Text',function()h:SetValue(k.Text)end)end function h.OnChanged(l,m)h.Changed=m m(h.Value)end function h.Destroy(l)i:Destroy()g.Options[e]=nil end g.Options[e]=h return h end return c end,[24]=function()local aa,ab,ac,ad,ae=b(24)local af,ag=game:GetService'UserInputService',ab.Parent.Parent local ah=ac(ag.Creator)local ai,aj,c=ah.New,ag.Components,{}c.__index=c c.__type='Keybind'function c.New(d,e,f)local g=d.Library assert(f.Title,'KeyBind - Missing Title')assert(f.Default,'KeyBind - Missing default value.')local h,i,j={Value=f.Default,Toggled=false,Mode=f.Mode or'Toggle',Type='Keybind',Callback=f.Callback or function(h)end,ChangedCallback=f.ChangedCallback or function(h)end},false,ac(aj.Element)(f.Title,f.Description,d.Container,true)h.SetTitle=j.SetTitle h.SetDesc=j.SetDesc local k=ai('TextLabel',{FontFace=Font.new('rbxasset://fonts/families/GothamSSm.json',Enum.FontWeight.Regular,Enum.FontStyle.Normal),Text=f.Default,TextColor3=Color3.fromRGB(255,255,255),TextSize=13,TextXAlignment=Enum.TextXAlignment.Center,Size=UDim2.new(0,0,0,14),Position=UDim2.new(0,0,0.5,0),AnchorPoint=Vector2.new(0,0.5),BackgroundColor3=Color3.fromRGB(255,255,255),AutomaticSize=Enum.AutomaticSize.X,BackgroundTransparency=1,ThemeTag={TextColor3='Text'}})local l=ai('TextButton',{Size=UDim2.fromOffset(0,30),Position=UDim2.new(1,-10,0.5,0),AnchorPoint=Vector2.new(1,0.5),BackgroundTransparency=0.9,Parent=j.Frame,AutomaticSize=Enum.AutomaticSize.X,ThemeTag={BackgroundColor3='Keybind'}},{ai('UICorner',{CornerRadius=UDim.new(0,5)}),ai('UIPadding',{PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8)}),ai('UIStroke',{Transparency=0.5,ApplyStrokeMode=Enum.ApplyStrokeMode.Border,ThemeTag={Color='InElementBorder'}}),k})function h.GetState(m)if af:GetFocusedTextBox()and h.Mode~='Always'then return false end if h.Mode=='Always'then return true elseif h.Mode=='Hold'then if h.Value=='None'then return false end local n=h.Value if n=='MouseLeft'or n=='MouseRight'then return n=='MouseLeft'and af:IsMouseButtonPressed(Enum.UserInputType.MouseButton1)or n=='MouseRight'and af:IsMouseButtonPressed(Enum.UserInputType.MouseButton2)else return af:IsKeyDown(Enum.KeyCode[h.Value])end else return h.Toggled end end function h.SetValue(m,n,o)n=n or h.Key o=o or h.Mode k.Text=n h.Value=n h.Mode=o end function h.OnClick(m,n)h.Clicked=n end function h.OnChanged(m,n)h.Changed=n n(h.Value)end function h.DoClick(m)g:SafeCallback(h.Callback,h.Toggled)g:SafeCallback(h.Clicked,h.Toggled)end function h.Destroy(m)j:Destroy()g.Options[e]=nil end ah.AddSignal(l.InputBegan,function(m)if m.UserInputType==Enum.UserInputType.MouseButton1 or m.UserInputType==Enum.UserInputType.Touch then i=true k.Text='...'wait(0.2)local n n=af.InputBegan:Connect(function(o)local p if o.UserInputType==Enum.UserInputType.Keyboard then p=o.KeyCode.Name elseif o.UserInputType==Enum.UserInputType.MouseButton1 then p='MouseLeft'elseif o.UserInputType==Enum.UserInputType.MouseButton2 then p='MouseRight'end local s s=af.InputEnded:Connect(function(t)if t.KeyCode.Name==p or p=='MouseLeft'and t.UserInputType==Enum.UserInputType.MouseButton1 or p=='MouseRight'and t.UserInputType==Enum.UserInputType.MouseButton2 then i=false k.Text=p h.Value=p g:SafeCallback(h.ChangedCallback,t.KeyCode or t.UserInputType)g:SafeCallback(h.Changed,t.KeyCode or t.UserInputType)n:Disconnect()s:Disconnect()end end)end)end end)ah.AddSignal(af.InputBegan,function(m)if not i and not af:GetFocusedTextBox()then if h.Mode=='Toggle'then local n=h.Value if n=='MouseLeft'or n=='MouseRight'then if n=='MouseLeft'and m.UserInputType==Enum.UserInputType.MouseButton1 or n=='MouseRight'and m.UserInputType==Enum.UserInputType.MouseButton2 then h.Toggled=not h.Toggled h:DoClick()end elseif m.UserInputType==Enum.UserInputType.Keyboard then if m.KeyCode.Name==n then h.Toggled=not h.Toggled h:DoClick()end end end end end)g.Options[e]=h return h end return c end,[25]=function()local aa,ab,ac,ad,ae=b(25)local af=ab.Parent.Parent local ag,ah,ai,aj=af.Components,ac(af.Packages.Flipper),ac(af.Creator),{}aj.__index=aj aj.__type='Paragraph'function aj.New(c,d)assert(d.Title,'Paragraph - Missing Title')d.Content=d.Content or''local e=ac(ag.Element)(d.Title,d.Content,aj.Container,false)e.Frame.BackgroundTransparency=0.92 e.Border.Transparency=0.6 return e end return aj end,[26]=function()local aa,ab,ac,ad,ae=b(26)local af,ag=game:GetService'UserInputService',ab.Parent.Parent local ah=ac(ag.Creator)local ai,aj,c=ah.New,ag.Components,{}c.__index=c c.__type='Slider'function c.New(d,e,f)local g=d.Library assert(f.Title,'Slider - Missing Title.')assert(f.Default,'Slider - Missing default value.')assert(f.Min,'Slider - Missing minimum value.')assert(f.Max,'Slider - Missing maximum value.')assert(f.Rounding,'Slider - Missing rounding value.')local h,i,j={Value=nil,Min=f.Min,Max=f.Max,Rounding=f.Rounding,Callback=f.Callback or function(h)end,Type='Slider'},false,ac(aj.Element)(f.Title,f.Description,d.Container,false)j.DescLabel.Size=UDim2.new(1,-170,0,14)h.SetTitle=j.SetTitle h.SetDesc=j.SetDesc local k=ai('ImageLabel',{AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,-7,0.5,0),Size=UDim2.fromOffset(14,14),Image='http://www.roblox.com/asset/?id=12266946128',ThemeTag={ImageColor3='Accent'}})local l,m,n=ai('Frame',{BackgroundTransparency=1,Position=UDim2.fromOffset(7,0),Size=UDim2.new(1,-14,1,0)},{k}),ai('Frame',{Size=UDim2.new(0,0,1,0),ThemeTag={BackgroundColor3='Accent'}},{ai('UICorner',{CornerRadius=UDim.new(1,0)})}),ai('TextLabel',{FontFace=Font.new'rbxasset://fonts/families/GothamSSm.json',Text='Value',TextSize=12,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Right,BackgroundColor3=Color3.fromRGB(255,255,255),BackgroundTransparency=1,Size=UDim2.new(0,100,0,14),Position=UDim2.new(0,-4,0.5,0),AnchorPoint=Vector2.new(1,0.5),ThemeTag={TextColor3='SubText'}})local o=ai('Frame',{Size=UDim2.new(1,0,0,4),AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-10,0.5,0),BackgroundTransparency=0.4,Parent=j.Frame,ThemeTag={BackgroundColor3='SliderRail'}},{ai('UICorner',{CornerRadius=UDim.new(1,0)}),ai('UISizeConstraint',{MaxSize=Vector2.new(150,math.huge)}),n,m,l})ah.AddSignal(k.InputBegan,function(p)if p.UserInputType==Enum.UserInputType.MouseButton1 or p.UserInputType==Enum.UserInputType.Touch then i=true end end)ah.AddSignal(k.InputEnded,function(p)if p.UserInputType==Enum.UserInputType.MouseButton1 or p.UserInputType==Enum.UserInputType.Touch then i=false end end)ah.AddSignal(af.InputChanged,function(p)if i and(p.UserInputType==Enum.UserInputType.MouseMovement or p.UserInputType==Enum.UserInputType.Touch)then local s=math.clamp((p.Position.X-l.AbsolutePosition.X)/l.AbsoluteSize.X,0,1)h:SetValue(h.Min+((h.Max-h.Min)*s))end end)function h.OnChanged(p,s)h.Changed=s s(h.Value)end function h.SetValue(p,s)p.Value=g:Round(math.clamp(s,h.Min,h.Max),h.Rounding)k.Position=UDim2.new((p.Value-h.Min)/(h.Max-h.Min),-7,0.5,0)m.Size=UDim2.fromScale((p.Value-h.Min)/(h.Max-h.Min),1)n.Text=tostring(p.Value)g:SafeCallback(h.Callback,p.Value)g:SafeCallback(h.Changed,p.Value)end function h.Destroy(p)j:Destroy()g.Options[e]=nil end h:SetValue(f.Default)g.Options[e]=h return h end return c end,[27]=function()local aa,ab,ac,ad,ae=b(27)local af,ag=game:GetService'TweenService',ab.Parent.Parent local ah=ac(ag.Creator)local ai,aj,c=ah.New,ag.Components,{}c.__index=c c.__type='Toggle'function c.New(d,e,f)local g=d.Library assert(f.Title,'Toggle - Missing Title')local h,i={Value=f.Default or false,Callback=f.Callback or function(h)end,Type='Toggle'},ac(aj.Element)(f.Title,f.Description,d.Container,true)i.DescLabel.Size=UDim2.new(1,-54,0,14)h.SetTitle=i.SetTitle h.SetDesc=i.SetDesc local j,k=ai('ImageLabel',{AnchorPoint=Vector2.new(0,0.5),Size=UDim2.fromOffset(14,14),Position=UDim2.new(0,2,0.5,0),Image='http://www.roblox.com/asset/?id=12266946128',ImageTransparency=0.5,ThemeTag={ImageColor3='ToggleSlider'}}),ai('UIStroke',{Transparency=0.5,ThemeTag={Color='ToggleSlider'}})local l=ai('Frame',{Size=UDim2.fromOffset(36,18),AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-10,0.5,0),Parent=i.Frame,BackgroundTransparency=1,ThemeTag={BackgroundColor3='Accent'}},{ai('UICorner',{CornerRadius=UDim.new(0,9)}),k,j})function h.OnChanged(m,n)h.Changed=n n(h.Value)end function h.SetValue(m,n)n=not not n h.Value=n ah.OverrideTag(k,{Color=h.Value and'Accent'or'ToggleSlider'})ah.OverrideTag(j,{ImageColor3=h.Value and'ToggleToggled'or'ToggleSlider'})af:Create(j,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Position=UDim2.new(0,h.Value and 19 or 2,0.5,0)}):Play()af:Create(l,TweenInfo.new(0.25,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency=h.Value and 0 or 1}):Play()j.ImageTransparency=h.Value and 0 or 0.5 g:SafeCallback(h.Callback,h.Value)g:SafeCallback(h.Changed,h.Value)end function h.Destroy(m)i:Destroy()g.Options[e]=nil end ah.AddSignal(i.Frame.MouseButton1Click,function()h:SetValue(not h.Value)end)h:SetValue(h.Value)g.Options[e]=h return h end return c end,[28]=function()local aa,ab,ac,ad,ae=b(28)return{assets={['lucide-accessibility']='rbxassetid://10709751939',['lucide-activity']='rbxassetid://10709752035',['lucide-air-vent']='rbxassetid://10709752131',['lucide-airplay']='rbxassetid://10709752254',['lucide-alarm-check']='rbxassetid://10709752405',['lucide-alarm-clock']='rbxassetid://10709752630',['lucide-alarm-clock-off']='rbxassetid://10709752508',['lucide-alarm-minus']='rbxassetid://10709752732',['lucide-alarm-plus']='rbxassetid://10709752825',['lucide-album']='rbxassetid://10709752906',['lucide-alert-circle']='rbxassetid://10709752996',['lucide-alert-octagon']='rbxassetid://10709753064',['lucide-alert-triangle']='rbxassetid://10709753149',['lucide-align-center']='rbxassetid://10709753570',['lucide-align-center-horizontal']='rbxassetid://10709753272',['lucide-align-center-vertical']='rbxassetid://10709753421',['lucide-align-end-horizontal']='rbxassetid://10709753692',['lucide-align-end-vertical']='rbxassetid://10709753808',['lucide-align-horizontal-distribute-center']='rbxassetid://10747779791',['lucide-align-horizontal-distribute-end']='rbxassetid://10747784534',['lucide-align-horizontal-distribute-start']='rbxassetid://10709754118',['lucide-align-horizontal-justify-center']='rbxassetid://10709754204',['lucide-align-horizontal-justify-end']='rbxassetid://10709754317',['lucide-align-horizontal-justify-start']='rbxassetid://10709754436',['lucide-align-horizontal-space-around']='rbxassetid://10709754590',['lucide-align-horizontal-space-between']='rbxassetid://10709754749',['lucide-align-justify']='rbxassetid://10709759610',['lucide-align-left']='rbxassetid://10709759764',['lucide-align-right']='rbxassetid://10709759895',['lucide-align-start-horizontal']='rbxassetid://10709760051',['lucide-align-start-vertical']='rbxassetid://10709760244',['lucide-align-vertical-distribute-center']='rbxassetid://10709760351',['lucide-align-vertical-distribute-end']='rbxassetid://10709760434',['lucide-align-vertical-distribute-start']='rbxassetid://10709760612',['lucide-align-vertical-justify-center']='rbxassetid://10709760814',['lucide-align-vertical-justify-end']='rbxassetid://10709761003',['lucide-align-vertical-justify-start']='rbxassetid://10709761176',['lucide-align-vertical-space-around']='rbxassetid://10709761324',['lucide-align-vertical-space-between']='rbxassetid://10709761434',['lucide-anchor']='rbxassetid://10709761530',['lucide-angry']='rbxassetid://10709761629',['lucide-annoyed']='rbxassetid://10709761722',['lucide-aperture']='rbxassetid://10709761813',['lucide-apple']='rbxassetid://10709761889',['lucide-archive']='rbxassetid://10709762233',['lucide-archive-restore']='rbxassetid://10709762058',['lucide-armchair']='rbxassetid://10709762327',['lucide-arrow-big-down']='rbxassetid://10747796644',['lucide-arrow-big-left']='rbxassetid://10709762574',['lucide-arrow-big-right']='rbxassetid://10709762727',['lucide-arrow-big-up']='rbxassetid://10709762879',['lucide-arrow-down']='rbxassetid://10709767827',['lucide-arrow-down-circle']='rbxassetid://10709763034',['lucide-arrow-down-left']='rbxassetid://10709767656',['lucide-arrow-down-right']='rbxassetid://10709767750',['lucide-arrow-left']='rbxassetid://10709768114',['lucide-arrow-left-circle']='rbxassetid://10709767936',['lucide-arrow-left-right']='rbxassetid://10709768019',['lucide-arrow-right']='rbxassetid://10709768347',['lucide-arrow-right-circle']='rbxassetid://10709768226',['lucide-arrow-up']='rbxassetid://10709768939',['lucide-arrow-up-circle']='rbxassetid://10709768432',['lucide-arrow-up-down']='rbxassetid://10709768538',['lucide-arrow-up-left']='rbxassetid://10709768661',['lucide-arrow-up-right']='rbxassetid://10709768787',['lucide-asterisk']='rbxassetid://10709769095',['lucide-at-sign']='rbxassetid://10709769286',['lucide-award']='rbxassetid://10709769406',['lucide-axe']='rbxassetid://10709769508',['lucide-axis-3d']='rbxassetid://10709769598',['lucide-baby']='rbxassetid://10709769732',['lucide-backpack']='rbxassetid://10709769841',['lucide-baggage-claim']='rbxassetid://10709769935',['lucide-banana']='rbxassetid://10709770005',['lucide-banknote']='rbxassetid://10709770178',['lucide-bar-chart']='rbxassetid://10709773755',['lucide-bar-chart-2']='rbxassetid://10709770317',['lucide-bar-chart-3']='rbxassetid://10709770431',['lucide-bar-chart-4']='rbxassetid://10709770560',['lucide-bar-chart-horizontal']='rbxassetid://10709773669',['lucide-barcode']='rbxassetid://10747360675',['lucide-baseline']='rbxassetid://10709773863',['lucide-bath']='rbxassetid://10709773963',['lucide-battery']='rbxassetid://10709774640',['lucide-battery-charging']='rbxassetid://10709774068',['lucide-battery-full']='rbxassetid://10709774206',['lucide-battery-low']='rbxassetid://10709774370',['lucide-battery-medium']='rbxassetid://10709774513',['lucide-beaker']='rbxassetid://10709774756',['lucide-bed']='rbxassetid://10709775036',['lucide-bed-double']='rbxassetid://10709774864',['lucide-bed-single']='rbxassetid://10709774968',['lucide-beer']='rbxassetid://10709775167',['lucide-bell']='rbxassetid://10709775704',['lucide-bell-minus']='rbxassetid://10709775241',['lucide-bell-off']='rbxassetid://10709775320',['lucide-bell-plus']='rbxassetid://10709775448',['lucide-bell-ring']='rbxassetid://10709775560',['lucide-bike']='rbxassetid://10709775894',['lucide-binary']='rbxassetid://10709776050',['lucide-bitcoin']='rbxassetid://10709776126',['lucide-bluetooth']='rbxassetid://10709776655',['lucide-bluetooth-connected']='rbxassetid://10709776240',['lucide-bluetooth-off']='rbxassetid://10709776344',['lucide-bluetooth-searching']='rbxassetid://10709776501',['lucide-bold']='rbxassetid://10747813908',['lucide-bomb']='rbxassetid://10709781460',['lucide-bone']='rbxassetid://10709781605',['lucide-book']='rbxassetid://10709781824',['lucide-book-open']='rbxassetid://10709781717',['lucide-bookmark']='rbxassetid://10709782154',['lucide-bookmark-minus']='rbxassetid://10709781919',['lucide-bookmark-plus']='rbxassetid://10709782044',['lucide-bot']='rbxassetid://10709782230',['lucide-box']='rbxassetid://10709782497',['lucide-box-select']='rbxassetid://10709782342',['lucide-boxes']='rbxassetid://10709782582',['lucide-briefcase']='rbxassetid://10709782662',['lucide-brush']='rbxassetid://10709782758',['lucide-bug']='rbxassetid://10709782845',['lucide-building']='rbxassetid://10709783051',['lucide-building-2']='rbxassetid://10709782939',['lucide-bus']='rbxassetid://10709783137',['lucide-cake']='rbxassetid://10709783217',['lucide-calculator']='rbxassetid://10709783311',['lucide-calendar']='rbxassetid://10709789505',['lucide-calendar-check']='rbxassetid://10709783474',['lucide-calendar-check-2']='rbxassetid://10709783392',['lucide-calendar-clock']='rbxassetid://10709783577',['lucide-calendar-days']='rbxassetid://10709783673',['lucide-calendar-heart']='rbxassetid://10709783835',['lucide-calendar-minus']='rbxassetid://10709783959',['lucide-calendar-off']='rbxassetid://10709788784',['lucide-calendar-plus']='rbxassetid://10709788937',['lucide-calendar-range']='rbxassetid://10709789053',['lucide-calendar-search']='rbxassetid://10709789200',['lucide-calendar-x']='rbxassetid://10709789407',['lucide-calendar-x-2']='rbxassetid://10709789329',['lucide-camera']='rbxassetid://10709789686',['lucide-camera-off']='rbxassetid://10747822677',['lucide-car']='rbxassetid://10709789810',['lucide-carrot']='rbxassetid://10709789960',['lucide-cast']='rbxassetid://10709790097',['lucide-charge']='rbxassetid://10709790202',['lucide-check']='rbxassetid://10709790644',['lucide-check-circle']='rbxassetid://10709790387',['lucide-check-circle-2']='rbxassetid://10709790298',['lucide-check-square']='rbxassetid://10709790537',['lucide-chef-hat']='rbxassetid://10709790757',['lucide-cherry']='rbxassetid://10709790875',['lucide-chevron-down']='rbxassetid://10709790948',['lucide-chevron-first']='rbxassetid://10709791015',['lucide-chevron-last']='rbxassetid://10709791130',['lucide-chevron-left']='rbxassetid://10709791281',['lucide-chevron-right']='rbxassetid://10709791437',['lucide-chevron-up']='rbxassetid://10709791523',['lucide-chevrons-down']='rbxassetid://10709796864',['lucide-chevrons-down-up']='rbxassetid://10709791632',['lucide-chevrons-left']='rbxassetid://10709797151',['lucide-chevrons-left-right']='rbxassetid://10709797006',['lucide-chevrons-right']='rbxassetid://10709797382',['lucide-chevrons-right-left']='rbxassetid://10709797274',['lucide-chevrons-up']='rbxassetid://10709797622',['lucide-chevrons-up-down']='rbxassetid://10709797508',['lucide-chrome']='rbxassetid://10709797725',['lucide-circle']='rbxassetid://10709798174',['lucide-circle-dot']='rbxassetid://10709797837',['lucide-circle-ellipsis']='rbxassetid://10709797985',['lucide-circle-slashed']='rbxassetid://10709798100',['lucide-citrus']='rbxassetid://10709798276',['lucide-clapperboard']='rbxassetid://10709798350',['lucide-clipboard']='rbxassetid://10709799288',['lucide-clipboard-check']='rbxassetid://10709798443',['lucide-clipboard-copy']='rbxassetid://10709798574',['lucide-clipboard-edit']='rbxassetid://10709798682',['lucide-clipboard-list']='rbxassetid://10709798792',['lucide-clipboard-signature']='rbxassetid://10709798890',['lucide-clipboard-type']='rbxassetid://10709798999',['lucide-clipboard-x']='rbxassetid://10709799124',['lucide-clock']='rbxassetid://10709805144',['lucide-clock-1']='rbxassetid://10709799535',['lucide-clock-10']='rbxassetid://10709799718',['lucide-clock-11']='rbxassetid://10709799818',['lucide-clock-12']='rbxassetid://10709799962',['lucide-clock-2']='rbxassetid://10709803876',['lucide-clock-3']='rbxassetid://10709803989',['lucide-clock-4']='rbxassetid://10709804164',['lucide-clock-5']='rbxassetid://10709804291',['lucide-clock-6']='rbxassetid://10709804435',['lucide-clock-7']='rbxassetid://10709804599',['lucide-clock-8']='rbxassetid://10709804784',['lucide-clock-9']='rbxassetid://10709804996',['lucide-cloud']='rbxassetid://10709806740',['lucide-cloud-cog']='rbxassetid://10709805262',['lucide-cloud-drizzle']='rbxassetid://10709805371',['lucide-cloud-fog']='rbxassetid://10709805477',['lucide-cloud-hail']='rbxassetid://10709805596',['lucide-cloud-lightning']='rbxassetid://10709805727',['lucide-cloud-moon']='rbxassetid://10709805942',['lucide-cloud-moon-rain']='rbxassetid://10709805838',['lucide-cloud-off']='rbxassetid://10709806060',['lucide-cloud-rain']='rbxassetid://10709806277',['lucide-cloud-rain-wind']='rbxassetid://10709806166',['lucide-cloud-snow']='rbxassetid://10709806374',['lucide-cloud-sun']='rbxassetid://10709806631',['lucide-cloud-sun-rain']='rbxassetid://10709806475',['lucide-cloudy']='rbxassetid://10709806859',['lucide-clover']='rbxassetid://10709806995',['lucide-code']='rbxassetid://10709810463',['lucide-code-2']='rbxassetid://10709807111',['lucide-codepen']='rbxassetid://10709810534',['lucide-codesandbox']='rbxassetid://10709810676',['lucide-coffee']='rbxassetid://10709810814',['lucide-cog']='rbxassetid://10709810948',['lucide-coins']='rbxassetid://10709811110',['lucide-columns']='rbxassetid://10709811261',['lucide-command']='rbxassetid://10709811365',['lucide-compass']='rbxassetid://10709811445',['lucide-component']='rbxassetid://10709811595',['lucide-concierge-bell']='rbxassetid://10709811706',['lucide-connection']='rbxassetid://10747361219',['lucide-contact']='rbxassetid://10709811834',['lucide-contrast']='rbxassetid://10709811939',['lucide-cookie']='rbxassetid://10709812067',['lucide-copy']='rbxassetid://10709812159',['lucide-copyleft']='rbxassetid://10709812251',['lucide-copyright']='rbxassetid://10709812311',['lucide-corner-down-left']='rbxassetid://10709812396',['lucide-corner-down-right']='rbxassetid://10709812485',['lucide-corner-left-down']='rbxassetid://10709812632',['lucide-corner-left-up']='rbxassetid://10709812784',['lucide-corner-right-down']='rbxassetid://10709812939',['lucide-corner-right-up']='rbxassetid://10709813094',['lucide-corner-up-left']='rbxassetid://10709813185',['lucide-corner-up-right']='rbxassetid://10709813281',['lucide-cpu']='rbxassetid://10709813383',['lucide-croissant']='rbxassetid://10709818125',['lucide-crop']='rbxassetid://10709818245',['lucide-cross']='rbxassetid://10709818399',['lucide-crosshair']='rbxassetid://10709818534',['lucide-crown']='rbxassetid://10709818626',['lucide-cup-soda']='rbxassetid://10709818763',['lucide-curly-braces']='rbxassetid://10709818847',['lucide-currency']='rbxassetid://10709818931',['lucide-database']='rbxassetid://10709818996',['lucide-delete']='rbxassetid://10709819059',['lucide-diamond']='rbxassetid://10709819149',['lucide-dice-1']='rbxassetid://10709819266',['lucide-dice-2']='rbxassetid://10709819361',['lucide-dice-3']='rbxassetid://10709819508',['lucide-dice-4']='rbxassetid://10709819670',['lucide-dice-5']='rbxassetid://10709819801',['lucide-dice-6']='rbxassetid://10709819896',['lucide-dices']='rbxassetid://10723343321',['lucide-diff']='rbxassetid://10723343416',['lucide-disc']='rbxassetid://10723343537',['lucide-divide']='rbxassetid://10723343805',['lucide-divide-circle']='rbxassetid://10723343636',['lucide-divide-square']='rbxassetid://10723343737',['lucide-dollar-sign']='rbxassetid://10723343958',['lucide-download']='rbxassetid://10723344270',['lucide-download-cloud']='rbxassetid://10723344088',['lucide-droplet']='rbxassetid://10723344432',['lucide-droplets']='rbxassetid://10734883356',['lucide-drumstick']='rbxassetid://10723344737',['lucide-edit']='rbxassetid://10734883598',['lucide-edit-2']='rbxassetid://10723344885',['lucide-edit-3']='rbxassetid://10723345088',['lucide-egg']='rbxassetid://10723345518',['lucide-egg-fried']='rbxassetid://10723345347',['lucide-electricity']='rbxassetid://10723345749',['lucide-electricity-off']='rbxassetid://10723345643',['lucide-equal']='rbxassetid://10723345990',['lucide-equal-not']='rbxassetid://10723345866',['lucide-eraser']='rbxassetid://10723346158',['lucide-euro']='rbxassetid://10723346372',['lucide-expand']='rbxassetid://10723346553',['lucide-external-link']='rbxassetid://10723346684',['lucide-eye']='rbxassetid://10723346959',['lucide-eye-off']='rbxassetid://10723346871',['lucide-factory']='rbxassetid://10723347051',['lucide-fan']='rbxassetid://10723354359',['lucide-fast-forward']='rbxassetid://10723354521',['lucide-feather']='rbxassetid://10723354671',['lucide-figma']='rbxassetid://10723354801',['lucide-file']='rbxassetid://10723374641',['lucide-file-archive']='rbxassetid://10723354921',['lucide-file-audio']='rbxassetid://10723355148',['lucide-file-audio-2']='rbxassetid://10723355026',['lucide-file-axis-3d']='rbxassetid://10723355272',['lucide-file-badge']='rbxassetid://10723355622',['lucide-file-badge-2']='rbxassetid://10723355451',['lucide-file-bar-chart']='rbxassetid://10723355887',['lucide-file-bar-chart-2']='rbxassetid://10723355746',['lucide-file-box']='rbxassetid://10723355989',['lucide-file-check']='rbxassetid://10723356210',['lucide-file-check-2']='rbxassetid://10723356100',['lucide-file-clock']='rbxassetid://10723356329',['lucide-file-code']='rbxassetid://10723356507',['lucide-file-cog']='rbxassetid://10723356830',['lucide-file-cog-2']='rbxassetid://10723356676',['lucide-file-diff']='rbxassetid://10723357039',['lucide-file-digit']='rbxassetid://10723357151',['lucide-file-down']='rbxassetid://10723357322',['lucide-file-edit']='rbxassetid://10723357495',['lucide-file-heart']='rbxassetid://10723357637',['lucide-file-image']='rbxassetid://10723357790',['lucide-file-input']='rbxassetid://10723357933',['lucide-file-json']='rbxassetid://10723364435',['lucide-file-json-2']='rbxassetid://10723364361',['lucide-file-key']='rbxassetid://10723364605',['lucide-file-key-2']='rbxassetid://10723364515',['lucide-file-line-chart']='rbxassetid://10723364725',['lucide-file-lock']='rbxassetid://10723364957',['lucide-file-lock-2']='rbxassetid://10723364861',['lucide-file-minus']='rbxassetid://10723365254',['lucide-file-minus-2']='rbxassetid://10723365086',['lucide-file-output']='rbxassetid://10723365457',['lucide-file-pie-chart']='rbxassetid://10723365598',['lucide-file-plus']='rbxassetid://10723365877',['lucide-file-plus-2']='rbxassetid://10723365766',['lucide-file-question']='rbxassetid://10723365987',['lucide-file-scan']='rbxassetid://10723366167',['lucide-file-search']='rbxassetid://10723366550',['lucide-file-search-2']='rbxassetid://10723366340',['lucide-file-signature']='rbxassetid://10723366741',['lucide-file-spreadsheet']='rbxassetid://10723366962',['lucide-file-symlink']='rbxassetid://10723367098',['lucide-file-terminal']='rbxassetid://10723367244',['lucide-file-text']='rbxassetid://10723367380',['lucide-file-type']='rbxassetid://10723367606',['lucide-file-type-2']='rbxassetid://10723367509',['lucide-file-up']='rbxassetid://10723367734',['lucide-file-video']='rbxassetid://10723373884',['lucide-file-video-2']='rbxassetid://10723367834',['lucide-file-volume']='rbxassetid://10723374172',['lucide-file-volume-2']='rbxassetid://10723374030',['lucide-file-warning']='rbxassetid://10723374276',['lucide-file-x']='rbxassetid://10723374544',['lucide-file-x-2']='rbxassetid://10723374378',['lucide-files']='rbxassetid://10723374759',['lucide-film']='rbxassetid://10723374981',['lucide-filter']='rbxassetid://10723375128',['lucide-fingerprint']='rbxassetid://10723375250',['lucide-flag']='rbxassetid://10723375890',['lucide-flag-off']='rbxassetid://10723375443',['lucide-flag-triangle-left']='rbxassetid://10723375608',['lucide-flag-triangle-right']='rbxassetid://10723375727',['lucide-flame']='rbxassetid://10723376114',['lucide-flashlight']='rbxassetid://10723376471',['lucide-flashlight-off']='rbxassetid://10723376365',['lucide-flask-conical']='rbxassetid://10734883986',['lucide-flask-round']='rbxassetid://10723376614',['lucide-flip-horizontal']='rbxassetid://10723376884',['lucide-flip-horizontal-2']='rbxassetid://10723376745',['lucide-flip-vertical']='rbxassetid://10723377138',['lucide-flip-vertical-2']='rbxassetid://10723377026',['lucide-flower']='rbxassetid://10747830374',['lucide-flower-2']='rbxassetid://10723377305',['lucide-focus']='rbxassetid://10723377537',['lucide-folder']='rbxassetid://10723387563',['lucide-folder-archive']='rbxassetid://10723384478',['lucide-folder-check']='rbxassetid://10723384605',['lucide-folder-clock']='rbxassetid://10723384731',['lucide-folder-closed']='rbxassetid://10723384893',['lucide-folder-cog']='rbxassetid://10723385213',['lucide-folder-cog-2']='rbxassetid://10723385036',['lucide-folder-down']='rbxassetid://10723385338',['lucide-folder-edit']='rbxassetid://10723385445',['lucide-folder-heart']='rbxassetid://10723385545',['lucide-folder-input']='rbxassetid://10723385721',['lucide-folder-key']='rbxassetid://10723385848',['lucide-folder-lock']='rbxassetid://10723386005',['lucide-folder-minus']='rbxassetid://10723386127',['lucide-folder-open']='rbxassetid://10723386277',['lucide-folder-output']='rbxassetid://10723386386',['lucide-folder-plus']='rbxassetid://10723386531',['lucide-folder-search']='rbxassetid://10723386787',['lucide-folder-search-2']='rbxassetid://10723386674',['lucide-folder-symlink']='rbxassetid://10723386930',['lucide-folder-tree']='rbxassetid://10723387085',['lucide-folder-up']='rbxassetid://10723387265',['lucide-folder-x']='rbxassetid://10723387448',['lucide-folders']='rbxassetid://10723387721',['lucide-form-input']='rbxassetid://10723387841',['lucide-forward']='rbxassetid://10723388016',['lucide-frame']='rbxassetid://10723394389',['lucide-framer']='rbxassetid://10723394565',['lucide-frown']='rbxassetid://10723394681',['lucide-fuel']='rbxassetid://10723394846',['lucide-function-square']='rbxassetid://10723395041',['lucide-gamepad']='rbxassetid://10723395457',['lucide-gamepad-2']='rbxassetid://10723395215',['lucide-gauge']='rbxassetid://10723395708',['lucide-gavel']='rbxassetid://10723395896',['lucide-gem']='rbxassetid://10723396000',['lucide-ghost']='rbxassetid://10723396107',['lucide-gift']='rbxassetid://10723396402',['lucide-gift-card']='rbxassetid://10723396225',['lucide-git-branch']='rbxassetid://10723396676',['lucide-git-branch-plus']='rbxassetid://10723396542',['lucide-git-commit']='rbxassetid://10723396812',['lucide-git-compare']='rbxassetid://10723396954',['lucide-git-fork']='rbxassetid://10723397049',['lucide-git-merge']='rbxassetid://10723397165',['lucide-git-pull-request']='rbxassetid://10723397431',['lucide-git-pull-request-closed']='rbxassetid://10723397268',['lucide-git-pull-request-draft']='rbxassetid://10734884302',['lucide-glass']='rbxassetid://10723397788',['lucide-glass-2']='rbxassetid://10723397529',['lucide-glass-water']='rbxassetid://10723397678',['lucide-glasses']='rbxassetid://10723397895',['lucide-globe']='rbxassetid://10723404337',['lucide-globe-2']='rbxassetid://10723398002',['lucide-grab']='rbxassetid://10723404472',['lucide-graduation-cap']='rbxassetid://10723404691',['lucide-grape']='rbxassetid://10723404822',['lucide-grid']='rbxassetid://10723404936',['lucide-grip-horizontal']='rbxassetid://10723405089',['lucide-grip-vertical']='rbxassetid://10723405236',['lucide-hammer']='rbxassetid://10723405360',['lucide-hand']='rbxassetid://10723405649',['lucide-hand-metal']='rbxassetid://10723405508',['lucide-hard-drive']='rbxassetid://10723405749',['lucide-hard-hat']='rbxassetid://10723405859',['lucide-hash']='rbxassetid://10723405975',['lucide-haze']='rbxassetid://10723406078',['lucide-headphones']='rbxassetid://10723406165',['lucide-heart']='rbxassetid://10723406885',['lucide-heart-crack']='rbxassetid://10723406299',['lucide-heart-handshake']='rbxassetid://10723406480',['lucide-heart-off']='rbxassetid://10723406662',['lucide-heart-pulse']='rbxassetid://10723406795',['lucide-help-circle']='rbxassetid://10723406988',['lucide-hexagon']='rbxassetid://10723407092',['lucide-highlighter']='rbxassetid://10723407192',['lucide-history']='rbxassetid://10723407335',['lucide-home']='rbxassetid://10723407389',['lucide-hourglass']='rbxassetid://10723407498',['lucide-ice-cream']='rbxassetid://10723414308',['lucide-image']='rbxassetid://10723415040',['lucide-image-minus']='rbxassetid://10723414487',['lucide-image-off']='rbxassetid://10723414677',['lucide-image-plus']='rbxassetid://10723414827',['lucide-import']='rbxassetid://10723415205',['lucide-inbox']='rbxassetid://10723415335',['lucide-indent']='rbxassetid://10723415494',['lucide-indian-rupee']='rbxassetid://10723415642',['lucide-infinity']='rbxassetid://10723415766',['lucide-info']='rbxassetid://10723415903',['lucide-inspect']='rbxassetid://10723416057',['lucide-italic']='rbxassetid://10723416195',['lucide-japanese-yen']='rbxassetid://10723416363',['lucide-joystick']='rbxassetid://10723416527',['lucide-key']='rbxassetid://10723416652',['lucide-keyboard']='rbxassetid://10723416765',['lucide-lamp']='rbxassetid://10723417513',['lucide-lamp-ceiling']='rbxassetid://10723416922',['lucide-lamp-desk']='rbxassetid://10723417016',['lucide-lamp-floor']='rbxassetid://10723417131',['lucide-lamp-wall-down']='rbxassetid://10723417240',['lucide-lamp-wall-up']='rbxassetid://10723417356',['lucide-landmark']='rbxassetid://10723417608',['lucide-languages']='rbxassetid://10723417703',['lucide-laptop']='rbxassetid://10723423881',['lucide-laptop-2']='rbxassetid://10723417797',['lucide-lasso']='rbxassetid://10723424235',['lucide-lasso-select']='rbxassetid://10723424058',['lucide-laugh']='rbxassetid://10723424372',['lucide-layers']='rbxassetid://10723424505',['lucide-layout']='rbxassetid://10723425376',['lucide-layout-dashboard']='rbxassetid://10723424646',['lucide-layout-grid']='rbxassetid://10723424838',['lucide-layout-list']='rbxassetid://10723424963',['lucide-layout-template']='rbxassetid://10723425187',['lucide-leaf']='rbxassetid://10723425539',['lucide-library']='rbxassetid://10723425615',['lucide-life-buoy']='rbxassetid://10723425685',['lucide-lightbulb']='rbxassetid://10723425852',['lucide-lightbulb-off']='rbxassetid://10723425762',['lucide-line-chart']='rbxassetid://10723426393',['lucide-link']='rbxassetid://10723426722',['lucide-link-2']='rbxassetid://10723426595',['lucide-link-2-off']='rbxassetid://10723426513',['lucide-list']='rbxassetid://10723433811',['lucide-list-checks']='rbxassetid://10734884548',['lucide-list-end']='rbxassetid://10723426886',['lucide-list-minus']='rbxassetid://10723426986',['lucide-list-music']='rbxassetid://10723427081',['lucide-list-ordered']='rbxassetid://10723427199',['lucide-list-plus']='rbxassetid://10723427334',['lucide-list-start']='rbxassetid://10723427494',['lucide-list-video']='rbxassetid://10723427619',['lucide-list-x']='rbxassetid://10723433655',['lucide-loader']='rbxassetid://10723434070',['lucide-loader-2']='rbxassetid://10723433935',['lucide-locate']='rbxassetid://10723434557',['lucide-locate-fixed']='rbxassetid://10723434236',['lucide-locate-off']='rbxassetid://10723434379',['lucide-lock']='rbxassetid://10723434711',['lucide-log-in']='rbxassetid://10723434830',['lucide-log-out']='rbxassetid://10723434906',['lucide-luggage']='rbxassetid://10723434993',['lucide-magnet']='rbxassetid://10723435069',['lucide-mail']='rbxassetid://10734885430',['lucide-mail-check']='rbxassetid://10723435182',['lucide-mail-minus']='rbxassetid://10723435261',['lucide-mail-open']='rbxassetid://10723435342',['lucide-mail-plus']='rbxassetid://10723435443',['lucide-mail-question']='rbxassetid://10723435515',['lucide-mail-search']='rbxassetid://10734884739',['lucide-mail-warning']='rbxassetid://10734885015',['lucide-mail-x']='rbxassetid://10734885247',['lucide-mails']='rbxassetid://10734885614',['lucide-map']='rbxassetid://10734886202',['lucide-map-pin']='rbxassetid://10734886004',['lucide-map-pin-off']='rbxassetid://10734885803',['lucide-maximize']='rbxassetid://10734886735',['lucide-maximize-2']='rbxassetid://10734886496',['lucide-medal']='rbxassetid://10734887072',['lucide-megaphone']='rbxassetid://10734887454',['lucide-megaphone-off']='rbxassetid://10734887311',['lucide-meh']='rbxassetid://10734887603',['lucide-menu']='rbxassetid://10734887784',['lucide-message-circle']='rbxassetid://10734888000',['lucide-message-square']='rbxassetid://10734888228',['lucide-mic']='rbxassetid://10734888864',['lucide-mic-2']='rbxassetid://10734888430',['lucide-mic-off']='rbxassetid://10734888646',['lucide-microscope']='rbxassetid://10734889106',['lucide-microwave']='rbxassetid://10734895076',['lucide-milestone']='rbxassetid://10734895310',['lucide-minimize']='rbxassetid://10734895698',['lucide-minimize-2']='rbxassetid://10734895530',['lucide-minus']='rbxassetid://10734896206',['lucide-minus-circle']='rbxassetid://10734895856',['lucide-minus-square']='rbxassetid://10734896029',['lucide-monitor']='rbxassetid://10734896881',['lucide-monitor-off']='rbxassetid://10734896360',['lucide-monitor-speaker']='rbxassetid://10734896512',['lucide-moon']='rbxassetid://10734897102',['lucide-more-horizontal']='rbxassetid://10734897250',['lucide-more-vertical']='rbxassetid://10734897387',['lucide-mountain']='rbxassetid://10734897956',['lucide-mountain-snow']='rbxassetid://10734897665',['lucide-mouse']='rbxassetid://10734898592',['lucide-mouse-pointer']='rbxassetid://10734898476',['lucide-mouse-pointer-2']='rbxassetid://10734898194',['lucide-mouse-pointer-click']='rbxassetid://10734898355',['lucide-move']='rbxassetid://10734900011',['lucide-move-3d']='rbxassetid://10734898756',['lucide-move-diagonal']='rbxassetid://10734899164',['lucide-move-diagonal-2']='rbxassetid://10734898934',['lucide-move-horizontal']='rbxassetid://10734899414',['lucide-move-vertical']='rbxassetid://10734899821',['lucide-music']='rbxassetid://10734905958',['lucide-music-2']='rbxassetid://10734900215',['lucide-music-3']='rbxassetid://10734905665',['lucide-music-4']='rbxassetid://10734905823',['lucide-navigation']='rbxassetid://10734906744',['lucide-navigation-2']='rbxassetid://10734906332',['lucide-navigation-2-off']='rbxassetid://10734906144',['lucide-navigation-off']='rbxassetid://10734906580',['lucide-network']='rbxassetid://10734906975',['lucide-newspaper']='rbxassetid://10734907168',['lucide-octagon']='rbxassetid://10734907361',['lucide-option']='rbxassetid://10734907649',['lucide-outdent']='rbxassetid://10734907933',['lucide-package']='rbxassetid://10734909540',['lucide-package-2']='rbxassetid://10734908151',['lucide-package-check']='rbxassetid://10734908384',['lucide-package-minus']='rbxassetid://10734908626',['lucide-package-open']='rbxassetid://10734908793',['lucide-package-plus']='rbxassetid://10734909016',['lucide-package-search']='rbxassetid://10734909196',['lucide-package-x']='rbxassetid://10734909375',['lucide-paint-bucket']='rbxassetid://10734909847',['lucide-paintbrush']='rbxassetid://10734910187',['lucide-paintbrush-2']='rbxassetid://10734910030',['lucide-palette']='rbxassetid://10734910430',['lucide-palmtree']='rbxassetid://10734910680',['lucide-paperclip']='rbxassetid://10734910927',['lucide-party-popper']='rbxassetid://10734918735',['lucide-pause']='rbxassetid://10734919336',['lucide-pause-circle']='rbxassetid://10735024209',['lucide-pause-octagon']='rbxassetid://10734919143',['lucide-pen-tool']='rbxassetid://10734919503',['lucide-pencil']='rbxassetid://10734919691',['lucide-percent']='rbxassetid://10734919919',['lucide-person-standing']='rbxassetid://10734920149',['lucide-phone']='rbxassetid://10734921524',['lucide-phone-call']='rbxassetid://10734920305',['lucide-phone-forwarded']='rbxassetid://10734920508',['lucide-phone-incoming']='rbxassetid://10734920694',['lucide-phone-missed']='rbxassetid://10734920845',['lucide-phone-off']='rbxassetid://10734921077',['lucide-phone-outgoing']='rbxassetid://10734921288',['lucide-pie-chart']='rbxassetid://10734921727',['lucide-piggy-bank']='rbxassetid://10734921935',['lucide-pin']='rbxassetid://10734922324',['lucide-pin-off']='rbxassetid://10734922180',['lucide-pipette']='rbxassetid://10734922497',['lucide-pizza']='rbxassetid://10734922774',['lucide-plane']='rbxassetid://10734922971',['lucide-play']='rbxassetid://10734923549',['lucide-play-circle']='rbxassetid://10734923214',['lucide-plus']='rbxassetid://10734924532',['lucide-plus-circle']='rbxassetid://10734923868',['lucide-plus-square']='rbxassetid://10734924219',['lucide-podcast']='rbxassetid://10734929553',['lucide-pointer']='rbxassetid://10734929723',['lucide-pound-sterling']='rbxassetid://10734929981',['lucide-power']='rbxassetid://10734930466',['lucide-power-off']='rbxassetid://10734930257',['lucide-printer']='rbxassetid://10734930632',['lucide-puzzle']='rbxassetid://10734930886',['lucide-quote']='rbxassetid://10734931234',['lucide-radio']='rbxassetid://10734931596',['lucide-radio-receiver']='rbxassetid://10734931402',['lucide-rectangle-horizontal']='rbxassetid://10734931777',['lucide-rectangle-vertical']='rbxassetid://10734932081',['lucide-recycle']='rbxassetid://10734932295',['lucide-redo']='rbxassetid://10734932822',['lucide-redo-2']='rbxassetid://10734932586',['lucide-refresh-ccw']='rbxassetid://10734933056',['lucide-refresh-cw']='rbxassetid://10734933222',['lucide-refrigerator']='rbxassetid://10734933465',['lucide-regex']='rbxassetid://10734933655',['lucide-repeat']='rbxassetid://10734933966',['lucide-repeat-1']='rbxassetid://10734933826',['lucide-reply']='rbxassetid://10734934252',['lucide-reply-all']='rbxassetid://10734934132',['lucide-rewind']='rbxassetid://10734934347',['lucide-rocket']='rbxassetid://10734934585',['lucide-rocking-chair']='rbxassetid://10734939942',['lucide-rotate-3d']='rbxassetid://10734940107',['lucide-rotate-ccw']='rbxassetid://10734940376',['lucide-rotate-cw']='rbxassetid://10734940654',['lucide-rss']='rbxassetid://10734940825',['lucide-ruler']='rbxassetid://10734941018',['lucide-russian-ruble']='rbxassetid://10734941199',['lucide-sailboat']='rbxassetid://10734941354',['lucide-save']='rbxassetid://10734941499',['lucide-scale']='rbxassetid://10734941912',['lucide-scale-3d']='rbxassetid://10734941739',['lucide-scaling']='rbxassetid://10734942072',['lucide-scan']='rbxassetid://10734942565',['lucide-scan-face']='rbxassetid://10734942198',['lucide-scan-line']='rbxassetid://10734942351',['lucide-scissors']='rbxassetid://10734942778',['lucide-screen-share']='rbxassetid://10734943193',['lucide-screen-share-off']='rbxassetid://10734942967',['lucide-scroll']='rbxassetid://10734943448',['lucide-search']='rbxassetid://10734943674',['lucide-send']='rbxassetid://10734943902',['lucide-separator-horizontal']='rbxassetid://10734944115',['lucide-separator-vertical']='rbxassetid://10734944326',['lucide-server']='rbxassetid://10734949856',['lucide-server-cog']='rbxassetid://10734944444',['lucide-server-crash']='rbxassetid://10734944554',['lucide-server-off']='rbxassetid://10734944668',['lucide-settings']='rbxassetid://10734950309',['lucide-settings-2']='rbxassetid://10734950020',['lucide-share']='rbxassetid://10734950813',['lucide-share-2']='rbxassetid://10734950553',['lucide-sheet']='rbxassetid://10734951038',['lucide-shield']='rbxassetid://10734951847',['lucide-shield-alert']='rbxassetid://10734951173',['lucide-shield-check']='rbxassetid://10734951367',['lucide-shield-close']='rbxassetid://10734951535',['lucide-shield-off']='rbxassetid://10734951684',['lucide-shirt']='rbxassetid://10734952036',['lucide-shopping-bag']='rbxassetid://10734952273',['lucide-shopping-cart']='rbxassetid://10734952479',['lucide-shovel']='rbxassetid://10734952773',['lucide-shower-head']='rbxassetid://10734952942',['lucide-shrink']='rbxassetid://10734953073',['lucide-shrub']='rbxassetid://10734953241',['lucide-shuffle']='rbxassetid://10734953451',['lucide-sidebar']='rbxassetid://10734954301',['lucide-sidebar-close']='rbxassetid://10734953715',['lucide-sidebar-open']='rbxassetid://10734954000',['lucide-sigma']='rbxassetid://10734954538',['lucide-signal']='rbxassetid://10734961133',['lucide-signal-high']='rbxassetid://10734954807',['lucide-signal-low']='rbxassetid://10734955080',['lucide-signal-medium']='rbxassetid://10734955336',['lucide-signal-zero']='rbxassetid://10734960878',['lucide-siren']='rbxassetid://10734961284',['lucide-skip-back']='rbxassetid://10734961526',['lucide-skip-forward']='rbxassetid://10734961809',['lucide-skull']='rbxassetid://10734962068',['lucide-slack']='rbxassetid://10734962339',['lucide-slash']='rbxassetid://10734962600',['lucide-slice']='rbxassetid://10734963024',['lucide-sliders']='rbxassetid://10734963400',['lucide-sliders-horizontal']='rbxassetid://10734963191',['lucide-smartphone']='rbxassetid://10734963940',['lucide-smartphone-charging']='rbxassetid://10734963671',['lucide-smile']='rbxassetid://10734964441',['lucide-smile-plus']='rbxassetid://10734964188',['lucide-snowflake']='rbxassetid://10734964600',['lucide-sofa']='rbxassetid://10734964852',['lucide-sort-asc']='rbxassetid://10734965115',['lucide-sort-desc']='rbxassetid://10734965287',['lucide-speaker']='rbxassetid://10734965419',['lucide-sprout']='rbxassetid://10734965572',['lucide-square']='rbxassetid://10734965702',['lucide-star']='rbxassetid://10734966248',['lucide-star-half']='rbxassetid://10734965897',['lucide-star-off']='rbxassetid://10734966097',['lucide-stethoscope']='rbxassetid://10734966384',['lucide-sticker']='rbxassetid://10734972234',['lucide-sticky-note']='rbxassetid://10734972463',['lucide-stop-circle']='rbxassetid://10734972621',['lucide-stretch-horizontal']='rbxassetid://10734972862',['lucide-stretch-vertical']='rbxassetid://10734973130',['lucide-strikethrough']='rbxassetid://10734973290',['lucide-subscript']='rbxassetid://10734973457',['lucide-sun']='rbxassetid://10734974297',['lucide-sun-dim']='rbxassetid://10734973645',['lucide-sun-medium']='rbxassetid://10734973778',['lucide-sun-moon']='rbxassetid://10734973999',['lucide-sun-snow']='rbxassetid://10734974130',['lucide-sunrise']='rbxassetid://10734974522',['lucide-sunset']='rbxassetid://10734974689',['lucide-superscript']='rbxassetid://10734974850',['lucide-swiss-franc']='rbxassetid://10734975024',['lucide-switch-camera']='rbxassetid://10734975214',['lucide-sword']='rbxassetid://10734975486',['lucide-swords']='rbxassetid://10734975692',['lucide-syringe']='rbxassetid://10734975932',['lucide-table']='rbxassetid://10734976230',['lucide-table-2']='rbxassetid://10734976097',['lucide-tablet']='rbxassetid://10734976394',['lucide-tag']='rbxassetid://10734976528',['lucide-tags']='rbxassetid://10734976739',['lucide-target']='rbxassetid://10734977012',['lucide-tent']='rbxassetid://10734981750',['lucide-terminal']='rbxassetid://10734982144',['lucide-terminal-square']='rbxassetid://10734981995',['lucide-text-cursor']='rbxassetid://10734982395',['lucide-text-cursor-input']='rbxassetid://10734982297',['lucide-thermometer']='rbxassetid://10734983134',['lucide-thermometer-snowflake']='rbxassetid://10734982571',['lucide-thermometer-sun']='rbxassetid://10734982771',['lucide-thumbs-down']='rbxassetid://10734983359',['lucide-thumbs-up']='rbxassetid://10734983629',['lucide-ticket']='rbxassetid://10734983868',['lucide-timer']='rbxassetid://10734984606',['lucide-timer-off']='rbxassetid://10734984138',['lucide-timer-reset']='rbxassetid://10734984355',['lucide-toggle-left']='rbxassetid://10734984834',['lucide-toggle-right']='rbxassetid://10734985040',['lucide-tornado']='rbxassetid://10734985247',['lucide-toy-brick']='rbxassetid://10747361919',['lucide-train']='rbxassetid://10747362105',['lucide-trash']='rbxassetid://10747362393',['lucide-trash-2']='rbxassetid://10747362241',['lucide-tree-deciduous']='rbxassetid://10747362534',['lucide-tree-pine']='rbxassetid://10747362748',['lucide-trees']='rbxassetid://10747363016',['lucide-trending-down']='rbxassetid://10747363205',['lucide-trending-up']='rbxassetid://10747363465',['lucide-triangle']='rbxassetid://10747363621',['lucide-trophy']='rbxassetid://10747363809',['lucide-truck']='rbxassetid://10747364031',['lucide-tv']='rbxassetid://10747364593',['lucide-tv-2']='rbxassetid://10747364302',['lucide-type']='rbxassetid://10747364761',['lucide-umbrella']='rbxassetid://10747364971',['lucide-underline']='rbxassetid://10747365191',['lucide-undo']='rbxassetid://10747365484',['lucide-undo-2']='rbxassetid://10747365359',['lucide-unlink']='rbxassetid://10747365771',['lucide-unlink-2']='rbxassetid://10747397871',['lucide-unlock']='rbxassetid://10747366027',['lucide-upload']='rbxassetid://10747366434',['lucide-upload-cloud']='rbxassetid://10747366266',['lucide-usb']='rbxassetid://10747366606',['lucide-user']='rbxassetid://10747373176',['lucide-user-check']='rbxassetid://10747371901',['lucide-user-cog']='rbxassetid://10747372167',['lucide-user-minus']='rbxassetid://10747372346',['lucide-user-plus']='rbxassetid://10747372702',['lucide-user-x']='rbxassetid://10747372992',['lucide-users']='rbxassetid://10747373426',['lucide-utensils']='rbxassetid://10747373821',['lucide-utensils-crossed']='rbxassetid://10747373629',['lucide-venetian-mask']='rbxassetid://10747374003',['lucide-verified']='rbxassetid://10747374131',['lucide-vibrate']='rbxassetid://10747374489',['lucide-vibrate-off']='rbxassetid://10747374269',['lucide-video']='rbxassetid://10747374938',['lucide-video-off']='rbxassetid://10747374721',['lucide-view']='rbxassetid://10747375132',['lucide-voicemail']='rbxassetid://10747375281',['lucide-volume']='rbxassetid://10747376008',['lucide-volume-1']='rbxassetid://10747375450',['lucide-volume-2']='rbxassetid://10747375679',['lucide-volume-x']='rbxassetid://10747375880',['lucide-wallet']='rbxassetid://10747376205',['lucide-wand']='rbxassetid://10747376565',['lucide-wand-2']='rbxassetid://10747376349',['lucide-watch']='rbxassetid://10747376722',['lucide-waves']='rbxassetid://10747376931',['lucide-webcam']='rbxassetid://10747381992',['lucide-wifi']='rbxassetid://10747382504',['lucide-wifi-off']='rbxassetid://10747382268',['lucide-wind']='rbxassetid://10747382750',['lucide-wrap-text']='rbxassetid://10747383065',['lucide-wrench']='rbxassetid://10747383470',['lucide-x']='rbxassetid://10747384394',['lucide-x-circle']='rbxassetid://10747383819',['lucide-x-octagon']='rbxassetid://10747384037',['lucide-x-square']='rbxassetid://10747384217',['lucide-zoom-in']='rbxassetid://10747384552',['lucide-zoom-out']='rbxassetid://10747384679'}}end,[30]=function()local aa,ab,ac,ad,ae=b(30)local af={SingleMotor=ac(ab.SingleMotor),GroupMotor=ac(ab.GroupMotor),Instant=ac(ab.Instant),Linear=ac(ab.Linear),Spring=ac(ab.Spring),isMotor=ac(ab.isMotor)}return af end,[31]=function()local aa,ab,ac,ad,ae=b(31)local af,ag,ah,ai=game:GetService'RunService',ac(ab.Parent.Signal),function()end,{}ai.__index=ai function ai.new()return setmetatable({_onStep=ag.new(),_onStart=ag.new(),_onComplete=ag.new()},ai)end function ai.onStep(aj,c)return aj._onStep:connect(c)end function ai.onStart(aj,c)return aj._onStart:connect(c)end function ai.onComplete(aj,c)return aj._onComplete:connect(c)end function ai.start(aj)if not aj._connection then aj._connection=af.RenderStepped:Connect(function(c)aj:step(c)end)end end function ai.stop(aj)if aj._connection then aj._connection:Disconnect()aj._connection=nil end end ai.destroy=ai.stop ai.step=ah ai.getValue=ah ai.setGoal=ah function ai.__tostring(aj)return'Motor'end return ai end,[32]=function()local aa,ab,ac,ad,ae=b(32)return function()local af,ag=game:GetService'RunService',ac(ab.Parent.BaseMotor)describe('connection management',function()local ah=ag.new()it('should hook up connections on :start()',function()ah:start()expect(typeof(ah._connection)).to.equal'RBXScriptConnection'end)it('should remove connections on :stop() or :destroy()',function()ah:stop()expect(ah._connection).to.equal(nil)end)end)it('should call :step() with deltaTime',function()local ah,ai=(ag.new())function ah.step(aj,...)ai={...}ah:stop()end ah:start()local aj=af.RenderStepped:Wait()af.RenderStepped:Wait()expect(ai).to.be.ok()expect(ai[1]).to.equal(aj)end)end end,[33]=function()local aa,ab,ac,ad,ae=b(33)local af,ag,ah=ac(ab.Parent.BaseMotor),ac(ab.Parent.SingleMotor),ac(ab.Parent.isMotor)local ai=setmetatable({},af)ai.__index=ai local aj=function(aj)if ah(aj)then return aj end local c=typeof(aj)if c=='number'then return ag.new(aj,false)elseif c=='table'then return ai.new(aj,false)end error(('Unable to convert %q to motor; type %s is unsupported'):format(aj,c),2)end function ai.new(c,d)assert(c,'Missing argument #1: initialValues')assert(typeof(c)=='table','initialValues must be a table!')assert(not c.step,[[initialValues contains disallowed property "step". Did you mean to put a table of values here?]])local e=setmetatable(af.new(),ai)if d~=nil then e._useImplicitConnections=d else e._useImplicitConnections=true end e._complete=true e._motors={}for f,g in pairs(c)do e._motors[f]=aj(g)end return e end function ai.step(c,d)if c._complete then return true end local e=true for f,g in pairs(c._motors)do local h=g:step(d)if not h then e=false end end c._onStep:fire(c:getValue())if e then if c._useImplicitConnections then c:stop()end c._complete=true c._onComplete:fire()end return e end function ai.setGoal(c,d)assert(not d.step,[[goals contains disallowed property "step". Did you mean to put a table of goals here?]])c._complete=false c._onStart:fire()for e,f in pairs(d)do local g=assert(c._motors[e],('Unknown motor for key %s'):format(e))g:setGoal(f)end if c._useImplicitConnections then c:start()end end function ai.getValue(c)local d={}for e,f in pairs(c._motors)do d[e]=f:getValue()end return d end function ai.__tostring(c)return'Motor(Group)'end return ai end,[34]=function()local aa,ab,ac,ad,ae=b(34)return function()local af,ag,ah=ac(ab.Parent.GroupMotor),ac(ab.Parent.Instant),ac(ab.Parent.Spring)it('should complete when all child motors are complete',function()local ai=af.new({A=1,B=2},false)expect(ai._complete).to.equal(true)ai:setGoal{A=ag.new(3),B=ah.new(4,{frequency=7.5,dampingRatio=1})}expect(ai._complete).to.equal(false)ai:step(1.6666666666666665E-2)expect(ai._complete).to.equal(false)for aj=1,30 do ai:step(1.6666666666666665E-2)end expect(ai._complete).to.equal(true)end)it('should start when the goal is set',function()local ai,aj=af.new({A=0},false),false ai:onStart(function()aj=not aj end)ai:setGoal{A=ag.new(1)}expect(aj).to.equal(true)ai:setGoal{A=ag.new(1)}expect(aj).to.equal(false)end)it('should properly return all values',function()local ai=af.new({A=1,B=2},false)local aj=ai:getValue()expect(aj.A).to.equal(1)expect(aj.B).to.equal(2)end)it('should error when a goal is given to GroupMotor.new',function()local ai=pcall(function()af.new(ag.new(0))end)expect(ai).to.equal(false)end)it([[should error when a single goal is provided to GroupMotor:step]],function()local ai=pcall(function()af.new{a=1}:setGoal(ag.new(0))end)expect(ai).to.equal(false)end)end end,[35]=function()local aa,ab,ac,ad,ae=b(35)local af={}af.__index=af function af.new(ag)return setmetatable({_targetValue=ag},af)end function af.step(ag)return{complete=true,value=ag._targetValue}end return af end,[36]=function()local aa,ab,ac,ad,ae=b(36)return function()local af=ac(ab.Parent.Instant)it('should return a completed state with the provided value',function()local ag=af.new(1.23)local ah=ag:step(0.1,{value=0,complete=false})expect(ah.complete).to.equal(true)expect(ah.value).to.equal(1.23)end)end end,[37]=function()local aa,ab,ac,ad,ae=b(37)local af={}af.__index=af function af.new(ag,ah)assert(ag,'Missing argument #1: targetValue')ah=ah or{}return setmetatable({_targetValue=ag,_velocity=ah.velocity or 1},af)end function af.step(ag,ah,ai)local aj,c,d=ah.value,ag._velocity,ag._targetValue local e=ai*c local f=e>=math.abs(d-aj)aj=aj+e*(d>aj and 1 or-1)if f then aj=ag._targetValue c=0 end return{complete=f,value=aj,velocity=c}end return af end,[38]=function()local aa,ab,ac,ad,ae=b(38)return function()local af,ag=ac(ab.Parent.SingleMotor),ac(ab.Parent.Linear)describe('completed state',function()local ah,ai=af.new(0,false),ag.new(1,{velocity=1})ah:setGoal(ai)for aj=1,60 do ah:step(1.6666666666666665E-2)end it('should complete',function()expect(ah._state.complete).to.equal(true)end)it('should be exactly the goal value when completed',function()expect(ah._state.value).to.equal(1)end)end)describe('uncompleted state',function()local ah,ai=af.new(0,false),ag.new(1,{velocity=1})ah:setGoal(ai)for aj=1,59 do ah:step(1.6666666666666665E-2)end it('should be uncomplete',function()expect(ah._state.complete).to.equal(false)end)end)describe('negative velocity',function()local ah,ai=af.new(1,false),ag.new(0,{velocity=1})ah:setGoal(ai)for aj=1,60 do ah:step(1.6666666666666665E-2)end it('should complete',function()expect(ah._state.complete).to.equal(true)end)it('should be exactly the goal value when completed',function()expect(ah._state.value).to.equal(0)end)end)end end,[39]=function()local aa,ab,ac,ad,ae=b(39)local af={}af.__index=af function af.new(ag,ah)return setmetatable({signal=ag,connected=true,_handler=ah},af)end function af.disconnect(ag)if ag.connected then ag.connected=false for ah,ai in pairs(ag.signal._connections)do if ai==ag then table.remove(ag.signal._connections,ah)return end end end end local ag={}ag.__index=ag function ag.new()return setmetatable({_connections={},_threads={}},ag)end function ag.fire(ah,...)for ai,aj in pairs(ah._connections)do aj._handler(...)end for c,d in pairs(ah._threads)do coroutine.resume(d,...)end ah._threads={}end function ag.connect(ah,aj)local c=af.new(ah,aj)table.insert(ah._connections,c)return c end function ag.wait(ah)table.insert(ah._threads,coroutine.running())return coroutine.yield()end return ag end,[40]=function()local aa,ab,ac,ad,ae=b(40)return function()local af=ac(ab.Parent.Signal)it('should invoke all connections, instantly',function()local ag,ah,aj=(af.new())ag:connect(function(c)ah=c end)ag:connect(function(c)aj=c end)ag:fire'hello'expect(ah).to.equal'hello'expect(aj).to.equal'hello'end)it('should return values when :wait() is called',function()local ag=af.new()spawn(function()ag:fire(123,'hello')end)local ah,aj=ag:wait()expect(ah).to.equal(123)expect(aj).to.equal'hello'end)it('should properly handle disconnections',function()local ag,ah=af.new(),false local aj=ag:connect(function()ah=true end)aj:disconnect()ag:fire()expect(ah).to.equal(false)end)end end,[41]=function()local aa,ab,ac,ad,ae=b(41)local af=ac(ab.Parent.BaseMotor)local ag=setmetatable({},af)ag.__index=ag function ag.new(ah,aj)assert(ah,'Missing argument #1: initialValue')assert(typeof(ah)=='number','initialValue must be a number!')local c=setmetatable(af.new(),ag)if aj~=nil then c._useImplicitConnections=aj else c._useImplicitConnections=true end c._goal=nil c._state={complete=true,value=ah}return c end function ag.step(ah,aj)if ah._state.complete then return true end local c=ah._goal:step(ah._state,aj)ah._state=c ah._onStep:fire(c.value)if c.complete then if ah._useImplicitConnections then ah:stop()end ah._onComplete:fire()end return c.complete end function ag.getValue(ah)return ah._state.value end function ag.setGoal(ah,aj)ah._state.complete=false ah._goal=aj ah._onStart:fire()if ah._useImplicitConnections then ah:start()end end function ag.__tostring(ah)return'Motor(Single)'end return ag end,[42]=function()local aa,ab,ac,ad,ae=b(42)return function()local af,ag=ac(ab.Parent.SingleMotor),ac(ab.Parent.Instant)it('should assign new state on step',function()local ah=af.new(0,false)ah:setGoal(ag.new(5))ah:step(1.6666666666666665E-2)expect(ah._state.complete).to.equal(true)expect(ah._state.value).to.equal(5)end)it([[should invoke onComplete listeners when the goal is completed]],function()local ah,aj=af.new(0,false),false ah:onComplete(function()aj=true end)ah:setGoal(ag.new(5))ah:step(1.6666666666666665E-2)expect(aj).to.equal(true)end)it('should start when the goal is set',function()local ah,aj=af.new(0,false),false ah:onStart(function()aj=not aj end)ah:setGoal(ag.new(5))expect(aj).to.equal(true)ah:setGoal(ag.new(5))expect(aj).to.equal(false)end)end end,[43]=function()local aa,ab,ac,ad,ae=b(43)local af,ag,ah,aj=0.001,0.001,0.0001,{}aj.__index=aj function aj.new(c,d)assert(c,'Missing argument #1: targetValue')d=d or{}return setmetatable({_targetValue=c,_frequency=d.frequency or 4,_dampingRatio=d.dampingRatio or 1},aj)end function aj.step(c,d,e)local f,g,h,i,j=c._dampingRatio,c._frequency*2*math.pi,c._targetValue,d.value,d.velocity or 0 local k,l,m,n=i-h,(math.exp(-f*g*e))if f==1 then m=(k*(1+g*e)+j*e)*l+h n=(j*(1-g*e)-k*(g*g*e))*l elseif f<1 then local o=math.sqrt(1-f*f)local p,s,t=math.cos(g*o*e),(math.sin(g*o*e))if o>ah then t=s/o else local u=e*g t=u+((u*u)*(o*o)*(o*o)/20-o*o)*(u*u*u)/6 end local u if g*o>ah then u=s/(g*o)else local v=g*o u=e+((e*e)*(v*v)*(v*v)/20-v*v)*(e*e*e)/6 end m=(k*(p+f*t)+j*u)*l+h n=(j*(p-t*f)-k*(t*g))*l else local o=math.sqrt(f*f-1)local p,s=-g*(f-o),-g*(f+o)local t=(j-k*p)/(2*g*o)local u=k-t local v,w=u*math.exp(p*e),t*math.exp(s*e)m=v+w+h n=v*p+w*s end local o=math.abs(n)<af and math.abs(m-h)<ag return{complete=o,value=o and h or m,velocity=n}end return aj end,[44]=function()local aa,ab,ac,ad,ae=b(44)return function()local af,ag=ac(ab.Parent.SingleMotor),ac(ab.Parent.Spring)describe('completed state',function()local ah,aj=af.new(0,false),ag.new(1,{frequency=2,dampingRatio=0.75})ah:setGoal(aj)for c=1,100 do ah:step(1.6666666666666665E-2)end it('should complete',function()expect(ah._state.complete).to.equal(true)end)it('should be exactly the goal value when completed',function()expect(ah._state.value).to.equal(1)end)end)it('should inherit velocity',function()local ah=af.new(0,false)ah._state={complete=false,value=0,velocity=-5}local aj=ag.new(1,{frequency=2,dampingRatio=1})ah:setGoal(aj)ah:step(1.6666666666666665E-2)expect(ah._state.velocity<0).to.equal(true)end)end end,[45]=function()local aa,ab,ac,ad,ae=b(45)local af=function(af)local ag=tostring(af):match'^Motor%((.+)%)$'if ag then return true,ag else return false end end return af end,[46]=function()local aa,ab,ac,ad,ae=b(46)return function()local af,ag,ah=ac(ab.Parent.isMotor),ac(ab.Parent.SingleMotor),ac(ab.Parent.GroupMotor)local aj,c=ag.new(0),ah.new{}it('should properly detect motors',function()expect(af(aj)).to.equal(true)expect(af(c)).to.equal(true)end)it("shouldn't detect things that aren't motors",function()expect(af{}).to.equal(false)end)it('should return the proper motor type',function()local d,e=af(aj)local f,g=af(c)expect(e).to.equal'Single'expect(g).to.equal'Group'end)end end,[47]=function()local aa,ab,ac,ad,ae=b(47)local af={Names={'Dark','Darker','Light','Aqua','Amethyst','Rose'}}for ag,ah in next,ab:GetChildren()do local aj=ac(ah)af[aj.Name]=aj end return af end,[48]=function()local aa,ab,ac,ad,ae=b(48)return{Name='Amethyst',Accent=Color3.fromRGB(97,62,167),AcrylicMain=Color3.fromRGB(20,20,20),AcrylicBorder=Color3.fromRGB(110,90,130),AcrylicGradient=ColorSequence.new(Color3.fromRGB(85,57,139),Color3.fromRGB(40,25,65)),AcrylicNoise=0.92,TitleBarLine=Color3.fromRGB(95,75,110),Tab=Color3.fromRGB(160,140,180),Element=Color3.fromRGB(140,120,160),ElementBorder=Color3.fromRGB(60,50,70),InElementBorder=Color3.fromRGB(100,90,110),ElementTransparency=0.87,ToggleSlider=Color3.fromRGB(140,120,160),ToggleToggled=Color3.fromRGB(0,0,0),SliderRail=Color3.fromRGB(140,120,160),DropdownFrame=Color3.fromRGB(170,160,200),DropdownHolder=Color3.fromRGB(60,45,80),DropdownBorder=Color3.fromRGB(50,40,65),DropdownOption=Color3.fromRGB(140,120,160),Keybind=Color3.fromRGB(140,120,160),Input=Color3.fromRGB(140,120,160),InputFocused=Color3.fromRGB(20,10,30),InputIndicator=Color3.fromRGB(170,150,190),Dialog=Color3.fromRGB(60,45,80),DialogHolder=Color3.fromRGB(45,30,65),DialogHolderLine=Color3.fromRGB(40,25,60),DialogButton=Color3.fromRGB(60,45,80),DialogButtonBorder=Color3.fromRGB(95,80,110),DialogBorder=Color3.fromRGB(85,70,100),DialogInput=Color3.fromRGB(70,55,85),DialogInputLine=Color3.fromRGB(175,160,190),Text=Color3.fromRGB(255,255,255),SubText=Color3.fromRGB(170,170,170),Hover=Color3.fromRGB(140,120,160),HoverChange=0.04}end,[49]=function()local aa,ab,ac,ad,ae=b(49)return{Name='Aqua',Accent=Color3.fromRGB(60,165,165),AcrylicMain=Color3.fromRGB(20,20,20),AcrylicBorder=Color3.fromRGB(50,100,100),AcrylicGradient=ColorSequence.new(Color3.fromRGB(60,140,140),Color3.fromRGB(40,80,80)),AcrylicNoise=0.92,TitleBarLine=Color3.fromRGB(60,120,120),Tab=Color3.fromRGB(140,180,180),Element=Color3.fromRGB(110,160,160),ElementBorder=Color3.fromRGB(40,70,70),InElementBorder=Color3.fromRGB(80,110,110),ElementTransparency=0.84,ToggleSlider=Color3.fromRGB(110,160,160),ToggleToggled=Color3.fromRGB(0,0,0),SliderRail=Color3.fromRGB(110,160,160),DropdownFrame=Color3.fromRGB(160,200,200),DropdownHolder=Color3.fromRGB(40,80,80),DropdownBorder=Color3.fromRGB(40,65,65),DropdownOption=Color3.fromRGB(110,160,160),Keybind=Color3.fromRGB(110,160,160),Input=Color3.fromRGB(110,160,160),InputFocused=Color3.fromRGB(20,10,30),InputIndicator=Color3.fromRGB(130,170,170),Dialog=Color3.fromRGB(40,80,80),DialogHolder=Color3.fromRGB(30,60,60),DialogHolderLine=Color3.fromRGB(25,50,50),DialogButton=Color3.fromRGB(40,80,80),DialogButtonBorder=Color3.fromRGB(80,110,110),DialogBorder=Color3.fromRGB(50,100,100),DialogInput=Color3.fromRGB(45,90,90),DialogInputLine=Color3.fromRGB(130,170,170),Text=Color3.fromRGB(255,255,255),SubText=Color3.fromRGB(170,170,170),Hover=Color3.fromRGB(110,160,160),HoverChange=0.04}end,[50]=function()local aa,ab,ac,ad,ae=b(50)return{Name='Dark',Accent=Color3.fromRGB(96,205,255),AcrylicMain=Color3.fromRGB(60,60,60),AcrylicBorder=Color3.fromRGB(90,90,90),AcrylicGradient=ColorSequence.new(Color3.fromRGB(5,5,5),Color3.fromRGB(5,5,5)),AcrylicNoise=0.9,TitleBarLine=Color3.fromRGB(75,75,75),Tab=Color3.fromRGB(120,120,120),Element=Color3.fromRGB(120,120,120),ElementBorder=Color3.fromRGB(35,35,35),InElementBorder=Color3.fromRGB(90,90,90),ElementTransparency=0.87,ToggleSlider=Color3.fromRGB(120,120,120),ToggleToggled=Color3.fromRGB(0,0,0),SliderRail=Color3.fromRGB(120,120,120),DropdownFrame=Color3.fromRGB(160,160,160),DropdownHolder=Color3.fromRGB(45,45,45),DropdownBorder=Color3.fromRGB(35,35,35),DropdownOption=Color3.fromRGB(120,120,120),Keybind=Color3.fromRGB(120,120,120),Input=Color3.fromRGB(160,160,160),InputFocused=Color3.fromRGB(10,10,10),InputIndicator=Color3.fromRGB(150,150,150),Dialog=Color3.fromRGB(45,45,45),DialogHolder=Color3.fromRGB(35,35,35),DialogHolderLine=Color3.fromRGB(30,30,30),DialogButton=Color3.fromRGB(45,45,45),DialogButtonBorder=Color3.fromRGB(80,80,80),DialogBorder=Color3.fromRGB(70,70,70),DialogInput=Color3.fromRGB(55,55,55),DialogInputLine=Color3.fromRGB(160,160,160),Text=Color3.fromRGB(255,255,255),SubText=Color3.fromRGB(170,170,170),Hover=Color3.fromRGB(120,120,120),HoverChange=0.07}end,[51]=function()local aa,ab,ac,ad,ae=b(51)return{Name='Darker',Accent=Color3.fromRGB(72,138,182),AcrylicMain=Color3.fromRGB(30,30,30),AcrylicBorder=Color3.fromRGB(60,60,60),AcrylicGradient=ColorSequence.new(Color3.fromRGB(25,25,25),Color3.fromRGB(15,15,15)),AcrylicNoise=0.94,TitleBarLine=Color3.fromRGB(65,65,65),Tab=Color3.fromRGB(100,100,100),Element=Color3.fromRGB(70,70,70),ElementBorder=Color3.fromRGB(25,25,25),InElementBorder=Color3.fromRGB(55,55,55),ElementTransparency=0.82,DropdownFrame=Color3.fromRGB(120,120,120),DropdownHolder=Color3.fromRGB(35,35,35),DropdownBorder=Color3.fromRGB(25,25,25),Dialog=Color3.fromRGB(35,35,35),DialogHolder=Color3.fromRGB(25,25,25),DialogHolderLine=Color3.fromRGB(20,20,20),DialogButton=Color3.fromRGB(35,35,35),DialogButtonBorder=Color3.fromRGB(55,55,55),DialogBorder=Color3.fromRGB(50,50,50),DialogInput=Color3.fromRGB(45,45,45),DialogInputLine=Color3.fromRGB(120,120,120)}end,[52]=function()local aa,ab,ac,ad,ae=b(52)return{Name='Light',Accent=Color3.fromRGB(0,103,192),AcrylicMain=Color3.fromRGB(255,255,255),AcrylicBorder=Color3.fromRGB(120,120,120),AcrylicGradient=ColorSequence.new(Color3.fromRGB(255,255,255),Color3.fromRGB(255,255,255)),AcrylicNoise=0.96,TitleBarLine=Color3.fromRGB(160,160,160),Tab=Color3.fromRGB(90,90,90),Element=Color3.fromRGB(255,255,255),ElementBorder=Color3.fromRGB(180,180,180),InElementBorder=Color3.fromRGB(150,150,150),ElementTransparency=0.65,ToggleSlider=Color3.fromRGB(5,5,5),ToggleToggled=Color3.fromRGB(255,255,255),SliderRail=Color3.fromRGB(5,5,5),DropdownFrame=Color3.fromRGB(255,255,255),DropdownHolder=Color3.fromRGB(255,255,255),DropdownBorder=Color3.fromRGB(255,255,255),DropdownOption=Color3.fromRGB(150,150,150),Keybind=Color3.fromRGB(120,120,120),Input=Color3.fromRGB(255,255,255),InputFocused=Color3.fromRGB(100,100,100),InputIndicator=Color3.fromRGB(80,80,80),Dialog=Color3.fromRGB(255,255,255),DialogHolder=Color3.fromRGB(255,255,255),DialogHolderLine=Color3.fromRGB(228,228,228),DialogButton=Color3.fromRGB(255,255,255),DialogButtonBorder=Color3.fromRGB(190,190,190),DialogBorder=Color3.fromRGB(140,140,140),DialogInput=Color3.fromRGB(250,250,250),DialogInputLine=Color3.fromRGB(160,160,160),Text=Color3.fromRGB(0,0,0),SubText=Color3.fromRGB(5,5,5),Hover=Color3.fromRGB(50,50,50),HoverChange=0.16}end,[53]=function()local aa,ab,ac,ad,ae=b(53)return{Name='Rose',Accent=Color3.fromRGB(180,55,90),AcrylicMain=Color3.fromRGB(5,5,5),AcrylicBorder=Color3.fromRGB(130,90,110),AcrylicGradient=ColorSequence.new(Color3.fromRGB(190,60,135),Color3.fromRGB(165,50,70)),AcrylicNoise=0.92,TitleBarLine=Color3.fromRGB(140,85,105),Tab=Color3.fromRGB(180,140,160),Element=Color3.fromRGB(200,120,170),ElementBorder=Color3.fromRGB(110,70,85),InElementBorder=Color3.fromRGB(120,90,90),ElementTransparency=0.86,ToggleSlider=Color3.fromRGB(200,120,170),ToggleToggled=Color3.fromRGB(0,0,0),SliderRail=Color3.fromRGB(200,120,170),DropdownFrame=Color3.fromRGB(200,160,180),DropdownHolder=Color3.fromRGB(120,50,75),DropdownBorder=Color3.fromRGB(90,40,55),DropdownOption=Color3.fromRGB(200,120,170),Keybind=Color3.fromRGB(200,120,170),Input=Color3.fromRGB(200,120,170),InputFocused=Color3.fromRGB(20,10,30),InputIndicator=Color3.fromRGB(170,150,190),Dialog=Color3.fromRGB(120,50,75),DialogHolder=Color3.fromRGB(95,40,60),DialogHolderLine=Color3.fromRGB(90,35,55),DialogButton=Color3.fromRGB(120,50,75),DialogButtonBorder=Color3.fromRGB(155,90,115),DialogBorder=Color3.fromRGB(100,70,90),DialogInput=Color3.fromRGB(135,55,80),DialogInputLine=Color3.fromRGB(190,160,180),Text=Color3.fromRGB(255,255,255),SubText=Color3.fromRGB(170,170,170),Hover=Color3.fromRGB(200,120,170),HoverChange=0.04}end}do local ab,ac,ad,ae,af,ag,ah,aj,c,e,f,g,h,i,j,k=task,setmetatable,error,newproxy,getmetatable,next,table,unpack,coroutine,script,type,require,pcall,getfenv,setfenv,rawget local l,m,n,o,p,s,t,u,v,w,x=ah.insert,ah.remove,ah.freeze or function(l)return l end,ab and ab.defer or function(l,...)local m=c.create(l)c.resume(m,...)return m end,'0.0.0-venv',{},{},{},{},{},{}local y,z={GetChildren=function(y)local z,A=x[y],{}for B in ag,z do l(A,B)end return A end,FindFirstChild=function(y,z)if not z then ad('Argument 1 missing or nil',2)end for A in ag,x[y]do if A.Name==z then return A end end return end,GetFullName=function(y)local z,A=y.Name,y.Parent while A do z=A.Name..'.'..z A=A.Parent end return'VirtualEnv.'..z end},{}for A,B in ag,y do z[A]=function(C,...)if not x[C]then ad("Expected ':' not '.' calling member function "..A,1)end return B(C,...)end end local C=function(C,D,E)local F,G,H,I,J=ac({},{__mode='k'}),function(F)ad(F..' is not a valid (virtual) member of '..C..' "'..D..'"',1)end,function(F)ad('Unable to assign (virtual) property '..F..'. Property is read only',1)end,(ae(true))local K=af(I)K.__index=function(L,M)if M=='ClassName'then return C elseif M=='Name'then return D elseif M=='Parent'then return E elseif C=='StringValue'and M=='Value'then return J else local N=z[M]if N then return N end end for N in ag,F do if N.Name==M then return N end end G(M)end K.__newindex=function(L,M,N)if M=='ClassName'then H(M)elseif M=='Name'then D=N elseif M=='Parent'then if N==I then return end if E~=nil then x[E][I]=nil end E=N if N~=nil then x[N][I]=true end elseif C=='StringValue'and M=='Value'then J=N else G(M)end end K.__tostring=function()return D end x[I]=F if E~=nil then x[E][I]=true end return I end local function D(E,F)local G,H,I,J=E[1],E[2],E[3],E[4]local K=m(I,1)local L=C(H,K,F)s[G]=L if I then for M,N in ag,I do L[M]=N end end if J then for M,N in ag,J do D(N,L)end end return L end local E={}for F,G in ag,a do l(E,D(G))end for H,I in ag,aa do local J=s[H]t[J]=I local K=J.ClassName if K=='LocalScript'or K=='Script'then l(v,J)end end local J=function(J)local K,L=J.ClassName,u[J]if L and K=='ModuleScript'then return aj(L)end local M=t[J]if not M then return end if K=='LocalScript'or K=='Script'then M()return else local N={M()}u[J]=N return aj(N)end end function b(K)local L=s[K]local M=t[L]if not M then return end local N,O,P,Q,R,S,T=false,n{Version=p,Script=e,Shared=w,GetScript=function()return e end,GetShared=function()return w end},L,function(N,...)if x[N]and N.ClassName=='ModuleScript'and t[N]then return J(N)end return g(N,...)end local U,V=function(U,...)if not N then T()end if f(U)=='number'and U>=0 then if U==0 then return S else U=U+1 local V,W=h(i,U)if V and W==R then return S end end end return i(U,...)end,function(U,V,...)if not N then T()end if f(U)=='number'and U>=0 then if U==0 then return j(S,V)else U=U+1 local W,X=h(i,U)if W and X==R then return j(S,V)end end end return j(U,V,...)end function T()R=i(0)local W={maui=O,script=P,require=Q,getfenv=U,setfenv=V}S=ac({},{__index=function(X,Y)local Z=k(S,Y)if Z~=nil then return Z end local _=W[Y]if _~=nil then return _ end return R[Y]end})j(M,S)N=true end return O,P,Q,U,V end for K,L in ag,v do o(J,L)end do local M for N,O in ag,E do if O.ClassName=='ModuleScript'and O.Name=='MainModule'then M=O break end end if M then return J(M)end end end
+
+    return setmetatable(
+        {
+            UI = {},
+            windowInfo = {
+                gameName = gameName,
+                userId = userId,
+                rank = rank
+            },
+            currentSelection = nil,
+            currentCategorySelection = nil,
+            currentTab = nil,
+            MainUI = window
+        },
+        UILibrary.Window
+    )
+end
+
+function UILibrary.Window:setAnimSpeed(val)
+    TI = TweenInfo.new(.4 / (val / 100), Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+end
+
+function UILibrary.Window:Notification(sett)
+    local Notif = objectGenerator.new("Notification").Main
+
+    Notif.Size = UDim2.new(1, 0, 1, -5)
+    Notif:FindFirstChildOfClass("UIAspectRatioConstraint"):Destroy()
+
+    local ui = self.MainUI.Notifications
+
+    Notif.Content.Text.Title.Text = sett.Title
+    Notif.Content.Text.Desc.Text = sett.Desc
+
+    local layout = getLayoutOrder(ui)
+
+    Notif.LayoutOrder = layout
+
+    Notif.Notification.BackgroundTransparency = 0
+    Notif.Parent.Size = UDim2.fromScale(1, 0)
+
+    Notif.Parent.Parent = ui
+
+    wait(.02)
+
+    TweenService:Create(
+        Notif.Parent,
+        TI,
+        {
+            Size = UDim2.new(1, 0, .1, 5)
+        }
+    ):Play()
+
+    wait(.2)
+
+    TweenService:Create(
+        Notif.Notification,
+        TI,
+        {
+            BackgroundTransparency = 1
+        }
+    ):Play()
+
+    local connections = {}
+    local isOpen = true
+
+    local function expire()
+        isOpen = false
+
+        for i, v in pairs(connections) do
+            v:Disconnect()
+        end
+
+        TweenService:Create(
+            Notif.Notification,
+            TI,
+            {
+                BackgroundTransparency = 0
+            }
+        ):Play()
+
+        TweenService:Create(
+            Notif,
+            TweenInfo.new(.3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+            {
+                Position = UDim2.fromScale(2, 0)
+                --Size = UDim2.fromScale(0,1)
+            }
+        ):Play()
+
+        task.delay(
+            .3,
+            function()
+                TweenService:Create(
+                    Notif.Parent,
+                    TweenInfo.new(.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
+                    {
+                        Size = UDim2.fromScale(0, 0)
+                    }
+                ):Play()
+
+                local parent = Notif.Parent
+
+                Notif.Parent:ClearAllChildren()
+
+                wait(.3)
+                parent:Destroy()
+            end
+        )
+
+        for i, v in pairs(Notif:GetDescendants()) do
+            if v:IsA("ImageLabel") or v:IsA("ImageButton") then
+                TweenService:Create(
+                    v,
+                    TI,
+                    {
+                        ImageTransparency = 1
+                    }
+                ):Play()
+            elseif v:IsA("TextLabel") then
+                TweenService:Create(
+                    v,
+                    TI,
+                    {
+                        TextTransparency = 1
+                    }
+                ):Play()
+            end
+        end
+    end
+
+    --// too fucking lazy to re-encode all instances
+
+    if sett.expire then
+        task.delay(
+            sett.expire,
+            function()
+                if isOpen then
+                    expire()
+                end
+            end
+        )
+    end
+
+    table.insert(
+        connections,
+        Notif.Content.Buttons.InputBegan:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    TweenService:Create(
+                        Notif.Content.Buttons.Close,
+                        TI,
+                        {
+                            ImageColor3 = Color3.fromRGB(100, 100, 100)
+                        }
+                    ):Play()
+                elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    expire()
+                end
+            end
+        )
+    )
+
+    table.insert(
+        connections,
+        Notif.Content.Buttons.InputEnded:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    TweenService:Create(
+                        Notif.Content.Buttons.Close,
+                        TI,
+                        {
+                            ImageColor3 = Color3.fromRGB(255, 255, 255)
+                        }
+                    ):Play()
+                end
+            end
+        )
+    )
+end
+
+function UILibrary.Window:Prompt(sett)
+    local Notif = objectGenerator.new("Prompt").Main
+
+    Notif.Size = UDim2.new(1, 0, 1, -5)
+    Notif:FindFirstChildOfClass("UIAspectRatioConstraint"):Destroy()
+
+    local ui = self.MainUI.Notifications
+
+    Notif.Content.Text.Title.Text = sett.Title
+    Notif.Content.Text.Desc.Text = sett.Desc
+
+    local layout = getLayoutOrder(ui)
+
+    Notif.LayoutOrder = layout
+
+    Notif.Notification.BackgroundTransparency = 0
+    Notif.Parent.Size = UDim2.fromScale(1, 0)
+
+    Notif.Parent.Parent = ui
+
+    wait(.02)
+
+    TweenService:Create(
+        Notif.Parent,
+        TI,
+        {
+            Size = UDim2.new(1, 0, .1, 5)
+        }
+    ):Play()
+
+    wait(.2)
+
+    TweenService:Create(
+        Notif.Notification,
+        TI,
+        {
+            BackgroundTransparency = 1
+        }
+    ):Play()
+
+    local connections = {}
+    local isOpen = true
+
+    local selection = nil
+    local bindable = Instance.new("BindableEvent")
+
+    local function expire()
+        isOpen = false
+
+        bindable:Fire()
+
+        for i, v in pairs(connections) do
+            v:Disconnect()
+        end
+
+        TweenService:Create(
+            Notif.Notification,
+            TI,
+            {
+                BackgroundTransparency = 0
+            }
+        ):Play()
+
+        TweenService:Create(
+            Notif,
+            TweenInfo.new(.3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+            {
+                Position = UDim2.fromScale(2, 0)
+                --Size = UDim2.fromScale(0,1)
+            }
+        ):Play()
+
+        task.delay(
+            .3,
+            function()
+                TweenService:Create(
+                    Notif.Parent,
+                    TweenInfo.new(.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
+                    {
+                        Size = UDim2.fromScale(0, 0)
+                    }
+                ):Play()
+
+                local parent = Notif.Parent
+
+                Notif.Parent:ClearAllChildren()
+
+                wait(.3)
+                parent:Destroy()
+            end
+        )
+
+        for i, v in pairs(Notif:GetDescendants()) do
+            if v:IsA("ImageLabel") or v:IsA("ImageButton") then
+                TweenService:Create(
+                    v,
+                    TI,
+                    {
+                        ImageTransparency = 1
+                    }
+                ):Play()
+            elseif v:IsA("TextLabel") then
+                TweenService:Create(
+                    v,
+                    TI,
+                    {
+                        TextTransparency = 1
+                    }
+                ):Play()
+            end
+        end
+    end
+
+    local function extraHitbox(obj, downOrUp)
+        local Frame = Instance.new("Frame")
+        Frame.Size = UDim2.fromScale(1, .35)
+        Frame.BackgroundTransparency = 1
+
+        obj.Parent = Frame
+        Frame.Name = obj.Name
+        obj.Name = "Button"
+
+        obj.Position = UDim2.fromScale(.5, .5 - (.2 / downOrUp))
+
+        return Frame
+    end
+
+    local Parent = Notif.Content.Buttons
+
+    local Close = extraHitbox(Notif.Content.Buttons.Close, 1)
+    Close.LayoutOrder = 1
+
+    local Accept = extraHitbox(Notif.Content.Buttons.Accept, -1)
+
+    Close.Parent = Parent
+    Accept.Parent = Parent
+
+    table.insert(
+        connections,
+        Close.InputBegan:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    TweenService:Create(
+                        Close.Button,
+                        TI,
+                        {
+                            ImageColor3 = Color3.fromRGB(100, 100, 100)
+                        }
+                    ):Play()
+                elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    expire()
+                end
+            end
+        )
+    )
+
+    table.insert(
+        connections,
+        Close.InputEnded:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    TweenService:Create(
+                        Close.Button,
+                        TI,
+                        {
+                            ImageColor3 = Color3.fromRGB(255, 255, 255)
+                        }
+                    ):Play()
+                end
+            end
+        )
+    )
+
+    table.insert(
+        connections,
+        Accept.InputBegan:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    TweenService:Create(
+                        Accept.Button,
+                        TI,
+                        {
+                            ImageColor3 = Color3.fromRGB(100, 100, 100)
+                        }
+                    ):Play()
+                elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    selection = true
+                    expire()
+                end
+            end
+        )
+    )
+
+    table.insert(
+        connections,
+        Accept.InputEnded:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    TweenService:Create(
+                        Accept.Button,
+                        TI,
+                        {
+                            ImageColor3 = Color3.fromRGB(255, 255, 255)
+                        }
+                    ):Play()
+                end
+            end
+        )
+    )
+
+    bindable.Event:Wait()
+    return selection
+end
+
+function UILibrary.Window:ChangeCategory(new)
+    local catFolder = self.MainUI.MainUI.Sidebar.ContentHolder.Cheats.CheatHolder
+    local Object = catFolder:FindFirstChild(new)
+
+    if Object and self.currentSelection ~= Object then
+        if self.currentSelection then
+            TweenService:Create(
+                self.currentSelection.Content.Image,
+                TI,
+                {
+                    ImageColor3 = Color3.fromRGB(90, 90, 90)
+                }
+            ):Play()
+
+            TweenService:Create(
+                self.currentSelection.Content.Title,
+                TI,
+                {
+                    TextColor3 = Color3.fromRGB(90, 90, 90)
+                }
+            ):Play()
+
+            TweenService:Create(
+                self.currentSelection.HoverFrame,
+                TI,
+                {
+                    BackgroundTransparency = 1
+                }
+            ):Play()
+
+            TweenService:Create(
+                self.MainUI.MainUI.Sidebar.Sidebar2[self.currentSelection.Name],
+                TI,
+                {
+                    Position = UDim2.fromScale(1, 0)
+                }
+            ):Play()
+        end
+
+        TweenService:Create(
+            Object.Content.Image,
+            TI,
+            {
+                ImageColor3 = Color3.fromRGB(255, 0, 0)
+            }
+        ):Play()
+
+        TweenService:Create(
+            Object.Content.Title,
+            TI,
+            {
+                TextColor3 = Color3.fromRGB(255, 0, 0)
+            }
+        ):Play()
+
+        TweenService:Create(
+            Object.HoverFrame,
+            TI,
+            {
+                BackgroundTransparency = .3
+            }
+        ):Play()
+
+        TweenService:Create(
+            self.MainUI.MainUI.Sidebar.Sidebar2[Object.Name],
+            TI,
+            {
+                Position = UDim2.fromScale(0, 0)
+            }
+        ):Play()
+
+        self.currentSelection = Object
+
+        local firstChild = nil
+
+        for i, v in pairs(self.MainUI.MainUI.Sidebar.Sidebar2[Object.Name].Bar2Holder:GetChildren()) do
+            if v:IsA("GuiObject") then
+                firstChild = v
+                break
+            end
+        end
+
+        if firstChild then
+            self:ChangeCategorySelection(firstChild.Name)
+        end
+    end
+end
+
+function UILibrary.Window:ChangeCategorySelection(name)
+    local catFolder = self.MainUI.MainUI.Sidebar.Sidebar2[self.currentSelection.Name].Bar2Holder
+    local Object = catFolder:FindFirstChild(name)
+
+    if Object and self.currentCategorySelection ~= Object then
+        if self.currentCategorySelection then
+            TweenService:Create(
+                self.currentCategorySelection.InnerContent.Image,
+                TI,
+                {
+                    ImageColor3 = Color3.fromRGB(90, 90, 90)
+                }
+            ):Play()
+
+            TweenService:Create(
+                self.currentCategorySelection.InnerContent.Title,
+                TI,
+                {
+                    TextColor3 = Color3.fromRGB(90, 90, 90)
+                }
+            ):Play()
+
+            TweenService:Create(
+                self.currentCategorySelection.HoverFrame,
+                TI,
+                {
+                    BackgroundTransparency = 1
+                }
+            ):Play()
+
+            TweenService:Create(
+                self.currentCategorySelection.SelectionShadow,
+                TI,
+                {
+                    BackgroundTransparency = 1
+                }
+            ):Play()
+
+            TweenService:Create(
+                self.currentTab,
+                TI,
+                {
+                    Position = UDim2.fromScale(0, 1)
+                }
+            ):Play()
+        end
+
+        TweenService:Create(
+            Object.InnerContent.Image,
+            TI,
+            {
+                ImageColor3 = Color3.fromRGB(255, 0, 0)
+            }
+        ):Play()
+
+        TweenService:Create(
+            Object.InnerContent.Title,
+            TI,
+            {
+                TextColor3 = Color3.fromRGB(255, 0, 0)
+            }
+        ):Play()
+        
+        for _, otherTab in pairs(self.MainUI.MainUI.Content:GetChildren()) do
+            if otherTab:IsA("Frame") or otherTab:IsA("ScrollingFrame") then
+                otherTab.Visible = false
+            end
+        end
+        
+        local tab = self.MainUI.MainUI.Content:FindFirstChild(name)
+        if tab then
+            tab.Visible = true
+        end
+
+        TweenService:Create(
+            Object.HoverFrame,
+            TI,
+            {
+                BackgroundTransparency = .3
+            }
+        ):Play()
+
+        TweenService:Create(
+            Object.SelectionShadow,
+            TI,
+            {
+                BackgroundTransparency = .6
+            }
+        ):Play()
+
+        local tab = self.MainUI.MainUI.Content:FindFirstChild(name)
+
+        if tab then
+            tab.Visible = true
+            TweenService:Create(
+                tab,
+                TI,
+                {
+                    Position = UDim2.fromScale(0, 0)
+                }
+            ):Play()
+        end
+
+        self.currentTab = tab
+        self.currentCategorySelection = Object
+    end
+end
+
+function UILibrary.Window:Category(name, icon)
+    local catFolder = self.MainUI.MainUI.Sidebar.ContentHolder.Cheats.CheatHolder
+    local category = objectGenerator.new("Category")
+
+    category.Content.Title.Text = name
+    category.Content.Image.Image = icon
+
+    self.UI[name] = {}
+
+    category.Name = name
+    category.Parent = catFolder
+    category.LayoutOrder = getLayoutOrder(catFolder)
+
+    local contentHolder = objectGenerator.new("CategoryContent")
+    contentHolder.Name = name
+    contentHolder.Visible = true
+    contentHolder.Parent = self.MainUI.MainUI.Sidebar.Sidebar2
+
+    local Hover =
+        EffectLib.ButtonHoverEffect(
+        category,
+        function()
+            if self.currentSelection ~= category then
+                return true
+            else
+                return false
+            end
+        end
+    )
+    local Click = EffectLib.ButtonClickEffect(category)
+
+    Click.Event:Connect(
+        function()
+            CircleClick(category, LocalPlayer:GetMouse().X, LocalPlayer:GetMouse().Y)
+
+            self:ChangeCategory(name)
+        end
+    )
+
+    if self.currentSelection == nil then
+        self:ChangeCategory(name)
+    end
+
+    return setmetatable(
+        {
+            Effects = {
+                Hover = Hover,
+                Click = Click
+            },
+            oldSelf = self,
+            categoryUI = category,
+            contentHolder = contentHolder
+        },
+        UILibrary.Category
+    )
+end
+
+function UILibrary.Category:Button(name, icon)
+    local contentholder = self.ContentHolder
+    local button = objectGenerator.new("CategoryButton")
+
+    button.InnerContent.Image.Image = icon
+    button.InnerContent.Title.Text = name
+
+    button.Parent = self.contentHolder.Bar2Holder
+    button.LayoutOrder = getLayoutOrder(self.contentHolder.Bar2Holder)
+    button.Name = name
+
+    local totalCount = 0
+
+    for i, v in pairs(self.contentHolder.Bar2Holder:GetChildren()) do
+        if v:IsA("GuiObject") then
+            totalCount = totalCount + 1
+        end
+    end
+
+    for i, v in pairs(self.contentHolder.Bar2Holder:GetChildren()) do
+        if v:IsA("GuiObject") then
+            v.Size = UDim2.fromScale(1, 1 / totalCount)
+        end
+    end
+
+    button.Size = UDim2.fromScale(1, 1 / totalCount)
+
+    self.oldSelf.UI[self.categoryUI.Name][name] = {}
+
+    local CategoryFrame = objectGenerator.new("CategoryFrame")
+    CategoryFrame.Name = name
+    CategoryFrame.Parent = self.oldSelf.MainUI.MainUI.Content
+    CategoryFrame.Visible = true
+
+    local Hover =
+        EffectLib.ButtonHoverEffect(
+        button,
+        function()
+            if self.currentCategorySelection ~= button then
+                return true
+            else
+                return false
+            end
+        end
+    )
+    local Click = EffectLib.ButtonClickEffect(button)
+
+    Click.Event:Connect(
+        function()
+            CircleClick(button, LocalPlayer:GetMouse().X, LocalPlayer:GetMouse().Y)
+
+            if self.oldSelf.currentSelection.Name == self.categoryUI.Name then
+                self.oldSelf:ChangeCategorySelection(name)
+            end
+        end
+    )
+
+    if self.oldSelf.currentCategorySelection == nil and self.oldSelf.currentSelection.Name == self.categoryUI.Name then
+        self.oldSelf:ChangeCategorySelection(name)
+    end
+
+    return setmetatable(
+        {
+            Effects = {
+                Hover = Hover,
+                Click = Click
+            },
+            oldSelf = self,
+            CategoryName = self.categoryUI.Name,
+            SectionName = name,
+            CategoryFrame = CategoryFrame
+        },
+        UILibrary.Button
+    )
+end
+
+function UILibrary.Button:Section(name, side)
+    local Section = objectGenerator.new("Section")
+    Section.Border.SectionTitle.Text = name
+
+    Section.DropShadow.Size = UDim2.new(1, 25, 1, 25)
+    Section.Name = name
+
+    Section.Border.Content.ChildAdded:Connect(
+        function(c)
+            local n = 25 + (10 * math.clamp(#Section.Border.Content:GetChildren() - 2, 0, 3))
+
+            Section.DropShadow.Size = UDim2.new(1, n, 1, n)
+        end
+    )
+
+    Section.Parent = self.oldSelf.oldSelf.MainUI.MainUI.Content[self.SectionName][side]
+    Section.LayoutOrder = getLayoutOrder(self.oldSelf.oldSelf.MainUI.MainUI.Content[self.SectionName][side])
+
+    self.oldSelf.oldSelf.UI[self.oldSelf.categoryUI.Name][self.SectionName][name] = {}
+
+    Section.Size = UDim2.new(1, 0, 0, Section.Border.Content.UIListLayout.AbsoluteContentSize.Y + 20)
+
+    Section.Border.Content.UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(
+        function()
+            Section.Size = UDim2.new(1, 0, 0, Section.Border.Content.UIListLayout.AbsoluteContentSize.Y + 20)
+        end
+    )
+
+    return setmetatable(
+        {
+            MainSelf = self.oldSelf.oldSelf,
+            oldSelf = self,
+            Section = Section
+        },
+        UILibrary.Section
+    )
+end
+
+--// now it gets fun!!!
+--// im jk this is where the pain begins
+
+local cheatInfo = {
+    ["Button"] = {
+        FullSize = true
+    },
+    ["Checkbox"] = {
+        TextSize = UDim2.fromScale(.2, 1)
+    },
+    ["Textbox"] = {
+        TextSize = UDim2.fromScale(.4, 1),
+        FullSize = true
+    },
+    ["Dropdown"] = {
+        FullSize = true
+    },
+    ["Slider"] = {
+        TextSize = UDim2.fromScale(.45, 1)
+    },
+    ["Toggle"] = {
+        TextSize = UDim2.fromScale(.5, 1)
+    }
+}
+
+local function generateCheatBase(Cheat, sett)
+    local cheatBase = objectGenerator.new("CheatBase")
+
+    local cheatinfo = cheatInfo[Cheat]
+    local supportsFullSize = cheatinfo ~= nil and cheatinfo.FullSize or false
+
+    local Size = supportsFullSize and UDim2.fromScale(1, 1) or UDim2.fromScale(.5, 1)
+
+    if sett.Title then
+        if sett.Description then
+            cheatBase.Content.Text.Text.Text = sett.Title
+            cheatBase.Content.Text.Text.Desc.Text = sett.Description
+
+            cheatBase.Content.Text.Text.Desc.Visible = true
+            cheatBase.Content.Text.Text.Visible = true
+        else
+            cheatBase.Content.Text.Text.Text = sett.Title
+            cheatBase.Content.Text.Text.Size = UDim2.fromScale(.9, 1)
+            cheatBase.Content.Text.Text.Position = UDim2.fromScale(.5, .5)
+            cheatBase.Content.Text.Text.Visible = true
+        end
+
+        if cheatinfo and cheatinfo.TextSize then
+            Size = cheatinfo.TextSize
+        else
+            Size = UDim2.fromScale(.5, 1)
+        end
+    end
+
+    local XSize = 1 - Size.X.Scale
+
+    cheatBase.Content.ElementContent.Size = Size
+    cheatBase.Content.Text.Size = UDim2.fromScale(XSize, 1)
+
+    local Content = objectGenerator.new("Cheat", Cheat)
+
+    if Content then
+        Content.Parent = cheatBase.Content.ElementContent
+    end
+
+    return cheatBase
+end
+
+--// some effects because my lazy ass is too lazy to put it in the module
+local function setupEffects(ui, hover)
+    local ClickEvent = Instance.new("BindableEvent")
+
+    local uiTweenType =
+        (hover:IsA("ImageLabel") or hover:IsA("ImageButton")) and "ImageTransparency" or "BackgroundTransparency"
+
+    local function constructTweenInfo(value)
+        return {
+            [uiTweenType] = value
+        }
+    end
+
+    ui.InputBegan:Connect(
+        function(input, gp)
+            if gp then
+                return
+            end
+
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                TweenService:Create(hover, TI, constructTweenInfo(.5)):Play()
+            elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+                TweenService:Create(hover, TI, constructTweenInfo(.2)):Play()
+            end
+        end
+    )
+
+    ui.InputEnded:Connect(
+        function(input, gp)
+            if gp then
+                return
+            end
+
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                TweenService:Create(hover, TI, constructTweenInfo(1)):Play()
+            elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+                TweenService:Create(hover, TI, constructTweenInfo(.5)):Play()
+
+                ClickEvent:Fire()
+            end
+        end
+    )
+
+    return ClickEvent.Event
+end
+
+function UILibrary.Section:Button(sett, callback)
+    local functions = {}
+    functions.__index = functions
+
+    local cheatBase = generateCheatBase("Button", sett)
+    cheatBase.Parent = self.Section.Border.Content
+    cheatBase.LayoutOrder = getLayoutOrder(self.Section.Border.Content)
+
+    local element = cheatBase.Content.ElementContent.Button
+
+    setupEffects(element, element.HoverFrame):Connect(
+        function()
+            callback()
+        end
+    )
+
+    element.Text.Text = sett.ButtonName
+
+    local meta =
+        setmetatable(
+        {
+            element = element,
+            UI = cheatBase
+        },
+        functions
+    )
+
+    self.oldSelf.oldSelf.oldSelf.UI[self.oldSelf.oldSelf.categoryUI.Name][self.oldSelf.SectionName][
+            self.Section.Name
+        ][sett.Title] = meta
+
+    return meta
+end
+
+function UILibrary.Section:Checkbox(sett, callback)
+    local functions = {}
+    functions.__index = functions
+
+    local cheatBase = generateCheatBase("Checkbox", sett)
+    cheatBase.Parent = self.Section.Border.Content
+    cheatBase.LayoutOrder = getLayoutOrder(self.Section.Border.Content)
+
+    local element = cheatBase.Content.ElementContent.Checkbox
+
+    local toggleEnabled = false
+
+    functions.setValue = function(new)
+        toggleEnabled = new
+
+        if new then
+            TweenService:Create(
+                element.Selection,
+                TI,
+                {
+                    Size = UDim2.fromScale(.85, .85),
+                    BackgroundTransparency = 0
+                }
+            ):Play()
+        else
+            TweenService:Create(
+                element.Selection,
+                TI,
+                {
+                    Size = UDim2.fromScale(0.5, 0.5),
+                    BackgroundTransparency = 1.1
+                }
+            ):Play()
+        end
+
+        callback(toggleEnabled)
+    end
+
+    functions.getValue = function()
+        return toggleEnabled
+    end
+
+    setupEffects(element, element.HoverFrame):Connect(
+        function()
+            functions.setValue(not toggleEnabled)
+        end
+    )
+
+    if sett.Default then
+        functions.setValue(sett.Default)
+    end
+
+    local meta =
+        setmetatable(
+        {
+            element = element,
+            UI = cheatBase
+        },
+        functions
+    )
+
+    self.oldSelf.oldSelf.oldSelf.UI[self.oldSelf.oldSelf.categoryUI.Name][self.oldSelf.SectionName][
+            self.Section.Name
+        ][sett.Title] = meta
+
+    return meta
+end
+
+function UILibrary.Section:Toggle(sett, callback)
+    local functions = {}
+    functions.__index = functions
+
+    local cheatBase = generateCheatBase("Toggle", sett)
+    cheatBase.Parent = self.Section.Border.Content
+    cheatBase.LayoutOrder = getLayoutOrder(self.Section.Border.Content)
+
+    local element = cheatBase.Content.ElementContent.Toggle
+
+    local toggleEnabled = false
+
+    functions.setValue = function(new)
+        toggleEnabled = new
+
+        if new then
+            TweenService:Create(
+                element.Content.Frame,
+                TI,
+                {
+                    Position = UDim2.fromScale(.8, .5)
+                }
+            ):Play()
+
+            TweenService:Create(
+                element,
+                TI,
+                {
+                    BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+                }
+            ):Play()
+        else
+            TweenService:Create(
+                element.Content.Frame,
+                TI,
+                {
+                    Position = UDim2.fromScale(.2, .5)
+                }
+            ):Play()
+
+            TweenService:Create(
+                element,
+                TI,
+                {
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }
+            ):Play()
+        end
+
+        if callback then
+            callback(toggleEnabled)
+        end
+    end
+
+    functions.getValue = function()
+        return toggleEnabled
+    end
+
+    setupEffects(element, element.HoverFrame):Connect(
+        function()
+            functions.setValue(not toggleEnabled)
+        end
+    )
+
+    if sett.Default then
+        functions.setValue(sett.Default)
+    end
+
+    local meta =
+        setmetatable(
+        {
+            element = element,
+            UI = cheatBase
+        },
+        functions
+    )
+
+    self.oldSelf.oldSelf.oldSelf.UI[self.oldSelf.oldSelf.categoryUI.Name][self.oldSelf.SectionName][
+            self.Section.Name
+        ][sett.Title] = meta
+
+    return meta
+end
+
+function UILibrary.Section:Textbox(sett, callback)
+    local functions = {}
+    functions.__index = functions
+
+    local cheatBase = generateCheatBase("Textbox", sett)
+    cheatBase.Parent = self.Section.Border.Content
+    cheatBase.LayoutOrder = getLayoutOrder(self.Section.Border.Content)
+
+    local element = cheatBase.Content.ElementContent.Textbox
+
+    local function updateSize()
+        local textBounds = math.clamp(element.Text.TextBounds.X, 10, element.Parent.AbsoluteSize.X) + 20
+
+        TweenService:Create(
+            element,
+            TI,
+            {
+                Size = UDim2.fromScale(textBounds / element.Parent.AbsoluteSize.X, 1)
+            }
+        ):Play()
+    end
+
+    functions.setValue = function(new)
+        --/// anims
+        element.Text.Text = new
+        updateSize()
+        callback(element.Text.Text)
+    end
+
+    functions.getValue = function()
+        return element.Text.Text
+    end
+
+    updateSize()
+
+    element.Text.Focused:Connect(
+        function()
+            -- handle as hover
+            TweenService:Create(
+                element,
+                TI,
+                {
+                    BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+                }
+            ):Play()
+
+            TweenService:Create(
+                element,
+                TI,
+                {
+                    Size = UDim2.fromScale(1, 1)
+                }
+            ):Play()
+        end
+    )
+
+    element.Text.FocusLost:Connect(
+        function()
+            -- set it here
+            TweenService:Create(
+                element,
+                TI,
+                {
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }
+            ):Play()
+
+            functions.setValue(element.Text.Text)
+        end
+    )
+
+    if sett.Default then
+        functions.setValue(sett.Default)
+    end
+
+    local meta =
+        setmetatable(
+        {
+            element = element,
+            UI = cheatBase
+        },
+        functions
+    )
+
+    self.oldSelf.oldSelf.oldSelf.UI[self.oldSelf.oldSelf.categoryUI.Name][self.oldSelf.SectionName][
+            self.Section.Name
+        ][sett.Title] = meta
+
+    return meta
+end
+
+local currentKBInfo = {}
+
+function UILibrary.Section:Keybind(sett, callback)
+    local functions = {}
+    functions.__index = functions
+
+    local cheatBase = generateCheatBase("Keybind", sett)
+    cheatBase.Parent = self.Section.Border.Content
+    cheatBase.LayoutOrder = getLayoutOrder(self.Section.Border.Content)
+
+    local element = cheatBase.Content.ElementContent.Keybind
+
+    local function updateSize()
+        local textBounds = math.clamp(element.Text.TextBounds.X, 10, element.Parent.AbsoluteSize.X) + 20
+
+        TweenService:Create(
+            element,
+            TI,
+            {
+                Size = UDim2.fromScale(textBounds / element.Parent.AbsoluteSize.X, 1)
+            }
+        ):Play()
+    end
+
+    local currentKb = nil
+    local keyPressConn = nil
+
+    functions.setValue = function(new)
+        --/// anims
+        element.Text.Text = new.Name
+        updateSize()
+
+        currentKb = new
+
+        if keyPressConn then
+            keyPressConn:Disconnect()
+        end
+
+        currentKBInfo = {}
+
+        keyPressConn =
+            game:GetService("UserInputService").InputBegan:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == currentKb then
+                    callback()
+                elseif input.UserInputType.Name == currentKb.Name then
+                    callback()
+                end
+            end
+        )
+    end
+
+    functions.getValue = function()
+        return currentKb
+    end
+
+    updateSize()
+
+    local rebinding = false
+    local conn
+
+    setupEffects(element, element.HoverFrame):Connect(
+        function()
+            if rebinding then
+                return
+            end
+
+            if currentKBInfo.old and currentKBInfo.set ~= functions.setValue then
+                return
+            end
+
+            rebinding = true
+
+            element.Text.Text = "..."
+            updateSize()
+
+            local old = functions.getValue()
+
+            conn =
+                game:GetService("UserInputService").InputBegan:Connect(
+                function(input, gp)
+                    --if gp then return end
+
+                    if input.UserInputType == Enum.UserInputType.Keyboard then
+                        currentKb = input.KeyCode
+
+                        rebinding = false
+
+                        functions.setValue(currentKb)
+                        conn:Disconnect()
+                    elseif
+                        input.UserInputType == Enum.UserInputType.MouseButton2 or
+                            input.UserInputType == Enum.UserInputType.MouseButton1
+                        then
+                        currentKb = input.UserInputType
+
+                        rebinding = false
+
+                        functions.setValue(currentKb)
+                        conn:Disconnect()
+                    end
+                end
+            )
+
+            currentKBInfo.old = old
+            currentKBInfo.conn = conn
+            currentKBInfo.set = functions.setValue
+        end
+    )
+
+    if sett.Default then
+        functions.setValue(sett.Default)
+    end
+
+    local meta =
+        setmetatable(
+        {
+            element = element,
+            UI = cheatBase
+        },
+        functions
+    )
+    self.oldSelf.oldSelf.oldSelf.UI[self.oldSelf.oldSelf.categoryUI.Name][self.oldSelf.SectionName][
+            self.Section.Name
+        ][sett.Title] = meta
+
+    return meta
+end
+
+function toInteger(color)
+    return math.floor(color.r * 255) * 256 ^ 2 + math.floor(color.g * 255) * 256 + math.floor(color.b * 255)
+end
+
+function toHex(color)
+    local int = toInteger(color)
+
+    local current = int
+    local final = ""
+
+    local hexChar = {
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+    }
+
+    repeat
+        local remainder = current % 16
+        local char = tostring(remainder)
+
+        if remainder >= 10 then
+            char = hexChar[1 + remainder - 10]
+        end
+
+        current = math.floor(current / 16)
+        final = final .. char
+    until current <= 0
+
+    return "#" .. string.reverse(final)
+end
+
+function UILibrary.Section:ColorPicker(sett, callback)
+    local functions = {}
+    functions.__index = functions
+
+    local cheatBase = generateCheatBase("ColorPicker", sett)
+    cheatBase.Parent = self.Section.Border.Content
+    cheatBase.LayoutOrder = getLayoutOrder(self.Section.Border.Content)
+
+    local element = cheatBase.Content.ElementContent.ColorPicker
+
+    local menuIsOpen = false
+    local currentclr = Color3.fromRGB(255, 255, 255)
+
+    functions.setValue = function(clr)
+        TweenService:Create(
+            element.Preview,
+            TI,
+            {
+                ImageColor3 = clr
+            }
+        ):Play()
+
+        currentclr = clr
+
+        callback(clr)
+        element.Text.Label.Text =
+            math.floor(clr.R * 255) .. ", " .. math.floor(clr.G * 255) .. ", " .. math.floor(clr.B * 255)
+    end
+
+    functions.getValue = function()
+        return currentclr
+    end
+
+    functions.openMenu = function()
+        if menuIsOpen == true then
+            return
+        end
+
+        menuIsOpen = true
+
+        local oldColor
+        local oldPos
+
+        self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Visible = true
+
+        TweenService:Create(
+            self.MainSelf.MainUI.MainUI.ColorPickerOverlay,
+            TI,
+            {
+                ImageTransparency = .07
+            }
+        ):Play()
+
+        TweenService:Create(
+            self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Content,
+            TI,
+            {
+                Position = UDim2.fromScale(.5, 0.5)
+            }
+        ):Play()
+
+        local Content = self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Content
+        local colourWheel = Content.MainWindow.Wheel
+        local darknessSlider = Content.MainWindow.Saturation.Pointer
+        local darknessPicker = Content.MainWindow.Saturation
+
+        local function updateWheel()
+            local centreOfWheel =
+                Vector2.new(
+                colourWheel.AbsolutePosition.X + (colourWheel.AbsoluteSize.X / 2),
+                colourWheel.AbsolutePosition.Y + (colourWheel.AbsoluteSize.Y / 2)
+            )
+
+            local colourPickerCentre =
+                Vector2.new(
+                colourWheel.Pointer.AbsolutePosition.X + (colourWheel.Pointer.AbsoluteSize.X / 2),
+                colourWheel.Pointer.AbsolutePosition.Y + (colourWheel.Pointer.AbsoluteSize.Y / 2)
+            )
+
+            local h =
+                (math.pi -
+                math.atan2(colourPickerCentre.Y - centreOfWheel.Y, colourPickerCentre.X - centreOfWheel.X)) /
+                (math.pi * 2)
+
+            local s = (centreOfWheel - colourPickerCentre).Magnitude / (colourWheel.AbsoluteSize.X / 2)
+
+            local v =
+                math.abs(
+                (darknessSlider.AbsolutePosition.Y - darknessPicker.AbsolutePosition.Y) /
+                    darknessPicker.AbsoluteSize.Y -
+                    1
+            )
+
+            local hsv = Color3.fromHSV(math.clamp(h, 0, 1), math.clamp(s, 0, 1), math.clamp(v, 0, 1))
+
+            return hsv, Color3.fromHSV(math.clamp(h, 0, 1), math.clamp(s, 0, 1), 1)
+        end
+
+        local holdingHsv = false
+        local holdingSaturation = false
+
+        local connections = {}
+
+        table.insert(
+            connections,
+            self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Content.MainWindow.Wheel.Hitbox.InputBegan:Connect(
+                function(input, gp)
+                    if gp == true then
+                        return
+                    end
+
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        holdingHsv = true
+                    end
+                end
+            )
+        )
+
+        table.insert(
+            connections,
+            self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Content.MainWindow.Wheel.Hitbox.InputEnded:Connect(
+                function(input, gp)
+                    if gp == true then
+                        return
+                    end
+
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        holdingHsv = false
+                    end
+                end
+            )
+        )
+
+        table.insert(
+            connections,
+            self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Content.MainWindow.Saturation.Hitbox.InputBegan:Connect(
+                function(input, gp)
+                    if gp == true then
+                        return
+                    end
+
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        holdingSaturation = true
+                    end
+                end
+            )
+        )
+
+        table.insert(
+            connections,
+            self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Content.MainWindow.Saturation.Hitbox.InputEnded:Connect(
+                function(input, gp)
+                    if gp == true then
+                        return
+                    end
+
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        holdingSaturation = false
+                    end
+                end
+            )
+        )
+
+        table.insert(
+            connections,
+            RunService.RenderStepped:Connect(
+                function()
+                    local mousePos =
+                        game:GetService("UserInputService"):GetMouseLocation() -
+                        Vector2.new(0, game:GetService("GuiService"):GetGuiInset().Y)
+
+                    local centreOfWheel =
+                        Vector2.new(
+                        colourWheel.AbsolutePosition.X + (colourWheel.AbsoluteSize.X / 2),
+                        colourWheel.AbsolutePosition.Y + (colourWheel.AbsoluteSize.Y / 2)
+                    )
+
+                    local distanceFromWheel = (mousePos - centreOfWheel).Magnitude
+
+                    if holdingHsv then
+                        if distanceFromWheel <= colourWheel.AbsoluteSize.X / 2 then
+                            colourWheel.Pointer.Position =
+                                UDim2.new(
+                                0,
+                                mousePos.X - colourWheel.AbsolutePosition.X,
+                                0,
+                                mousePos.Y - colourWheel.AbsolutePosition.Y
+                            )
+                        end
+                    end
+
+                    if holdingSaturation then
+                        darknessSlider.Position =
+                            UDim2.new(
+                            darknessSlider.Position.X.Scale,
+                            0,
+                            0,
+                            math.clamp(
+                                mousePos.Y - darknessPicker.AbsolutePosition.Y,
+                                0,
+                                darknessPicker.AbsoluteSize.Y
+                            )
+                        )
+                    end
+
+                    local clr, new = updateWheel()
+
+                    darknessPicker.ImageColor3 = new
+
+                    if clr ~= oldColor then
+                        oldColor = clr
+
+                        Content.ClrDisplay.RGB.Textbox.Text =
+                            math.floor(clr.R * 255) ..
+                            ", " .. math.floor(clr.G * 255) .. ", " .. math.floor(clr.B * 255)
+                        Content.ClrDisplay.Hex.Textbox.Text = toHex(clr)
+                    end
+                end
+            )
+        )
+
+        local function closeMenu()
+            for i, v in pairs(connections) do
+                v:Disconnect()
+            end
+
+            TweenService:Create(
+                self.MainSelf.MainUI.MainUI.ColorPickerOverlay,
+                TI,
+                {
+                    ImageTransparency = 1
+                }
+            ):Play()
+
+            TweenService:Create(
+                self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Content,
+                TI,
+                {
+                    Position = UDim2.fromScale(.5, 1.5)
+                }
+            ):Play()
+
+            wait(.5)
+            self.MainSelf.MainUI.MainUI.ColorPickerOverlay.Visible = false
+            menuIsOpen = false
+        end
+
+        table.insert(
+            connections,
+            Content.Buttons.Cancel.InputBegan:Connect(
+                function(input, gp)
+                    if gp == true then
+                        return
+                    end
+
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        closeMenu()
+                    elseif input.UserInputType == Enum.UserInputType.MouseMovement then
+                        TweenService:Create(
+                            Content.Buttons.Cancel.OtherFill,
+                            TI,
+                            {
+                                ImageColor3 = Color3.fromRGB(150, 69, 71)
+                            }
+                        ):Play()
+                    end
+                end
+            )
+        )
+
+        table.insert(
+            connections,
+            Content.Buttons.Cancel.InputEnded:Connect(
+                function(input, gp)
+                    if gp == true then
+                        return
+                    end
+
+                    if input.UserInputType == Enum.UserInputType.MouseMovement then
+                        TweenService:Create(
+                            Content.Buttons.Cancel.OtherFill,
+                            TI,
+                            {
+                                ImageColor3 = Color3.fromRGB(170, 89, 91)
+                            }
+                        ):Play()
+                    end
+                end
+            )
+        )
+
+        table.insert(
+            connections,
+            Content.Buttons.Confirm.InputBegan:Connect(
+                function(input, gp)
+                    if gp == true then
+                        return
+                    end
+
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        local actual, clr = updateWheel()
+
+                        functions.setValue(actual)
+
+                        closeMenu()
+                    elseif input.UserInputType == Enum.UserInputType.MouseMovement then
+                        TweenService:Create(
+                            Content.Buttons.Confirm.OtherFill,
+                            TI,
+                            {
+                                ImageColor3 = Color3.fromRGB(60, 150, 107)
+                            }
+                        ):Play()
+                    end
+                end
+            )
+        )
+
+        table.insert(
+            connections,
+            Content.Buttons.Confirm.InputEnded:Connect(
+                function(input, gp)
+                    if gp == true then
+                        return
+                    end
+
+                    if input.UserInputType == Enum.UserInputType.MouseMovement then
+                        TweenService:Create(
+                            Content.Buttons.Confirm.OtherFill,
+                            TI,
+                            {
+                                ImageColor3 = Color3.fromRGB(85, 170, 127)
+                            }
+                        ):Play()
+                    end
+                end
+            )
+        )
+    end
+
+    element.Text.Label.Focused:Connect(
+        function()
+            TweenService:Create(
+                element.Text,
+                TI,
+                {
+                    ImageColor3 = Color3.fromRGB(20, 20, 20)
+                }
+            ):Play()
+        end
+    )
+
+    element.Text.Label.FocusLost:Connect(
+        function()
+            TweenService:Create(
+                element.Text,
+                TI,
+                {
+                    ImageColor3 = Color3.fromRGB(25, 25, 25)
+                }
+            ):Play()
+
+            local split = element.Text.Label.Text:split(",")
+
+            if #split == 3 then
+                for i, v in pairs(split) do
+                    if tonumber(v) == nil then
+                        element.Text.Label.Text =
+                            math.floor(currentclr.R * 255) ..
+                            ", " .. math.floor(currentclr.G * 255) .. ", " .. math.floor(currentclr.B * 255)
+                        return
+                    end
+                end
+
+                local clr3 = Color3.fromRGB(split[1], split[2], split[3])
+
+                functions.setValue(clr3)
+            else
+                element.Text.Label.Text =
+                    math.floor(currentclr.R * 255) ..
+                    ", " .. math.floor(currentclr.G * 255) .. ", " .. math.floor(currentclr.B * 255)
+            end
+        end
+    )
+
+    setupEffects(element.Preview, element.Preview.Hover):Connect(
+        function()
+            functions.openMenu()
+        end
+    )
+
+    if sett.Default then
+        functions.setValue(sett.Default)
+    else
+        functions.setValue(Color3.fromRGB(255, 255, 255))
+    end
+
+    local meta =
+        setmetatable(
+        {
+            element = element,
+            UI = cheatBase
+        },
+        functions
+    )
+
+    self.oldSelf.oldSelf.oldSelf.UI[self.oldSelf.oldSelf.categoryUI.Name][self.oldSelf.SectionName][
+            self.Section.Name
+        ][sett.Title] = meta
+
+    return meta
+end
+
+function UILibrary.Section:Slider(sett, callback)
+    local functions = {}
+    functions.__index = functions
+
+    local cheatBase = generateCheatBase("Slider", sett)
+    cheatBase.Parent = self.Section.Border.Content
+    cheatBase.LayoutOrder = getLayoutOrder(self.Section.Border.Content)
+
+    local element = cheatBase.Content.ElementContent.Slider
+
+    if sett.Min == nil then
+        sett.Min = 0
+    end
+
+    if sett.Max == nil then
+        sett.Max = 10
+    end
+
+    local sliderValue = sett.Min
+    local scaleValue = 0
+
+    functions.getData = function()
+        return sett
+    end
+
+    functions.setValue = function(v, scale)
+        sliderValue = math.floor(v)
+        scaleValue = scale
+
+        element.KeyInput.Text.Text = tostring(math.floor(v))
+
+        TweenService:Create(
+            element.Drag.Frame.UIGradient,
+            TI,
+            {
+                Offset = Vector2.new(scaleValue, 0)
+            }
+        ):Play()
+
+        callback(v)
+    end
+
+    functions.getValue = function()
+        return sliderValue
+    end
+
+    element.KeyInput.Text.Focused:Connect(
+        function()
+            TweenService:Create(
+                element.KeyInput,
+                TI,
+                {
+                    BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+                }
+            ):Play()
+        end
+    )
+
+    element.KeyInput.Text.FocusLost:Connect(
+        function()
+            TweenService:Create(
+                element.KeyInput,
+                TI,
+                {
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }
+            ):Play()
+
+            if tonumber(element.KeyInput.Text.Text) then
+                element.KeyInput.Text.Text = math.clamp(tonumber(element.KeyInput.Text.Text), sett.Min, sett.Max)
+            end
+
+            if tonumber(element.KeyInput.Text.Text) then
+                local scale = math.clamp(tonumber(element.KeyInput.Text.Text) / sett.Max, 0, 1)
+
+                functions.setValue(tonumber(element.KeyInput.Text.Text), scale)
+            else
+                element.KeyInput.Text.Text = tostring(math.floor(sliderValue))
+            end
+        end
+    )
+
+    local holding = false
+
+    RunService.RenderStepped:Connect(
+        function()
+            if holding then
+                local mouseX = LocalPlayer:GetMouse().X
+                local sliderPos = element.Drag.AbsolutePosition.X
+
+                local leftBoundary = element.Drag.AbsolutePosition.X - (element.Drag.AbsoluteSize.X)
+
+                local rightBoundary = element.Drag.AbsolutePosition.X + (element.Drag.AbsoluteSize.X)
+
+                local maxPos = math.clamp((mouseX - sliderPos) / (rightBoundary - sliderPos), 0, 1)
+
+                local val = ((sett.Max - sett.Min) * maxPos) + sett.Min
+
+                functions.setValue(val, maxPos)
+            end
+        end
+    )
+
+    element.Drag.InputBegan:Connect(
+        function(input, gp)
+            if gp == true then
+                return
+            end
+
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                holding = true
+            end
+        end
+    )
+
+    element.Drag.InputEnded:Connect(
+        function(input, gp)
+            if gp == true then
+                return
+            end
+
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                holding = false
+            end
+        end
+    )
+
+    if sett.Default then
+        local scale = math.clamp(tonumber(sett.Default) / sett.Max, 0, 1)
+        functions.setValue(tonumber(sett.Default), scale)
+    else
+        local scale = math.clamp((((sett.Max - sett.Min) / 2) + sett.Min) / sett.Max, 0, 1)
+        functions.setValue(tonumber((((sett.Max - sett.Min) / 2) + sett.Min)), scale)
+    end
+
+    local meta =
+        setmetatable(
+        {
+            element = element,
+            UI = cheatBase
+        },
+        functions
+    )
+
+    self.oldSelf.oldSelf.oldSelf.UI[self.oldSelf.oldSelf.categoryUI.Name][self.oldSelf.SectionName][
+            self.Section.Name
+        ][sett.Title] = meta
+
+    return meta
+end
+
+function UILibrary.Section:Dropdown(sett, callback)
+    local functions = {}
+    functions.__index = functions
+
+    local cheatBase = generateCheatBase("Dropdown", sett)
+    cheatBase.Parent = self.Section.Border.Content
+    cheatBase.LayoutOrder = getLayoutOrder(self.Section.Border.Content)
+
+    local element = cheatBase.Content.ElementContent.Dropdown
+
+    local slot = element.Slot:Clone()
+    element.Slot:Destroy()
+
+    local bottom = element.Bottom:Clone()
+    element.Bottom:Destroy()
+
+    local top = element.Top:Clone()
+    element.Top:Destroy()
+
+    local conns = {}
+    local menuOpen = false
+
+    local options = sett.Options ~= nil and sett.Options or {}
+    local selectedOptions = {}
+
+    local optionConnections = {}
+
+    functions.refreshUI = function()
+        local String = ""
+
+        for i, v in pairs(options) do
+            local ui = element.OptionHolder.ContentHolder.Content:FindFirstChild(i)
+
+            if options[i] then
+                TweenService:Create(
+                    ui.Select,
+                    TI,
+                    {
+                        ImageTransparency = 0
+                    }
+                ):Play()
+
+                if String == "" then
+                    String = i
+                else
+                    String = String .. ", " .. i
+                end
+            else
+                TweenService:Create(
+                    ui.Select,
+                    TI,
+                    {
+                        ImageTransparency = 1
+                    }
+                ):Play()
+            end
+        end
+
+        if String == "" then
+            String = "None"
+        end
+
+        element.MainHolder.Content.Text.Text = String
+    end
+
+    functions.setValue = function(option, value, isDefault)
+        if options[option] ~= nil then
+            if element.OptionHolder.ContentHolder.Content:FindFirstChild(option) then
+                if sett.Multi == true then
+                    options[option] = value
+
+                    functions.refreshUI()
+                else
+                    if value == true then
+                        for i, v in pairs(options) do
+                            options[i] = false
+                        end
+
+                        if isDefault == nil then
+                            functions.openMenu()
+                        end
+
+                        options[option] = true
+
+                        functions.refreshUI()
+                    end
+                end
+
+                callback(options)
+            end
+        end
+    end
+
+    local function updateDropdown()
+        for i, v in pairs(element.OptionHolder.ContentHolder.Content:GetChildren()) do
+            if v:IsA("GuiObject") then
+                v:Destroy()
+            end
+        end
+
+        for i, v in pairs(optionConnections) do
+            v:Disconnect()
+        end
+
+        local counter = 0
+        local totalCounter = 0
+
+        for i, v in pairs(options) do
+            totalCounter = totalCounter + 1
+        end
+
+        for v, i in pairs(options) do
+            local Option
+
+            counter = counter + 1
+
+            if counter == totalCounter then
+                Option = bottom:Clone()
+            elseif counter ~= 1 then
+                Option = slot:Clone()
+            else
+                Option = top:Clone()
+            end
+
+            Option.Name = v
+            Option.Parent = element.OptionHolder.ContentHolder.Content
+            Option.LayoutOrder = i
+            Option.Size = UDim2.fromScale(1, 1 / totalCounter)
+
+            Option.Current.Text = v
+
+            table.insert(
+                optionConnections,
+                Option.InputBegan:Connect(
+                    function(input, gp)
+                        if gp then
+                            return
+                        end
+
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            functions.setValue(v, not options[v])
+                        elseif input.UserInputType == Enum.UserInputType.MouseMovement then
+                            TweenService:Create(
+                                Option,
+                                TI,
+                                {
+                                    ImageColor3 = Color3.fromRGB(20, 20, 20)
+                                }
+                            ):Play()
+                        end
+                    end
+                )
+            )
+
+            table.insert(
+                optionConnections,
+                Option.InputEnded:Connect(
+                    function(input, gp)
+                        if input.UserInputType == Enum.UserInputType.MouseMovement then
+                            TweenService:Create(
+                                Option,
+                                TI,
+                                {
+                                    ImageColor3 = Color3.fromRGB(25, 25, 25)
+                                }
+                            ):Play()
+                        end
+                    end
+                )
+            )
+        end
+    end
+
+    updateDropdown()
+
+    functions.updateDropdown = function(new)
+        options = new
+
+        updateDropdown()
+        functions.refreshUI()
+    end
+
+    functions.openMenu = function()
+        local totalCounter = 0
+
+        for i, v in pairs(options) do
+            totalCounter = totalCounter + 1
+        end
+
+        if totalCounter == 0 then
+            return
+        end
+
+        menuOpen = not menuOpen
+
+        if menuOpen then
+            TweenService:Create(
+                element.MainHolder.Content.Icon.Holder,
+                TI,
+                {
+                    Rotation = 180
+                }
+            ):Play()
+
+            TweenService:Create(
+                element.OptionHolder,
+                TI,
+                {
+                    Size = UDim2.fromScale(1, math.clamp(totalCounter, 0, 999) * .7)
+                }
+            ):Play()
+
+            local n = 15 + (10 * math.clamp(totalCounter, 0, 3))
+
+            TweenService:Create(
+                element.OptionHolder.Cover.DropShadow,
+                TI,
+                {
+                    ImageTransparency = 0.5,
+                    Size = UDim2.new(1, n, 1, n)
+                }
+            ):Play()
+
+            element.OptionHolder.Visible = true
+
+            task.delay(
+                .4,
+                function()
+                    if menuOpen then
+                        TweenService:Create(
+                            element.OptionHolder.Cover,
+                            TI,
+                            {
+                                BackgroundTransparency = 1
+                            }
+                        ):Play()
+                    end
+                end
+            )
+        else
+            TweenService:Create(
+                element.MainHolder.Content.Icon.Holder,
+                TI,
+                {
+                    Rotation = 0
+                }
+            ):Play()
+
+            TweenService:Create(
+                element.OptionHolder,
+                TI,
+                {
+                    Size = UDim2.fromScale(1, 0)
+                }
+            ):Play()
+
+            TweenService:Create(
+                element.OptionHolder.Cover.DropShadow,
+                TI,
+                {
+                    ImageTransparency = 1,
+                    Size = UDim2.new(1, 0, 1, 0)
+                }
+            ):Play()
+
+            TweenService:Create(
+                element.OptionHolder.Cover,
+                TweenInfo.new(.2, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
+                {
+                    BackgroundTransparency = 0
+                }
+            ):Play()
+
+            task.delay(
+                .4,
+                function()
+                    if menuOpen then
+                        return
+                    end
+
+                    element.OptionHolder.Visible = false
+                end
+            )
+        end
+    end
+
+    functions.getValue = function()
+        return options
+    end
+
+    table.insert(
+        conns,
+        element.MainHolder.Content.Icon.InputBegan:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    TweenService:Create(
+                        element.MainHolder.Content.Icon.Holder.Icon,
+                        TI,
+                        {
+                            Position = UDim2.fromScale(0, .2),
+                            ImageColor3 = Color3.fromRGB(50, 50, 50)
+                        }
+                    ):Play()
+                elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    functions.openMenu()
+                end
+            end
+        )
+    )
+
+    table.insert(
+        conns,
+        element.MainHolder.Content.Icon.InputEnded:Connect(
+            function(input, gp)
+                if gp then
+                    return
+                end
+
+                if input.UserInputType == Enum.UserInputType.MouseMovement then
+                    TweenService:Create(
+                        element.MainHolder.Content.Icon.Holder.Icon,
+                        TI,
+                        {
+                            Position = UDim2.fromScale(0, 0),
+                            ImageColor3 = Color3.fromRGB(100, 100, 100)
+                        }
+                    ):Play()
+                end
+            end
+        )
+    )
+
+    if sett.Default then
+        functions.setValue(sett.Default, true, true)
+    end
+
+    local meta =
+        setmetatable(
+        {
+            element = element,
+            UI = cheatBase
+        },
+        functions
+    )
+
+    self.oldSelf.oldSelf.oldSelf.UI[self.oldSelf.oldSelf.categoryUI.Name][self.oldSelf.SectionName][
+            self.Section.Name
+        ][sett.Title] = meta
+
+    return meta
+end
+
+return UILibrary
