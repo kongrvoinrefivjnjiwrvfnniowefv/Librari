@@ -24,9 +24,9 @@ local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
 
 -- iconos de control: usar rbxassetid:// directo (rbxthumb es solo para thumbnails de Asset,
 -- estos IDs son Decals/Images sueltos y necesitan el formato directo)
-local ICON_CLOSE = "rbxassetid://111147657950432"
-local ICON_COLLAPSE = "rbxassetid://119364000008939"
-local ICON_EXPAND = "rbxassetid://76932851909318"
+local ICON_CLOSE = "rbxthumb://111147657950432"
+local ICON_COLLAPSE = "rbxthumb://119364000008939"
+local ICON_EXPAND = "rbxthumb://76932851909318"
 
 local NORMAL_SIZE = UDim2.new(0, 721, 0, 584)
 local MAX_SIZE = UDim2.new(0, 900, 0, 720)
