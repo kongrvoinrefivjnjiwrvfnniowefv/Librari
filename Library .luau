@@ -1,1366 +1,564 @@
--- vars
+-- [[ Write Hub - Premium Complete Edition ]]
+-- Elegante, Minimalista y Funcional
 
 local lib = {}
 local sections = {}
 local workareas = {}
-local notifs = {}
 local visible = true
-local dbcooper = false
 
--- paleta (todo negro, acento rojo)
-local COL_BG = Color3.fromRGB(15, 15, 15)
-local COL_BG2 = Color3.fromRGB(20, 20, 20)
-local COL_BTN = Color3.fromRGB(35, 35, 35)
-local COL_TEXT = Color3.fromRGB(255, 255, 255)
-local COL_SUBTEXT = Color3.fromRGB(190, 190, 190)
-local COL_ACCENT = Color3.fromRGB(220, 40, 45)
+-- Paleta de colores Premium (Deep Dark & Vivid Red)
+local COL_BG = Color3.fromRGB(10, 10, 10)
+local COL_BG2 = Color3.fromRGB(15, 15, 15)
+local COL_BTN = Color3.fromRGB(22, 22, 22)
+local COL_TEXT = Color3.fromRGB(245, 245, 245)
+local COL_SUBTEXT = Color3.fromRGB(160, 160, 160)
+local COL_ACCENT = Color3.fromRGB(255, 45, 55)
+local COL_STROKE = Color3.fromRGB(40, 40, 40)
 
--- la topbar ahora usa el MISMO color que el menú (COL_BG), no un color aparte
-local TOPBAR_STROKE = Color3.fromRGB(60, 60, 60)
-local TOPBAR_ICON_BG = Color3.fromRGB(25, 25, 25)
-
--- imagen de perfil/control, confirmada que carga bien con rbxthumb
+-- Assets
 local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
-
--- iconos de control: usar rbxthumb con parámetros para asegurar que carguen
--- (rbxassetid directo solo funciona si es el ID de Imagen, no el de Decal)
 local ICON_CLOSE = "rbxthumb://type=Asset&id=111147657950432&w=150&h=150"
 local ICON_COLLAPSE = "rbxthumb://type=Asset&id=119364000008939&w=150&h=150"
 local ICON_EXPAND = "rbxthumb://type=Asset&id=76932851909318&w=150&h=150"
 
-local NORMAL_SIZE = UDim2.new(0, 721, 0, 584)
-local MAX_SIZE = UDim2.new(0, 900, 0, 720)
+local NORMAL_SIZE = UDim2.new(0, 720, 0, 540)
+local MAX_SIZE = UDim2.new(0, 880, 0, 680)
 
-local function tp(ins, pos, time, thing)
-    game:GetService("TweenService"):Create(ins, TweenInfo.new(time, Enum.EasingStyle.Quart, Enum.EasingDirection.InOut),{Position = pos}):Play()
+-- [[ Utilidades de Animación ]]
+local function tween(ins, info, goal)
+    local tw = game:GetService("TweenService"):Create(ins, info, goal)
+    tw:Play()
+    return tw
 end
 
--- animación genérica de hover (escala + color opcional)
 local function addHover(btn, opts)
     opts = opts or {}
-    local scaleUp = opts.scaleUp or 1.05
+    local scaleUp = opts.scaleUp or 1.02
     local hoverColor = opts.hoverColor
     local baseColor = btn.BackgroundColor3
     local baseSize = btn.Size
 
-    local tweenIn = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tweenOut = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-
     btn.MouseEnter:Connect(function()
-        local goalSize = UDim2.new(
-            baseSize.X.Scale, baseSize.X.Offset * scaleUp,
-            baseSize.Y.Scale, baseSize.Y.Offset * scaleUp
-        )
-        game:GetService("TweenService"):Create(btn, tweenIn, {Size = goalSize}):Play()
-        if hoverColor then
-            game:GetService("TweenService"):Create(btn, tweenIn, {BackgroundColor3 = hoverColor}):Play()
-        end
+        tween(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+            Size = UDim2.new(baseSize.X.Scale, baseSize.X.Offset * scaleUp, baseSize.Y.Scale, baseSize.Y.Offset * scaleUp),
+            BackgroundColor3 = hoverColor or baseColor
+        })
     end)
 
     btn.MouseLeave:Connect(function()
-        game:GetService("TweenService"):Create(btn, tweenOut, {Size = baseSize}):Play()
-        if hoverColor then
-            game:GetService("TweenService"):Create(btn, tweenOut, {BackgroundColor3 = baseColor}):Play()
-        end
-    end)
-end
-
--- rotación suave al hacer click (para iconos tipo "expandir")
-local function addClickSpin(btn, degrees)
-    btn.MouseButton1Click:Connect(function()
-        local goal = btn.Rotation + (degrees or 90)
-        game:GetService("TweenService"):Create(
-            btn,
-            TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-            {Rotation = goal}
-        ):Play()
-    end)
-end
-
--- pulso sutil infinito (respiración) para llamar la atención sin ser invasivo
-local function addPulse(ins, opts)
-    opts = opts or {}
-    local minT = opts.minTransparency or 0.1
-    local maxT = opts.maxTransparency or 0.4
-    local dur = opts.duration or 1.4
-    task.spawn(function()
-        while ins and ins.Parent do
-            local t1 = game:GetService("TweenService"):Create(ins, TweenInfo.new(dur, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {ImageTransparency = maxT})
-            t1:Play()
-            t1.Completed:Wait()
-            if not (ins and ins.Parent) then break end
-            local t2 = game:GetService("TweenService"):Create(ins, TweenInfo.new(dur, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {ImageTransparency = minT})
-            t2:Play()
-            t2.Completed:Wait()
-        end
-    end)
-end
-
--- fade-in de transparencia de fondo (para frames al aparecer)
-local function fadeInBackground(ins, targetTransparency, duration)
-    local startT = ins.BackgroundTransparency
-    ins.BackgroundTransparency = 1
-    game:GetService("TweenService"):Create(
-        ins,
-        TweenInfo.new(duration or 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-        {BackgroundTransparency = targetTransparency}
-    ):Play()
-end
-
--- entrada escalonada: anima una lista de instancias con pequeño delay entre cada una
-local function staggerIn(instances, delayStep)
-    delayStep = delayStep or 0.05
-    for i, ins in ipairs(instances) do
-        local goalPos = ins.Position
-        ins.Position = goalPos + UDim2.new(0, -20, 0, 0)
-        local goalTransparency = ins.BackgroundTransparency
-        ins.BackgroundTransparency = 1
-        task.delay((i - 1) * delayStep, function()
-            if ins and ins.Parent then
-                game:GetService("TweenService"):Create(ins, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = goalPos, BackgroundTransparency = goalTransparency}):Play()
-            end
-        end)
-    end
-end
-
--- spinner rojo tipo "sin conexión" alrededor de un ImageLabel/ImageButton
-local function addLoadingSpinner(parent, targetImage)
-    local ring = Instance.new("ImageLabel")
-    ring.Name = "loadingRing"
-    ring.Parent = parent
-    ring.AnchorPoint = Vector2.new(0.5, 0.5)
-    ring.BackgroundTransparency = 1
-    ring.Position = UDim2.new(0.5, 0, 0.5, 0)
-    ring.Size = UDim2.new(1.35, 0, 1.35, 0)
-    ring.ZIndex = (targetImage.ZIndex or 1) - 1
-    ring.Image = "rbxassetid://4965945880"
-    ring.ImageColor3 = COL_ACCENT
-    ring.ScaleType = Enum.ScaleType.Fit
-
-    local spinning = true
-    task.spawn(function()
-        while spinning and ring.Parent do
-            local tween = game:GetService("TweenService"):Create(
-                ring,
-                TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                {Rotation = ring.Rotation + 360}
-            )
-            tween:Play()
-            tween.Completed:Wait()
-        end
-    end)
-
-    return ring, function() spinning = false end
-end
-
--- contador de FPS en vivo
-local function startFpsCounter(label)
-    local frames = 0
-    local lastUpdate = os.clock()
-    local RunService = game:GetService("RunService")
-    local conn
-    conn = RunService.RenderStepped:Connect(function()
-        frames += 1
-        local now = os.clock()
-        if now - lastUpdate >= 1 then
-            if label and label.Parent then
-                label.Text = "FPS: " .. tostring(frames)
-            else
-                if conn then conn:Disconnect() end
-                return
-            end
-            frames = 0
-            lastUpdate = now
-        end
-    end)
-    return conn
-end
-
--- contador de PING en vivo
-local function startPingCounter(label)
-    local Stats = game:GetService("Stats")
-    task.spawn(function()
-        while label and label.Parent do
-            local ok, ping = pcall(function()
-                return Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
-            end)
-            if ok and ping then
-                label.Text = "PING: " .. math.floor(ping) .. "ms"
-            end
-            task.wait(1)
-        end
+        tween(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+            Size = baseSize,
+            BackgroundColor3 = baseColor
+        })
     end)
 end
 
 function lib:init(ti, dosplash, visiblekey, deleteprevious)
-    if syn then
-         cg = game:GetService("CoreGui")
-        if cg:FindFirstChild("ScreenGui") and deleteprevious then
-           tp(cg.ScreenGui.main, cg.ScreenGui.main.Position + UDim2.new(0,0,2,0), 0.5)
-            game:GetService("Debris"):AddItem(cg.ScreenGui, 1)
-      end
-        scrgui = Instance.new("ScreenGui")
-        syn.protect_gui(scrgui)
-        scrgui.Parent = game:GetService("CoreGui")
-    elseif gethui then
-        if gethui():FindFirstChild("ScreenGui") and deleteprevious then
-            gethui().ScreenGui.main:TweenPosition(gethui().ScreenGui.main.Position + UDim2.new(0,0,2,0), "InOut", "Quart", 0.5)
-            game:GetService("Debris"):AddItem(gethui().ScreenGui, 1)
+    local scrgui = Instance.new("ScreenGui")
+    if syn and syn.protect_gui then syn.protect_gui(scrgui) end
+    scrgui.Parent = (gethui and gethui()) or game:GetService("CoreGui")
+    scrgui.Name = "WriteHub_Premium"
+
+    if deleteprevious then
+        for _, v in pairs(scrgui.Parent:GetChildren()) do
+            if v.Name == scrgui.Name and v ~= scrgui then v:Destroy() end
         end
-         scrgui = Instance.new("ScreenGui")
-        scrgui.Parent = gethui()
-    else
-        cg = game:GetService("CoreGui")
-        if cg:FindFirstChild("ScreenGui") and deleteprevious then
-            tp(cg.ScreenGui.main, cg.ScreenGui.main.Position + UDim2.new(0,0,2,0), 0.5)
-            game:GetService("Debris"):AddItem(cg.ScreenGui, 1)
-        end
-         scrgui = Instance.new("ScreenGui")
-        scrgui.Parent = cg
     end
 
-    if dosplash then
-        local splash = Instance.new("Frame")
-        splash.Name = "splash"
-        splash.Parent = scrgui
-        splash.AnchorPoint = Vector2.new(0.5, 0.5)
-        splash.BackgroundColor3 = COL_BG
-        splash.BackgroundTransparency = 0
-        splash.Position = UDim2.new(0.5, 0, 2, 0)
-        splash.Size = UDim2.new(0, 340, 0, 340)
-        splash.Visible = true
-        splash.ZIndex = 40
-
-        local uc_22 = Instance.new("UICorner")
-        uc_22.CornerRadius = UDim.new(0, 18)
-        uc_22.Parent = splash
-
-        local sicon = Instance.new("ImageLabel")
-        sicon.Name = "sicon"
-        sicon.Parent = splash
-        sicon.AnchorPoint = Vector2.new(0.5, 0.5)
-        sicon.BackgroundColor3 = COL_BG
-        sicon.BackgroundTransparency = 1
-        sicon.Position = UDim2.new(0.5, 0, 0.5, 0)
-        sicon.Size = UDim2.new(0, 150, 0, 150)
-        sicon.ZIndex = 40
-        sicon.Image = CONTROL_IMAGE
-        sicon.ScaleType = Enum.ScaleType.Fit
-
-        local uc_sicon = Instance.new("UICorner")
-        uc_sicon.CornerRadius = UDim.new(1, 0)
-        uc_sicon.Parent = sicon
-
-        local _, stopSpin = addLoadingSpinner(splash, sicon)
-
-        -- pequeña animación de "respiración" en la imagen mientras carga
-        addPulse(sicon, {minTransparency = 0, maxTransparency = 0.25, duration = 0.9})
-
-        splash:TweenPosition(UDim2.new(0.5, 0, 0.5, 0), "InOut", "Quart", 1)
-        wait(3)
-        stopSpin()
-        splash:TweenPosition(UDim2.new(0.5, 0, 2, 0), "InOut", "Quart", 1)
-        game:GetService("Debris"):AddItem(splash, 1)
-    end
-        
-
+    -- Main Frame
     local main = Instance.new("Frame")
     main.Name = "main"
     main.Parent = scrgui
     main.AnchorPoint = Vector2.new(0.5, 0.5)
     main.BackgroundColor3 = COL_BG
-    main.BackgroundTransparency = 1 -- arranca invisible para el fade-in
-    main.Position = UDim2.new(0.5, 0, 2, 0)
-    main.Size = NORMAL_SIZE
-    main.ClipsDescendants = false
-
+    main.Position = UDim2.new(0.5, 0, 0.5, 0)
+    main.Size = UDim2.new(0, 0, 0, 0)
+    main.ClipsDescendants = true
+    
     local uc = Instance.new("UICorner")
-    uc.CornerRadius = UDim.new(0, 18)
+    uc.CornerRadius = UDim.new(0, 14)
     uc.Parent = main
 
+    local stroke = Instance.new("UIStroke")
+    stroke.Thickness = 1.2
+    stroke.Color = COL_STROKE
+    stroke.Parent = main
+
+    -- Draggable
     local UserInputService = game:GetService("UserInputService")
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
-    
-    local function update(input)
-        local delta = input.Position - dragStart
-        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-    
+    local dragging, dragInput, dragStart, startPos
     main.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = main.Position
-            
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true; dragStart = input.Position; startPos = main.Position
+            input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
         end
     end)
-    
-    main.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-    
+    main.InputChanged:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end end)
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
-            update(input)
+            local delta = input.Position - dragStart
+            main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
 
-    -- workarea right side setup
+    -- Sidebar Area
+    local sidebar = Instance.new("ScrollingFrame")
+    sidebar.Name = "sidebar"
+    sidebar.Parent = main
+    sidebar.BackgroundTransparency = 1
+    sidebar.Position = UDim2.new(0, 15, 0, 70)
+    sidebar.Size = UDim2.new(0, 200, 1, -150)
+    sidebar.ScrollBarThickness = 0
+    sidebar.CanvasSize = UDim2.new(0, 0, 0, 0)
+    sidebar.AutomaticCanvasSize = "Y"
 
+    local ull = Instance.new("UIListLayout")
+    ull.Parent = sidebar
+    ull.Padding = UDim.new(0, 8)
+
+    -- Workarea
     local workarea = Instance.new("Frame")
     workarea.Name = "workarea"
     workarea.Parent = main
     workarea.BackgroundColor3 = COL_BG2
-    workarea.Position = UDim2.new(0.36403501, 0, 0.09, 0)
-    workarea.Size = UDim2.new(0, 458, 0, 530)
+    workarea.Position = UDim2.new(0, 230, 0, 70)
+    workarea.Size = UDim2.new(1, -245, 1, -85)
+    
+    local uc2 = Instance.new("UICorner")
+    uc2.CornerRadius = UDim.new(0, 12)
+    uc2.Parent = workarea
 
-    local uc_2 = Instance.new("UICorner")
-    uc_2.CornerRadius = UDim.new(0, 18)
-    uc_2.Parent = workarea
+    local wstroke = Instance.new("UIStroke")
+    wstroke.Thickness = 1
+    wstroke.Color = COL_STROKE
+    wstroke.Transparency = 0.5
+    wstroke.Parent = workarea
 
-    local workareacornerhider = Instance.new("Frame")
-    workareacornerhider.Name = "workareacornerhider"
-    workareacornerhider.Parent = workarea
-    workareacornerhider.BackgroundColor3 = COL_BG2
-    workareacornerhider.BorderSizePixel = 0
-    workareacornerhider.Size = UDim2.new(0, 18, 0.99895674, 0)
-
-    -- sidebar
-
-    local sidebar = Instance.new("ScrollingFrame")
-    sidebar.Name = "sidebar"
-    sidebar.Parent = main
-    sidebar.Active = true
-    sidebar.BackgroundColor3 = COL_BG
-    sidebar.BackgroundTransparency = 1
-    sidebar.BorderSizePixel = 0
-    sidebar.Position = UDim2.new(0.0249653254, 0, 0.19, 0)
-    sidebar.Size = UDim2.new(0, 233, 0, 390)
-    sidebar.AutomaticCanvasSize = "Y"
-    sidebar.CanvasSize = UDim2.new(0, 0, 0, 0)
-    sidebar.ScrollBarThickness = 2
-
-    local ull_2 = Instance.new("UIListLayout")
-    ull_2.Parent = sidebar
-    ull_2.SortOrder = Enum.SortOrder.LayoutOrder
-    ull_2.Padding = UDim.new(0, 5)
-
-    -- ===== SECCIÓN DE PERFIL (Abajo de las tabs) =====
-    local profileFrame = Instance.new("Frame")
-    profileFrame.Name = "profileFrame"
-    profileFrame.Parent = main
-    profileFrame.BackgroundColor3 = COL_BG2
-    profileFrame.Position = UDim2.new(0.025, 0, 0.865, 0)
-    profileFrame.Size = UDim2.new(0, 226, 0, 60)
-    profileFrame.ZIndex = 5
-
-    local uc_prof = Instance.new("UICorner")
-    uc_prof.CornerRadius = UDim.new(0, 12)
-    uc_prof.Parent = profileFrame
-
-    local profStroke = Instance.new("UIStroke")
-    profStroke.Parent = profileFrame
-    profStroke.Color = TOPBAR_STROKE
-    profStroke.Thickness = 1
-    profStroke.Transparency = 0.5
-
-    local player = game:GetService("Players").LocalPlayer
-    local avatar = Instance.new("ImageLabel")
-    avatar.Name = "avatar"
-    avatar.Parent = profileFrame
-    avatar.BackgroundColor3 = TOPBAR_ICON_BG
-    avatar.Position = UDim2.new(0, 8, 0.5, 0)
-    avatar.AnchorPoint = Vector2.new(0, 0.5)
-    avatar.Size = UDim2.new(0, 44, 0, 44)
-    avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150"
-    avatar.ZIndex = 6
-
-    local uc_avatar = Instance.new("UICorner")
-    uc_avatar.CornerRadius = UDim.new(1, 0)
-    uc_avatar.Parent = avatar
-
-    local username = Instance.new("TextLabel")
-    username.Name = "username"
-    username.Parent = profileFrame
-    username.BackgroundTransparency = 1
-    username.Position = UDim2.new(0, 60, 0.2, 0)
-    username.Size = UDim2.new(1, -70, 0, 20)
-    username.Font = Enum.Font.GothamBold
-    username.Text = player.Name
-    username.TextColor3 = COL_TEXT
-    username.TextSize = 14
-    username.TextXAlignment = Enum.TextXAlignment.Left
-    username.ZIndex = 6
-
-    local userid = Instance.new("TextLabel")
-    userid.Name = "userid"
-    userid.Parent = profileFrame
-    userid.BackgroundTransparency = 1
-    userid.Position = UDim2.new(0, 60, 0.55, 0)
-    userid.Size = UDim2.new(1, -70, 0, 20)
-    userid.Font = Enum.Font.Gotham
-    userid.Text = "ID: " .. player.UserId
-    userid.TextColor3 = COL_SUBTEXT
-    userid.TextSize = 12
-    userid.TextXAlignment = Enum.TextXAlignment.Left
-    userid.ZIndex = 6
-
-    -- ===== TOPBAR: mismo color que el menú (COL_BG) =====
-
+    -- Topbar
     local topbar = Instance.new("Frame")
     topbar.Name = "topbar"
     topbar.Parent = main
-    topbar.BackgroundColor3 = COL_BG
-    topbar.BackgroundTransparency = 0
-    topbar.Position = UDim2.new(0, 8, 0, 8)
-    topbar.Size = UDim2.new(1, -16, 0, 52)
-    topbar.ZIndex = 10
-    topbar.ClipsDescendants = false
+    topbar.BackgroundTransparency = 1
+    topbar.Size = UDim2.new(1, 0, 0, 60)
 
-    local uc_topbar = Instance.new("UICorner")
-    uc_topbar.CornerRadius = UDim.new(0, 12)
-    uc_topbar.Parent = topbar
-
-    local topbarStroke = Instance.new("UIStroke")
-    topbarStroke.Parent = topbar
-    topbarStroke.Color = TOPBAR_STROKE
-    topbarStroke.Thickness = 1
-    topbarStroke.Transparency = 0.5
-
-    -- icono circular pequeño (izquierda), SIN borde
-    local topbarIcon = Instance.new("ImageLabel")
-    topbarIcon.Name = "topbarIcon"
-    topbarIcon.Parent = topbar
-    topbarIcon.BackgroundColor3 = TOPBAR_ICON_BG
-    topbarIcon.Position = UDim2.new(0, 10, 0.5, 0)
-    topbarIcon.AnchorPoint = Vector2.new(0, 0.5)
-    topbarIcon.Size = UDim2.new(0, 34, 0, 34)
-    topbarIcon.Image = CONTROL_IMAGE
-    topbarIcon.ScaleType = Enum.ScaleType.Fit
-    topbarIcon.ZIndex = 11
-
-    local uc_ticon = Instance.new("UICorner")
-    uc_ticon.CornerRadius = UDim.new(1, 0)
-    uc_ticon.Parent = topbarIcon
-
-    -- título + subtítulo
     local title = Instance.new("TextLabel")
-    title.Name = "title"
     title.Parent = topbar
     title.BackgroundTransparency = 1
-    title.Position = UDim2.new(0, 54, 0, 6)
-    title.Size = UDim2.new(0, 220, 0, 20)
+    title.Position = UDim2.new(0, 20, 0, 0)
+    title.Size = UDim2.new(0, 200, 1, 0)
     title.Font = Enum.Font.GothamBold
-    title.TextColor3 = COL_ACCENT
-    title.TextSize = 16
-    title.TextWrapped = true
+    title.Text = ti or "WRITE HUB"
+    title.TextColor3 = COL_TEXT
+    title.TextSize = 18
     title.TextXAlignment = Enum.TextXAlignment.Left
-    title.TextYAlignment = Enum.TextYAlignment.Center
-    title.ZIndex = 11
 
     local subtitle = Instance.new("TextLabel")
-    subtitle.Name = "subtitle"
     subtitle.Parent = topbar
     subtitle.BackgroundTransparency = 1
-    subtitle.Position = UDim2.new(0, 54, 0, 26)
-    subtitle.Size = UDim2.new(0, 220, 0, 16)
+    subtitle.Position = UDim2.new(0, 20, 0, 35)
+    subtitle.Size = UDim2.new(0, 200, 0, 15)
     subtitle.Font = Enum.Font.Gotham
+    subtitle.Text = "PREMIUM EDITION"
     subtitle.TextColor3 = COL_SUBTEXT
-    subtitle.TextSize = 12
-    subtitle.TextWrapped = true
+    subtitle.TextSize = 10
     subtitle.TextXAlignment = Enum.TextXAlignment.Left
-    subtitle.TextYAlignment = Enum.TextYAlignment.Center
-    subtitle.ZIndex = 11
-    subtitle.Text = ""
 
-    -- stats FPS / PING (rojo)
-    local statsFrame = Instance.new("Frame")
-    statsFrame.Name = "statsFrame"
-    statsFrame.Parent = topbar
-    statsFrame.BackgroundTransparency = 1
-    statsFrame.AnchorPoint = Vector2.new(1, 0.5)
-    statsFrame.Position = UDim2.new(1, -110, 0.5, 0)
-    statsFrame.Size = UDim2.new(0, 90, 0, 36)
-    statsFrame.ZIndex = 11
-
-    local fpsLabel = Instance.new("TextLabel")
-    fpsLabel.Name = "fpsLabel"
-    fpsLabel.Parent = statsFrame
-    fpsLabel.BackgroundTransparency = 1
-    fpsLabel.Position = UDim2.new(0, 0, 0, 0)
-    fpsLabel.Size = UDim2.new(1, 0, 0, 16)
-    fpsLabel.Font = Enum.Font.GothamMedium
-    fpsLabel.TextColor3 = COL_ACCENT
-    fpsLabel.TextSize = 13
-    fpsLabel.TextXAlignment = Enum.TextXAlignment.Left
-    fpsLabel.Text = "FPS: --"
-    fpsLabel.ZIndex = 11
-
-    local pingLabel = Instance.new("TextLabel")
-    pingLabel.Name = "pingLabel"
-    pingLabel.Parent = statsFrame
-    pingLabel.BackgroundTransparency = 1
-    pingLabel.Position = UDim2.new(0, 0, 0, 18)
-    pingLabel.Size = UDim2.new(1, 0, 0, 16)
-    pingLabel.Font = Enum.Font.GothamMedium
-    pingLabel.TextColor3 = COL_ACCENT
-    pingLabel.TextSize = 13
-    pingLabel.TextXAlignment = Enum.TextXAlignment.Left
-    pingLabel.Text = "PING: --ms"
-    pingLabel.ZIndex = 11
-
-    startFpsCounter(fpsLabel)
-    startPingCounter(pingLabel)
-
-    -- iconos de control con imágenes (rbxassetid directo)
+    -- Control Buttons
     local controls = Instance.new("Frame")
-    controls.Name = "controls"
     controls.Parent = topbar
-    controls.AnchorPoint = Vector2.new(1, 0.5)
     controls.BackgroundTransparency = 1
-    controls.Position = UDim2.new(1, -10, 0.5, 0)
-    controls.Size = UDim2.new(0, 90, 0, 24)
-    controls.ZIndex = 11
+    controls.Position = UDim2.new(1, -110, 0, 0)
+    controls.Size = UDim2.new(0, 100, 1, 0)
 
-    local ull_ctrl = Instance.new("UIListLayout")
-    ull_ctrl.Parent = controls
-    ull_ctrl.FillDirection = Enum.FillDirection.Horizontal
-    ull_ctrl.HorizontalAlignment = Enum.HorizontalAlignment.Right
-    ull_ctrl.VerticalAlignment = Enum.VerticalAlignment.Center
-    ull_ctrl.SortOrder = Enum.SortOrder.LayoutOrder
-    ull_ctrl.Padding = UDim.new(0, 12)
-
-    local function iconControlButton(nameStr, imageId)
+    local function createControl(name, icon, color)
         local btn = Instance.new("ImageButton")
-        btn.Name = nameStr
+        btn.Name = name
         btn.Parent = controls
         btn.BackgroundTransparency = 1
-        btn.Size = UDim2.new(0, 18, 0, 18)
-        btn.Image = imageId
-        btn.ImageColor3 = COL_ACCENT
-        btn.ScaleType = Enum.ScaleType.Fit
-        btn.ZIndex = 11
-        addHover(btn, {scaleUp = 1.3})
+        btn.Size = UDim2.new(0, 22, 0, 22)
+        btn.Image = icon
+        btn.ImageColor3 = color or COL_SUBTEXT
         return btn
     end
 
-    local collapseButton = iconControlButton("collapseButton", ICON_COLLAPSE)
-    local expandButton = iconControlButton("expandButton", ICON_EXPAND)
-    local closeButton = iconControlButton("closeButton", ICON_CLOSE)
+    local closeBtn = createControl("Close", ICON_CLOSE, COL_ACCENT)
+    local maxBtn = createControl("Max", ICON_EXPAND)
+    local minBtn = createControl("Min", ICON_COLLAPSE)
 
-    -- rotación al click en expandir/colapsar (feedback visual extra)
-    addClickSpin(expandButton, 90)
-    addClickSpin(collapseButton, -20)
+    local cll = Instance.new("UIListLayout")
+    cll.Parent = controls
+    cll.FillDirection = Enum.FillDirection.Horizontal
+    cll.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    cll.VerticalAlignment = Enum.VerticalAlignment.Center
+    cll.Padding = UDim.new(0, 12)
 
-    -- ===== botón único FUERA del menú, negro redondeado con la imagen =====
-    local reopenButton = Instance.new("ImageButton")
-    reopenButton.Name = "reopenButton"
-    reopenButton.Parent = scrgui
-    reopenButton.AnchorPoint = Vector2.new(1, 1)
-    reopenButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    reopenButton.BorderSizePixel = 0
-    reopenButton.Position = UDim2.new(1, -30, 1, -30)
-    reopenButton.Size = UDim2.new(0, 64, 0, 64)
-    reopenButton.Image = CONTROL_IMAGE
-    reopenButton.ScaleType = Enum.ScaleType.Fit
-    reopenButton.Visible = true
-    reopenButton.ZIndex = 50
+    -- Profile Section
+    local player = game:GetService("Players").LocalPlayer
+    local profile = Instance.new("Frame")
+    profile.Name = "profile"
+    profile.Parent = main
+    profile.BackgroundColor3 = COL_BG2
+    profile.Position = UDim2.new(0, 15, 1, -75)
+    profile.Size = UDim2.new(0, 200, 0, 60)
+    
+    local uc3 = Instance.new("UICorner")
+    uc3.CornerRadius = UDim.new(0, 10)
+    uc3.Parent = profile
 
-    local uc_reopen = Instance.new("UICorner")
-    uc_reopen.CornerRadius = UDim.new(0, 20)
-    uc_reopen.Parent = reopenButton
+    local pstroke = Instance.new("UIStroke")
+    pstroke.Thickness = 1
+    pstroke.Color = COL_STROKE
+    pstroke.Parent = profile
 
-    local reopenStroke = Instance.new("UIStroke")
-    reopenStroke.Parent = reopenButton
-    reopenStroke.Color = Color3.fromRGB(60, 60, 60)
-    reopenStroke.Thickness = 1.5
+    local avatar = Instance.new("ImageLabel")
+    avatar.Parent = profile
+    avatar.Position = UDim2.new(0, 10, 0.5, 0)
+    avatar.AnchorPoint = Vector2.new(0, 0.5)
+    avatar.Size = UDim2.new(0, 40, 0, 40)
+    avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150"
+    avatar.BackgroundColor3 = COL_BTN
+    Instance.new("UICorner", avatar).CornerRadius = UDim.new(1, 0)
 
-    addHover(reopenButton, {scaleUp = 1.1})
-    addPulse(reopenButton, {minTransparency = 0, maxTransparency = 0.15, duration = 1.6})
+    local userLabel = Instance.new("TextLabel")
+    userLabel.Parent = profile
+    userLabel.BackgroundTransparency = 1
+    userLabel.Position = UDim2.new(0, 60, 0.25, 0)
+    userLabel.Size = UDim2.new(1, -70, 0, 15)
+    userLabel.Font = Enum.Font.GothamBold
+    userLabel.Text = player.Name:upper()
+    userLabel.TextColor3 = COL_TEXT
+    userLabel.TextSize = 12
+    userLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- notif1
-    local notif = Instance.new("Frame")
-    notif.Name = "notif"
-    notif.Parent = main
-    notif.AnchorPoint = Vector2.new(0.5, 0.5)
-    notif.BackgroundColor3 = COL_BG
-    notif.Position = UDim2.new(0.5, 0, 0.5, 0)
-    notif.Size = UDim2.new(0, 304, 0, 362)
-    notif.Visible = false
-    notif.ZIndex = 30
+    local idLabel = Instance.new("TextLabel")
+    idLabel.Parent = profile
+    idLabel.BackgroundTransparency = 1
+    idLabel.Position = UDim2.new(0, 60, 0.55, 0)
+    idLabel.Size = UDim2.new(1, -70, 0, 15)
+    idLabel.Font = Enum.Font.Gotham
+    idLabel.Text = "ID: " .. player.UserId
+    idLabel.TextColor3 = COL_SUBTEXT
+    idLabel.TextSize = 10
+    idLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-    local uc_11 = Instance.new("UICorner")
-    uc_11.CornerRadius = UDim.new(0, 18)
-    uc_11.Parent = notif
+    -- Notifications
+    local notifFrame = Instance.new("Frame")
+    notifFrame.Name = "notifFrame"
+    notifFrame.Parent = main
+    notifFrame.BackgroundColor3 = COL_BG
+    notifFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    notifFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    notifFrame.Size = UDim2.new(0, 300, 0, 200)
+    notifFrame.Visible = false
+    notifFrame.ZIndex = 100
+    Instance.new("UICorner", notifFrame).CornerRadius = UDim.new(0, 12)
+    Instance.new("UIStroke", notifFrame).Color = COL_ACCENT
 
-    local notificon = Instance.new("ImageLabel")
-    notificon.Name = "notificon"
-    notificon.Parent = notif
-    notificon.BackgroundColor3 = COL_BG
-    notificon.BackgroundTransparency = 1
-    notificon.Position = UDim2.new(0.335526317, 0, 0.0994475111, 0)
-    notificon.Size = UDim2.new(0, 100, 0, 100)
-    notificon.ZIndex = 30
-    notificon.Image = "rbxassetid://4871684504"
-    notificon.ImageColor3 = COL_TEXT
+    local notifTitle = Instance.new("TextLabel")
+    notifTitle.Parent = notifFrame
+    notifTitle.Size = UDim2.new(1, 0, 0, 40)
+    notifTitle.Font = Enum.Font.GothamBold
+    notifTitle.TextColor3 = COL_TEXT
+    notifTitle.TextSize = 16
+    notifTitle.BackgroundTransparency = 1
 
-    local notifbutton1 = Instance.new("TextButton")
-    notifbutton1.Name = "notifbutton1"
-    notifbutton1.Parent = notif
-    notifbutton1.BackgroundColor3 = COL_ACCENT
-    notifbutton1.Position = UDim2.new(0.0559210554, 0, 0.817679524, 0)
-    notifbutton1.Size = UDim2.new(0, 270, 0, 50)
-    notifbutton1.ZIndex = 30
-    notifbutton1.Font = Enum.Font.Gotham
-    notifbutton1.Text = "OK"
-    notifbutton1.TextColor3 = COL_TEXT
-    notifbutton1.TextSize = 21
+    local notifText = Instance.new("TextLabel")
+    notifText.Parent = notifFrame
+    notifText.Position = UDim2.new(0, 15, 0, 45)
+    notifText.Size = UDim2.new(1, -30, 0, 80)
+    notifText.Font = Enum.Font.Gotham
+    notifText.TextColor3 = COL_SUBTEXT
+    notifText.TextSize = 14
+    notifText.TextWrapped = true
+    notifText.BackgroundTransparency = 1
 
-    local uc_12 = Instance.new("UICorner")
-    uc_12.CornerRadius = UDim.new(0, 9)
-    uc_12.Parent = notifbutton1
-    addHover(notifbutton1, {scaleUp = 1.05})
+    local notifBtn1 = Instance.new("TextButton")
+    notifBtn1.Parent = notifFrame
+    notifBtn1.Size = UDim2.new(0, 120, 0, 35)
+    notifBtn1.Position = UDim2.new(0.5, -60, 1, -50)
+    notifBtn1.BackgroundColor3 = COL_ACCENT
+    notifBtn1.Font = Enum.Font.GothamBold
+    notifBtn1.TextColor3 = COL_TEXT
+    notifBtn1.TextSize = 14
+    Instance.new("UICorner", notifBtn1).CornerRadius = UDim.new(0, 8)
 
-    local notifdarkness = Instance.new("Frame")
-    notifdarkness.Name = "notifdarkness"
-    notifdarkness.Parent = notif
-    notifdarkness.AnchorPoint = Vector2.new(0.5, 0.5)
-    notifdarkness.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    notifdarkness.BackgroundTransparency = 0.600
-    notifdarkness.Position = UDim2.new(0.5, 0, 0.5, 0)
-    notifdarkness.Size = UDim2.new(0, 721, 0, 584)
-    notifdarkness.ZIndex = 29
+    -- Initial Animation
+    tween(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = NORMAL_SIZE})
 
-    local uc_13 = Instance.new("UICorner")
-    uc_13.CornerRadius = UDim.new(0, 18)
-    uc_13.Parent = notifdarkness
+    -- Logic
+    closeBtn.MouseButton1Click:Connect(function()
+        tween(main, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0,0,0,0)})
+        task.wait(0.4)
+        scrgui:Destroy()
+    end)
 
-    local notiftitle = Instance.new("TextLabel")
-    notiftitle.Name = "notiftitle"
-    notiftitle.Parent = notif
-    notiftitle.BackgroundColor3 = COL_BG
-    notiftitle.BackgroundTransparency = 1
-    notiftitle.Position = UDim2.new(0.167763159, 0, 0.375690609, 0)
-    notiftitle.Size = UDim2.new(0, 200, 0, 50)
-    notiftitle.ZIndex = 30
-    notiftitle.Font = Enum.Font.GothamMedium
-    notiftitle.Text = "Notice"
-    notiftitle.TextColor3 = COL_TEXT
-    notiftitle.TextSize = 28
+    local isMax = false
+    maxBtn.MouseButton1Click:Connect(function()
+        isMax = not isMax
+        tween(main, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = isMax and MAX_SIZE or NORMAL_SIZE})
+    end)
 
-    local notiftext = Instance.new("TextLabel")
-    notiftext.Name = "notiftext"
-    notiftext.Parent = notif
-    notiftext.BackgroundColor3 = COL_BG
-    notiftext.BackgroundTransparency = 1
-    notiftext.Position = UDim2.new(0.0822368413, 0, 0.513812184, 0)
-    notiftext.Size = UDim2.new(0, 254, 0, 66)
-    notiftext.ZIndex = 30
-    notiftext.Font = Enum.Font.Gotham
-    notiftext.Text = "We would like to contact you regarding your car's extended warranty."
-    notiftext.TextColor3 = COL_SUBTEXT
-    notiftext.TextSize = 16
-    notiftext.TextWrapped = true
-
-    -- notifcation 2 (two button)
-
-    local notif2 = Instance.new("Frame")
-    notif2.Name = "notif2"
-    notif2.Parent = main
-    notif2.AnchorPoint = Vector2.new(0.5, 0.5)
-    notif2.BackgroundColor3 = COL_BG
-    notif2.Position = UDim2.new(0.5, 0, 0.5, 0)
-    notif2.Size = UDim2.new(0, 304, 0, 260)
-    notif2.Visible = false
-    notif2.ZIndex = 30
-
-    local uc_14 = Instance.new("UICorner")
-    uc_14.CornerRadius = UDim.new(0, 18)
-    uc_14.Parent = notif2
-
-    local notif2icon = Instance.new("ImageLabel")
-    notif2icon.Name = "notif2icon"
-    notif2icon.Parent = notif2
-    notif2icon.BackgroundColor3 = COL_BG
-    notif2icon.BackgroundTransparency = 1
-    notif2icon.Position = UDim2.new(0.335526317, 0, 0.0994475111, 0)
-    notif2icon.Size = UDim2.new(0, 100, 0, 100)
-    notif2icon.ZIndex = 30
-    notif2icon.Image = "rbxassetid://12608260095"
-    notif2icon.ImageColor3 = COL_TEXT
-
-    local notif2title = Instance.new("TextLabel")
-    notif2title.Name = "notif2title"
-    notif2title.Parent = notif2
-    notif2title.BackgroundColor3 = COL_BG
-    notif2title.BackgroundTransparency = 1
-    notif2title.Position = UDim2.new(0.167763159, 0, 0.375690609, 0)
-    notif2title.Size = UDim2.new(0, 200, 0, 50)
-    notif2title.ZIndex = 30
-    notif2title.Font = Enum.Font.GothamMedium
-    notif2title.Text = "Notice"
-    notif2title.TextColor3 = COL_TEXT
-    notif2title.TextSize = 28
-
-    local notif2text = Instance.new("TextLabel")
-    notif2text.Name = "notif2text"
-    notif2text.Parent = notif2
-    notif2text.BackgroundColor3 = COL_BG
-    notif2text.BackgroundTransparency = 1
-    notif2text.Position = UDim2.new(0.0822368413, 0, 0.513812184, 0)
-    notif2text.Size = UDim2.new(0, 254, 0, 66)
-    notif2text.ZIndex = 30
-    notif2text.Font = Enum.Font.Gotham
-    notif2text.Text = "We would like to contact you regarding your car's extended warranty."
-    notif2text.TextColor3 = COL_SUBTEXT
-    notif2text.TextSize = 16
-    notif2text.TextWrapped = true
-
-    local notif2button1 = Instance.new("TextButton")
-    notif2button1.Name = "notif2button1"
-    notif2button1.Parent = notif2
-    notif2button1.BackgroundColor3 = COL_ACCENT
-    notif2button1.Position = UDim2.new(0.0559210517, 0, 0.715469658, 0)
-    notif2button1.Size = UDim2.new(0, 270, 0, 40)
-    notif2button1.ZIndex = 30
-    notif2button1.Font = Enum.Font.Gotham
-    notif2button1.Text = "Sure!"
-    notif2button1.TextColor3 = COL_TEXT
-    notif2button1.TextSize = 21
-
-    local uc_15 = Instance.new("UICorner")
-    uc_15.CornerRadius = UDim.new(0, 9)
-    uc_15.Parent = notif2button1
-    addHover(notif2button1, {scaleUp = 1.05})
-
-    local notif2darkness = Instance.new("Frame")
-    notif2darkness.Name = "notif2darkness"
-    notif2darkness.Parent = notif2
-    notif2darkness.AnchorPoint = Vector2.new(0.5, 0.5)
-    notif2darkness.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    notif2darkness.BackgroundTransparency = 0.600
-    notif2darkness.Position = UDim2.new(0.5, 0, 0.5, 0)
-    notif2darkness.Size = UDim2.new(0, 721, 0, 584)
-    notif2darkness.ZIndex = 29
-
-    local uc_16 = Instance.new("UICorner")
-    uc_16.CornerRadius = UDim.new(0, 18)
-    uc_16.Parent = notif2darkness
-
-    local notif2button2 = Instance.new("TextButton")
-    notif2button2.Name = "notif2button2"
-    notif2button2.Parent = notif2
-    notif2button2.BackgroundColor3 = COL_ACCENT
-    notif2button2.BackgroundTransparency = 1
-    notif2button2.Position = UDim2.new(0.0526315793, 0, 0.842541456, 0)
-    notif2button2.Size = UDim2.new(0, 270, 0, 40)
-    notif2button2.ZIndex = 30
-    notif2button2.Font = Enum.Font.Gotham
-    notif2button2.Text = "Go away."
-    notif2button2.TextColor3 = COL_SUBTEXT
-    notif2button2.TextSize = 21
-
-    local uc_17 = Instance.new("UICorner")
-    uc_17.CornerRadius = UDim.new(0, 9)
-    uc_17.Parent = notif2button2
-
-    if ti then
-        title.Text = ti
-    else
-        title.Text = "Write Hub"
-    end
-
-    -- animación de apertura inicial: fade-in + entrada del frame
-    main.Size = UDim2.new(0, 0, 0, 0)
-    tp(main, UDim2.new(0.5, 0, 0.5, 0), 1)
-    game:GetService("TweenService"):Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Size = NORMAL_SIZE,
-        BackgroundTransparency = 0.05
-    }):Play()
-
-    window = {}
-
-    -- ===== [-] colapsar la topbar =====
     local isCollapsed = false
-    local collapseAnimating = false
-    local expandedHeight = NORMAL_SIZE.Y.Offset
-
-    function window:ToggleCollapse()
-        if collapseAnimating then return end
-        collapseAnimating = true
+    minBtn.MouseButton1Click:Connect(function()
         isCollapsed = not isCollapsed
+        tween(main, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Size = isCollapsed and UDim2.new(0, NORMAL_SIZE.X.Offset, 0, 60) or NORMAL_SIZE})
+        workarea.Visible = not isCollapsed
+        sidebar.Visible = not isCollapsed
+        profile.Visible = not isCollapsed
+    end)
 
-        local goalHeight = isCollapsed and 68 or expandedHeight
+    local window = {}
 
-        if isCollapsed then
-            workarea.Visible = false
-            sidebar.Visible = false
-            profileFrame.Visible = false
-        end
-
-        local tw = game:GetService("TweenService"):Create(
-            main,
-            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
-            {Size = UDim2.new(main.Size.X.Scale, main.Size.X.Offset, 0, goalHeight)}
-        )
-        tw:Play()
-        tw.Completed:Wait()
-
-        if not isCollapsed then
-            workarea.Visible = true
-            sidebar.Visible = true
-            profileFrame.Visible = true
-            fadeInBackground(workarea, 0, 0.25)
-        end
-
-        collapseAnimating = false
+    function window:SetSubtitle(text)
+        subtitle.Text = text:upper()
     end
 
-    collapseButton.MouseButton1Click:Connect(function()
-        window:ToggleCollapse()
-    end)
-
-    -- ===== [ ] expandir/restaurar =====
-    local isMaximized = false
-    local maxAnimating = false
-
-    function window:ToggleMaximize()
-        if maxAnimating or isCollapsed then return end
-        maxAnimating = true
-        isMaximized = not isMaximized
-
-        local goalSize = isMaximized and MAX_SIZE or NORMAL_SIZE
-        expandedHeight = goalSize.Y.Offset
-
-        game:GetService("TweenService"):Create(
-            main,
-            TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-            {Size = goalSize}
-        ):Play()
-
-        task.wait(0.35)
-        maxAnimating = false
-    end
-
-    expandButton.MouseButton1Click:Connect(function()
-        window:ToggleMaximize()
-    end)
-
-    -- ===== X cerrar con confirmación sí/no =====
-    closeButton.MouseButton1Click:Connect(function()
-        window:Notify2(
-            "¿Cerrar Write Hub?",
-            "Esta acción cerrará el menú por completo.",
-            "Sí",
-            "No",
-            nil,
-            function()
-                scrgui:Destroy()
-            end,
-            function() end
-        )
-    end)
-
-    -- ===== botón único (fuera del menú): minimiza/reabre el menú completo =====
-    local isOpen = true
-    local openAnimating = false
-
-    function window:ToggleVisible()
-        if openAnimating then return end
-        openAnimating = true
-        isOpen = not isOpen
-
-        if isOpen then
-            main.Visible = true
-            main.Size = UDim2.new(0, 0, 0, 0)
-            main.BackgroundTransparency = 1
-            main.Position = UDim2.new(0.5, 0, 0.5, 0)
-            game:GetService("TweenService"):Create(
-                main,
-                TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-                {Size = isMaximized and MAX_SIZE or NORMAL_SIZE, BackgroundTransparency = 0.05}
-            ):Play()
-            task.wait(0.35)
-        else
-            local closeTween = game:GetService("TweenService"):Create(
-                main,
-                TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-                {Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1}
-            )
-            closeTween:Play()
-            closeTween.Completed:Wait()
-            main.Visible = false
-        end
-
-        openAnimating = false
-    end
-
-    reopenButton.MouseButton1Click:Connect(function()
-        window:ToggleVisible()
-    end)
-
-    if visiblekey then
-        game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-            if input.KeyCode == visiblekey then
-                window:ToggleVisible()
-            end
+    function window:Notify(txt1, txt2, b1, callback)
+        notifTitle.Text = txt1:upper()
+        notifText.Text = txt2
+        notifBtn1.Text = b1:upper()
+        notifBtn1.Size = UDim2.new(0, 200, 0, 35)
+        notifBtn1.Position = UDim2.new(0.5, -100, 1, -50)
+        notifFrame.Visible = true
+        local conn
+        conn = notifBtn1.MouseButton1Click:Connect(function()
+            conn:Disconnect()
+            notifFrame.Visible = false
+            if callback then callback() end
         end)
     end
 
-    function window:SetSubtitle(text)
-        subtitle.Text = text
+    function window:Notify2(txt1, txt2, b1, b2, callback1, callback2)
+        notifTitle.Text = txt1:upper()
+        notifText.Text = txt2
+        
+        local btn1 = notifBtn1
+        btn1.Text = b1:upper()
+        btn1.Size = UDim2.new(0, 130, 0, 35)
+        btn1.Position = UDim2.new(0.5, -135, 1, -50)
+
+        local btn2 = btn1:Clone()
+        btn2.Parent = notifFrame
+        btn2.Text = b2:upper()
+        btn2.Position = UDim2.new(0.5, 5, 1, -50)
+        btn2.BackgroundColor3 = COL_BTN
+        btn2.UIStroke.Color = COL_STROKE
+
+        notifFrame.Visible = true
+        
+        local c1, c2
+        c1 = btn1.MouseButton1Click:Connect(function()
+            c1:Disconnect(); c2:Disconnect()
+            notifFrame.Visible = false
+            btn2:Destroy()
+            if callback1 then callback1() end
+        end)
+        c2 = btn2.MouseButton1Click:Connect(function()
+            c1:Disconnect(); c2:Disconnect()
+            notifFrame.Visible = false
+            btn2:Destroy()
+            if callback2 then callback2() end
+        end)
     end
 
-    function window:TempNotify(text1, text2, icon)
-        for b,v in next, scrgui:GetChildren() do
-            if v.Name == "tempnotif" then 
-                v.Position += UDim2.new(0,0,0,130)
-            end
-        end
-        local tempnotif = Instance.new("Frame")
-        tempnotif.Name = "tempnotif"
-        tempnotif.Parent = scrgui
-        tempnotif.AnchorPoint = Vector2.new(0.5, 0.5)
-        tempnotif.BackgroundColor3 = COL_BG
-        tempnotif.BackgroundTransparency = 1
-        tempnotif.Position = UDim2.new(1, -250, 0.0794737339, 0)
-        tempnotif.Size = UDim2.new(0, 447, 0, 117)
-        tempnotif.Visible = true
-        tempnotif.ZIndex = 4
+    function window:TempNotify(txt1, txt2)
+        local t = Instance.new("Frame")
+        t.Parent = scrgui
+        t.Size = UDim2.new(0, 280, 0, 80)
+        t.Position = UDim2.new(1, 20, 0.9, -100)
+        t.BackgroundColor3 = COL_BG
+        Instance.new("UICorner", t).CornerRadius = UDim.new(0, 10)
+        Instance.new("UIStroke", t).Color = COL_ACCENT
+        
+        local tl1 = Instance.new("TextLabel")
+        tl1.Parent = t
+        tl1.Position = UDim2.new(0, 15, 0, 10)
+        tl1.Size = UDim2.new(1, -30, 0, 20)
+        tl1.Font = Enum.Font.GothamBold
+        tl1.Text = txt1:upper()
+        tl1.TextColor3 = COL_TEXT
+        tl1.TextSize = 14
+        tl1.TextXAlignment = Enum.TextXAlignment.Left
+        tl1.BackgroundTransparency = 1
 
-        local uc_21 = Instance.new("UICorner")
-        uc_21.CornerRadius = UDim.new(0, 18)
-        uc_21.Parent = tempnotif
+        local tl2 = Instance.new("TextLabel")
+        tl2.Parent = t
+        tl2.Position = UDim2.new(0, 15, 0, 30)
+        tl2.Size = UDim2.new(1, -30, 0, 40)
+        tl2.Font = Enum.Font.Gotham
+        tl2.Text = txt2
+        tl2.TextColor3 = COL_SUBTEXT
+        tl2.TextSize = 12
+        tl2.TextWrapped = true
+        tl2.TextXAlignment = Enum.TextXAlignment.Left
+        tl2.BackgroundTransparency = 1
 
-        local t2 = Instance.new("TextLabel")
-        t2.Name = "t2"
-        t2.Parent = tempnotif
-        t2.BackgroundColor3 = COL_BG
-        t2.BackgroundTransparency = 1
-        t2.Position = UDim2.new(0.236927822, 0, 0.470085472, 0)
-        t2.Size = UDim2.new(0, 326, 0, 52)
-        t2.ZIndex = 4
-        t2.Font = Enum.Font.Gotham
-        t2.Text = text2
-        t2.TextColor3 = COL_SUBTEXT
-        t2.TextSize = 16
-        t2.TextWrapped = true
-        t2.TextXAlignment = Enum.TextXAlignment.Left
-        t2.TextYAlignment = Enum.TextYAlignment.Top
-
-        local t1 = Instance.new("TextLabel")
-        t1.Name = "t1"
-        t1.Parent = tempnotif
-        t1.BackgroundColor3 = COL_BG
-        t1.BackgroundTransparency = 1
-        t1.Position = UDim2.new(0.234690696, 0, 0.193464488, 0)
-        t1.Size = UDim2.new(0, 327, 0, 25)
-        t1.ZIndex = 4
-        t1.Font = Enum.Font.GothamMedium
-        t1.Text = text1
-        t1.TextColor3 = COL_TEXT
-        t1.TextSize = 28
-        t1.TextXAlignment = Enum.TextXAlignment.Left
-
-        local ticon = Instance.new("ImageLabel")
-        ticon.Name = "ticon"
-        ticon.Parent = tempnotif
-        ticon.BackgroundColor3 = COL_BG
-        ticon.BackgroundTransparency = 1
-        ticon.Position = UDim2.new(0.0311112702, 0, 0.193464488, 0)
-        ticon.Size = UDim2.new(0, 71, 0, 71)
-        ticon.ZIndex = 4
-        ticon.Image = icon
-        ticon.ImageColor3 = COL_TEXT
-        ticon.ScaleType = Enum.ScaleType.Fit
-
-        local tshadow = Instance.new("ImageLabel")
-        tshadow.Name = "tshadow"
-        tshadow.Parent = tempnotif
-        tshadow.AnchorPoint = Vector2.new(0.5, 0.5)
-        tshadow.BackgroundTransparency = 1
-        tshadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-        tshadow.Size = UDim2.new(1.12, 0, 1.20000005, 0)
-        tshadow.ZIndex = 3
-        tshadow.Image = "rbxassetid://313486536"
-        tshadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-        tshadow.ImageTransparency = 0.400
-        tshadow.TileSize = UDim2.new(0, 1, 0, 1)
-
-        -- fade-in + deslizamiento de entrada de la notificación temporal
-        tempnotif.Position = tempnotif.Position + UDim2.new(0, 40, 0, 0)
-        local goalPos = UDim2.new(1, -250, 0.0794737339, 0)
-        game:GetService("TweenService"):Create(tempnotif, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Position = goalPos,
-            BackgroundTransparency = 0.100
-        }):Play()
-
-        game:GetService("Debris"):AddItem(tempnotif, 5)
-    end
-
-    function window:Notify(txt1, txt2, b1, icohn, callback)
-        if notif.Visible == true or notif2.Visible == true then return "Already visible" end
-        notiftitle.Text = txt1
-        notiftext.Text = txt2
-        notificon = icohn
-        notif.Visible = true
-        notif.Size = UDim2.new(0, 260, 0, 320)
-        notifbutton1.Text = b1
-        game:GetService("TweenService"):Create(notif, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 304, 0, 362)}):Play()
-        if callback then
-            con1 = notifbutton1.MouseButton1Click:Connect(function()
-                con1:Disconnect()
-                callback()
-                notif.Visible = false
-            end)
-        end
-    end
-
-    function window:Notify2(txt1, txt2, b1, b2, icohn, callback, callback2)
-        if notif.Visible == true or notif2.Visible == true then return "Already visible" end
-        notif2title.Text = txt1
-        notif2text.Text = txt2
-        notif2icon = icohn
-        notif2.Visible = true
-        notif2.Size = UDim2.new(0, 260, 0, 220)
-        notif2button1.Text = b1
-        notif2button2.Text = b2
-        game:GetService("TweenService"):Create(notif2, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 304, 0, 260)}):Play()
-        if callback and callback2 then
-            con1 = notif2button1.MouseButton1Click:Connect(function()
-                con1:Disconnect()
-                con2:Disconnect()
-                callback()
-                notif2.Visible = false
-            end)
-            con2 = notif2button2.MouseButton1Click:Connect(function()
-                con1:Disconnect()
-                con2:Disconnect()
-                callback2()
-                notif2.Visible = false
-            end)
-        end
-    end
-
-    function window:Divider(name)
-        local sidebardivider = Instance.new("TextLabel")
-        sidebardivider.Name = "sidebardivider"
-        sidebardivider.Parent = sidebar
-        sidebardivider.BackgroundColor3 = COL_BG
-        sidebardivider.BackgroundTransparency = 1
-        sidebardivider.BorderSizePixel = 2
-        sidebardivider.Position = UDim2.new(0, 0, 0.00215982716, 0)
-        sidebardivider.Size = UDim2.new(0, 226, 0, 26)
-        sidebardivider.Font = Enum.Font.Gotham
-        sidebardivider.Text = name
-        sidebardivider.TextColor3 = COL_SUBTEXT
-        sidebardivider.TextSize = 21
-        sidebardivider.TextWrapped = true
-        sidebardivider.TextXAlignment = Enum.TextXAlignment.Left
-        sidebardivider.TextYAlignment = Enum.TextYAlignment.Bottom
+        tween(t, TweenInfo.new(0.5, Enum.EasingStyle.Back), {Position = UDim2.new(1, -300, 0.9, -100)})
+        task.delay(4, function()
+            tween(t, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(1, 20, 0.9, -100)})
+            task.wait(0.5)
+            t:Destroy()
+        end)
     end
 
     function window:Section(name)
-        local sidebar2 = Instance.new("TextButton")
-        sidebar2.Name = "sidebar2"
-        sidebar2.Parent = sidebar
-        sidebar2.BackgroundColor3 = COL_ACCENT
-        sidebar2.BackgroundTransparency = 1
-        sidebar2.Size = UDim2.new(0, 226, 0, 37)
-        sidebar2.ZIndex = 2
-        sidebar2.AutoButtonColor = false
-        sidebar2.Font = Enum.Font.Gotham
-        sidebar2.Text = name
-        sidebar2.TextColor3 = COL_TEXT
-        sidebar2.TextSize = 21
+        local btn = Instance.new("TextButton")
+        btn.Parent = sidebar
+        btn.BackgroundColor3 = COL_BTN
+        btn.Size = UDim2.new(1, 0, 0, 42)
+        btn.Font = Enum.Font.GothamMedium
+        btn.Text = name:upper()
+        btn.TextColor3 = COL_SUBTEXT
+        btn.TextSize = 13
+        btn.AutoButtonColor = false
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+        local bstroke = Instance.new("UIStroke", btn)
+        bstroke.Thickness = 1
+        bstroke.Color = COL_STROKE
+
+        local container = Instance.new("ScrollingFrame")
+        container.Parent = workarea
+        container.Size = UDim2.new(1, -20, 1, -20)
+        container.Position = UDim2.new(0, 10, 0, 10)
+        container.BackgroundTransparency = 1
+        container.Visible = false
+        container.ScrollBarThickness = 0
+        container.CanvasSize = UDim2.new(0, 0, 0, 0)
+        container.AutomaticCanvasSize = "Y"
         
-        local uc_10 = Instance.new("UICorner")
-        uc_10.CornerRadius = UDim.new(0, 9)
-        uc_10.Parent = sidebar2
-        table.insert(sections, sidebar2)
-        addHover(sidebar2, {scaleUp = 1.03})
+        local cll2 = Instance.new("UIListLayout")
+        cll2.Parent = container
+        cll2.Padding = UDim.new(0, 10)
+        cll2.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-        -- animación de entrada del botón de sección al ser creado
-        do
-            local goalPos = sidebar2.Position
-            sidebar2.Position = goalPos - UDim2.new(0, 25, 0, 0)
-            local og = sidebar2.BackgroundTransparency
-            game:GetService("TweenService"):Create(sidebar2, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = goalPos}):Play()
-        end
+        table.insert(sections, btn)
+        table.insert(workareas, container)
 
-        local workareamain = Instance.new("ScrollingFrame")
-        workareamain.Name = "workareamain"
-        workareamain.Parent = workarea
-        workareamain.Active = true
-        workareamain.BackgroundColor3 = COL_BG2
-        workareamain.BackgroundTransparency = 1
-        workareamain.BorderSizePixel = 0
-        workareamain.Position = UDim2.new(0.0393013097, 0, 0.0958904102, 0)
-        workareamain.Size = UDim2.new(0, 422, 0, 460)
-        workareamain.ZIndex = 3
-        workareamain.CanvasSize = UDim2.new(0, 0, 0, 0)
-        workareamain.ScrollBarThickness = 2
-        workareamain.Visible = false
-
-        local ull = Instance.new("UIListLayout")
-        ull.Parent = workareamain
-        ull.HorizontalAlignment = Enum.HorizontalAlignment.Center
-        ull.SortOrder = Enum.SortOrder.LayoutOrder
-        ull.Padding = UDim.new(0, 5)
-    
-        table.insert(workareas, workareamain)
+        btn.MouseButton1Click:Connect(function()
+            for _, v in pairs(sections) do 
+                tween(v, TweenInfo.new(0.3), {BackgroundColor3 = COL_BTN, TextColor3 = COL_SUBTEXT})
+                v.UIStroke.Color = COL_STROKE
+            end
+            for _, v in pairs(workareas) do v.Visible = false end
+            tween(btn, TweenInfo.new(0.3), {BackgroundColor3 = COL_ACCENT, TextColor3 = COL_TEXT})
+            btn.UIStroke.Color = COL_ACCENT
+            container.Visible = true
+        end)
 
         local sec = {}
-        function sec:Select()
-            for b, v in next, sections do
-                v.BackgroundTransparency = 1
-                v.TextColor3 = COL_TEXT
-            end
-            sidebar2.BackgroundTransparency = 0
-            sidebar2.TextColor3 = Color3.fromRGB(255, 255, 255)
-            for b, v in next, workareas do
-                v.Visible = false
-            end
-            workareamain.Visible = true
+        
+        function sec:Button(text, callback)
+            local b = Instance.new("TextButton")
+            b.Parent = container
+            b.BackgroundColor3 = COL_BTN
+            b.Size = UDim2.new(0, 420, 0, 40)
+            b.Font = Enum.Font.Gotham
+            b.Text = text
+            b.TextColor3 = COL_TEXT
+            b.TextSize = 14
+            b.AutoButtonColor = false
+            Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+            local bs = Instance.new("UIStroke", b)
+            bs.Thickness = 1
+            bs.Color = COL_STROKE
 
-            -- animación de aparición: deslizamiento + fade
-            workareamain.Position = UDim2.new(0.0393013097, 15, 0.0958904102, 0)
-            local goal = UDim2.new(0.0393013097, 0, 0.0958904102, 0)
-            game:GetService("TweenService"):Create(workareamain, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = goal}):Play()
-
-            -- entrada escalonada de los elementos dentro de la sección
-            local children = {}
-            for _, child in ipairs(workareamain:GetChildren()) do
-                if child:IsA("GuiObject") and child.Name ~= "UIListLayout" then
-                    table.insert(children, child)
-                end
-            end
-            staggerIn(children, 0.04)
-        end
-        function sec:Divider(name)
-            local section = Instance.new("TextLabel")
-            section.Name = "section"
-            section.Parent = workareamain
-            section.BackgroundColor3 = COL_BG2
-            section.BackgroundTransparency = 1
-            section.BorderSizePixel = 2
-            section.Size = UDim2.new(0, 418, 0, 50)
-            section.Font = Enum.Font.Gotham
-            section.LineHeight = 1.180
-            section.Text = name
-            section.TextColor3 = COL_TEXT
-            section.TextSize = 25
-            section.TextWrapped = true
-            section.TextXAlignment = Enum.TextXAlignment.Left
-            section.TextYAlignment = Enum.TextYAlignment.Bottom
-        end
-        function sec:Button(name, callback)
-            local button = Instance.new("TextButton")
-            button.Name = "button"
-            button.Text = name
-            button.Parent = workareamain
-            button.BackgroundColor3 = COL_BTN
-            button.BackgroundTransparency = 0
-            button.Size = UDim2.new(0, 418, 0, 37)
-            button.ZIndex = 2
-            button.Font = Enum.Font.Gotham
-            button.TextColor3 = COL_TEXT
-            button.TextSize = 21
-
-            local uc_3 = Instance.new("UICorner")
-            uc_3.CornerRadius = UDim.new(0, 9)
-            uc_3.Parent = button
-
-            local us = Instance.new("UIStroke", button)
-            us.ApplyStrokeMode = "Border"
-            us.Color = COL_ACCENT
-            us.Thickness = 1
-
-            addHover(button, {scaleUp = 1.03, hoverColor = Color3.fromRGB(50, 50, 50)})
-
-            if callback then
-                button.MouseButton1Click:Connect(function() 
-                    -- pulso de click más notorio: encoge y rebota
-                    local orig = button.Size
-                    local shrink = UDim2.new(orig.X.Scale, orig.X.Offset * 0.97, orig.Y.Scale, orig.Y.Offset * 0.9)
-                    local tw1 = game:GetService("TweenService"):Create(button, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = shrink})
-                    tw1:Play()
-                    tw1.Completed:Wait()
-                    game:GetService("TweenService"):Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = orig}):Play()
-                    callback()
-                end)
-            end
+            addHover(b, {hoverColor = Color3.fromRGB(30, 30, 30)})
+            b.MouseButton1Click:Connect(callback)
         end
 
-        function sec:Label(name)
-            local label = Instance.new("TextLabel")
-            label.Name = "label"
-            label.Parent = workareamain
-            label.BackgroundColor3 = COL_BG2
-            label.BackgroundTransparency = 1
-            label.BorderSizePixel = 2
-            label.Size = UDim2.new(0, 418, 0, 37)
-            label.Font = Enum.Font.Gotham
-            label.TextColor3 = COL_SUBTEXT
-            label.TextSize = 21
-            label.TextWrapped = true
-            label.Text = name
-        end
+        function sec:Switch(text, default, callback)
+            local state = default
+            local f = Instance.new("Frame")
+            f.Parent = container
+            f.BackgroundColor3 = COL_BTN
+            f.Size = UDim2.new(0, 420, 0, 40)
+            Instance.new("UICorner", f).CornerRadius = UDim.new(0, 8)
+            Instance.new("UIStroke", f).Color = COL_STROKE
 
-        function sec:Switch(name, defaultmode, callback)
-            local mode = defaultmode
-            local toggleswitch = Instance.new("Frame")
-            toggleswitch.Name = "toggleswitch"
-            toggleswitch.Parent = workareamain
-            toggleswitch.BackgroundColor3 = COL_BTN
-            toggleswitch.BackgroundTransparency = 0
-            toggleswitch.BorderSizePixel = 0
-            toggleswitch.Size = UDim2.new(0, 418, 0, 37)
-            toggleswitch.ClipsDescendants = false
+            local l = Instance.new("TextLabel")
+            l.Parent = f
+            l.BackgroundTransparency = 1
+            l.Position = UDim2.new(0, 15, 0, 0)
+            l.Size = UDim2.new(1, -70, 1, 0)
+            l.Font = Enum.Font.Gotham
+            l.Text = text
+            l.TextColor3 = COL_TEXT
+            l.TextSize = 14
+            l.TextXAlignment = Enum.TextXAlignment.Left
 
-            local uc_sw = Instance.new("UICorner")
-            uc_sw.CornerRadius = UDim.new(0, 9)
-            uc_sw.Parent = toggleswitch
-
-            local swLabel = Instance.new("TextLabel")
-            swLabel.Name = "swLabel"
-            swLabel.Parent = toggleswitch
-            swLabel.BackgroundTransparency = 1
-            swLabel.Position = UDim2.new(0, 14, 0, 0)
-            swLabel.Size = UDim2.new(1, -100, 1, 0)
-            swLabel.Font = Enum.Font.Gotham
-            swLabel.Text = name
-            swLabel.TextColor3 = COL_TEXT
-            swLabel.TextSize = 18
-            swLabel.TextWrapped = true
-            swLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-            local hitArea = Instance.new("TextButton")
-            hitArea.Name = "hitArea"
-            hitArea.Parent = toggleswitch
-            hitArea.BackgroundTransparency = 1
-            hitArea.Size = UDim2.new(1, 0, 1, 0)
-            hitArea.Text = ""
-            hitArea.ZIndex = 5
-            hitArea.AutoButtonColor = false
-
-            local Frame = Instance.new("Frame")
-            Frame.Name = "track"
-            Frame.Parent = toggleswitch
-            Frame.AnchorPoint = Vector2.new(1, 0.5)
-            Frame.Position = UDim2.new(1, -8, 0.5, 0)
-            Frame.Size = UDim2.new(0, 56, 0, 28)
-            Frame.ZIndex = 4
-
-            local uc_4 = Instance.new("UICorner")
-            uc_4.CornerRadius = UDim.new(1, 0)
-            uc_4.Parent = Frame
+            local tog = Instance.new("TextButton")
+            tog.Parent = f
+            tog.AnchorPoint = Vector2.new(1, 0.5)
+            tog.Position = UDim2.new(1, -10, 0.5, 0)
+            tog.Size = UDim2.new(0, 38, 0, 20)
+            tog.BackgroundColor3 = state and COL_ACCENT or COL_STROKE
+            tog.Text = ""
+            Instance.new("UICorner", tog).CornerRadius = UDim.new(1, 0)
 
             local knob = Instance.new("Frame")
-            knob.Name = "knob"
-            knob.Parent = Frame
-            knob.BackgroundColor3 = COL_TEXT
-            knob.Size = UDim2.new(0, 22, 0, 22)
+            knob.Parent = tog
+            knob.Size = UDim2.new(0, 16, 0, 16)
+            knob.Position = state and UDim2.new(1, -18, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)
             knob.AnchorPoint = Vector2.new(0, 0.5)
-            knob.Position = UDim2.new(0, 3, 0.5, 0)
-            knob.ZIndex = 4
-            knob.Active = false
+            knob.BackgroundColor3 = COL_TEXT
+            Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
 
-            local uc_5 = Instance.new("UICorner")
-            uc_5.CornerRadius = UDim.new(1, 0)
-            uc_5.Parent = knob
-
-            local function applyState(instant)
-                local knobGoal = mode and UDim2.new(1, -25, 0.5, 0) or UDim2.new(0, 3, 0.5, 0)
-                local colGoal = mode and COL_ACCENT or Color3.fromRGB(60, 60, 60)
-                if instant then
-                    knob.Position = knobGoal
-                    Frame.BackgroundColor3 = colGoal
-                else
-                    -- knob "estira" ligeramente al moverse para dar sensación elástica
-                    local stretchSize = UDim2.new(0, 28, 0, 22)
-                    game:GetService("TweenService"):Create(knob, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = stretchSize}):Play()
-                    game:GetService("TweenService"):Create(knob, TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = knobGoal, Size = UDim2.new(0, 22, 0, 22)}):Play()
-                    game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.15), {BackgroundColor3 = colGoal}):Play()
-                end
-            end
-            applyState(true)
-
-            local function flip()
-                mode = not mode
-                applyState(false)
-                if callback then
-                    callback(mode)
-                end
-            end
-
-            hitArea.MouseButton1Click:Connect(flip)
+            tog.MouseButton1Click:Connect(function()
+                state = not state
+                tween(tog, TweenInfo.new(0.2), {BackgroundColor3 = state and COL_ACCENT or COL_STROKE})
+                tween(knob, TweenInfo.new(0.2, Enum.EasingStyle.Back), {Position = state and UDim2.new(1, -18, 0.5, 0) or UDim2.new(0, 2, 0.5, 0)})
+                callback(state)
+            end)
         end
 
-        function sec:TextField(name, placeholder, callback)
-            local textfield = Instance.new("TextLabel")
-            textfield.Name = "textfield"
-            textfield.Parent = workareamain
-            textfield.BackgroundColor3 = COL_BG2
-            textfield.BackgroundTransparency = 1
-            textfield.BorderSizePixel = 2
-            textfield.Size = UDim2.new(0, 418, 0, 37)
-            textfield.Font = Enum.Font.Gotham
-            textfield.Text = name
-            textfield.TextColor3 = COL_TEXT
-            textfield.TextSize = 21
-            textfield.TextWrapped = true
-            textfield.TextXAlignment = Enum.TextXAlignment.Left
+        function sec:TextField(text, placeholder, callback)
+            local f = Instance.new("Frame")
+            f.Parent = container
+            f.BackgroundColor3 = COL_BTN
+            f.Size = UDim2.new(0, 420, 0, 45)
+            Instance.new("UICorner", f).CornerRadius = UDim.new(0, 8)
+            Instance.new("UIStroke", f).Color = COL_STROKE
 
-            local Frame_2 = Instance.new("Frame")
-            Frame_2.Parent = textfield
-            Frame_2.BackgroundColor3 = COL_BTN
-            Frame_2.Position = UDim2.new(0.441926777, 0, 0.0270270277, 0)
-            Frame_2.Size = UDim2.new(0, 233, 0, 34)
+            local l = Instance.new("TextLabel")
+            l.Parent = f
+            l.BackgroundTransparency = 1
+            l.Position = UDim2.new(0, 15, 0, 0)
+            l.Size = UDim2.new(0, 150, 1, 0)
+            l.Font = Enum.Font.Gotham
+            l.Text = text
+            l.TextColor3 = COL_TEXT
+            l.TextSize = 14
+            l.TextXAlignment = Enum.TextXAlignment.Left
 
-            local uc_6 = Instance.new("UICorner")
-            uc_6.CornerRadius = UDim.new(0, 9)
-            uc_6.Parent = Frame_2
+            local tb = Instance.new("TextBox")
+            tb.Parent = f
+            tb.BackgroundColor3 = COL_BG2
+            tb.Position = UDim2.new(1, -240, 0.5, 0)
+            tb.AnchorPoint = Vector2.new(0, 0.5)
+            tb.Size = UDim2.new(0, 230, 0, 30)
+            tb.Font = Enum.Font.Gotham
+            tb.PlaceholderText = placeholder or "Escribe aquí..."
+            tb.Text = ""
+            tb.TextColor3 = COL_TEXT
+            tb.TextSize = 13
+            Instance.new("UICorner", tb).CornerRadius = UDim.new(0, 6)
+            Instance.new("UIStroke", tb).Color = COL_STROKE
 
-            local TextBox = Instance.new("TextBox")
-            TextBox.Parent = Frame_2
-            TextBox.BackgroundColor3 = COL_BG2
-            TextBox.BackgroundTransparency = 1
-            TextBox.BorderColor3 = Color3.fromRGB(27, 42, 53)
-            TextBox.BorderSizePixel = 0
-            TextBox.ClipsDescendants = true
-            TextBox.Position = UDim2.new(0.0643776804, 0, 0, -2)
-            TextBox.Size = UDim2.new(0, 203, 0, 34)
-            TextBox.ClearTextOnFocus = false
-            TextBox.Font = Enum.Font.Gotham
-            TextBox.LineHeight = 0.870
-            TextBox.PlaceholderColor3 = COL_SUBTEXT
-            TextBox.PlaceholderText = placeholder or "Type..."
-            TextBox.Text = ""
-            TextBox.TextColor3 = COL_TEXT
-            TextBox.TextSize = 21
-            TextBox.TextXAlignment = Enum.TextXAlignment.Left
-
-            if callback then
-                TextBox.FocusLost:Connect(function()
-                    callback(TextBox.Text)
-                end)
-            end
+            tb.FocusLost:Connect(function()
+                callback(tb.Text)
+            end)
         end
 
-        sidebar2.MouseButton1Click:Connect(function()
-            sec:Select()
-        end)
+        function sec:Label(text)
+            local l = Instance.new("TextLabel")
+            l.Parent = container
+            l.BackgroundTransparency = 1
+            l.Size = UDim2.new(0, 420, 0, 30)
+            l.Font = Enum.Font.Gotham
+            l.Text = text
+            l.TextColor3 = COL_SUBTEXT
+            l.TextSize = 14
+        end
 
         return sec
     end
