@@ -7,22 +7,23 @@ local notifs = {}
 local visible = true
 local dbcooper = false
 
--- paleta (todo negro, acento rojo) - Mantenida pero pulida
-local COL_BG = Color3.fromRGB(10, 10, 10)
-local COL_BG2 = Color3.fromRGB(15, 15, 15)
-local COL_BTN = Color3.fromRGB(25, 25, 25)
+-- paleta (todo negro, acento rojo)
+local COL_BG = Color3.fromRGB(15, 15, 15)
+local COL_BG2 = Color3.fromRGB(20, 20, 20)
+local COL_BTN = Color3.fromRGB(35, 35, 35)
 local COL_TEXT = Color3.fromRGB(255, 255, 255)
-local COL_SUBTEXT = Color3.fromRGB(180, 180, 180)
+local COL_SUBTEXT = Color3.fromRGB(190, 190, 190)
 local COL_ACCENT = Color3.fromRGB(220, 40, 45)
 
 -- la topbar ahora usa el MISMO color que el menú (COL_BG), no un color aparte
-local TOPBAR_STROKE = Color3.fromRGB(50, 50, 50)
-local TOPBAR_ICON_BG = Color3.fromRGB(20, 20, 20)
+local TOPBAR_STROKE = Color3.fromRGB(60, 60, 60)
+local TOPBAR_ICON_BG = Color3.fromRGB(25, 25, 25)
 
 -- imagen de perfil/control, confirmada que carga bien con rbxthumb
 local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
 
--- iconos de control: corregidos para usar rbxthumb
+-- iconos de control: usar rbxthumb con parámetros para asegurar que carguen
+-- (rbxassetid directo solo funciona si es el ID de Imagen, no el de Decal)
 local ICON_CLOSE = "rbxthumb://type=Asset&id=111147657950432&w=150&h=150"
 local ICON_COLLAPSE = "rbxthumb://type=Asset&id=119364000008939&w=150&h=150"
 local ICON_EXPAND = "rbxthumb://type=Asset&id=76932851909318&w=150&h=150"
@@ -344,7 +345,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     sidebar.BackgroundTransparency = 1
     sidebar.BorderSizePixel = 0
     sidebar.Position = UDim2.new(0.0249653254, 0, 0.19, 0)
-    sidebar.Size = UDim2.new(0, 233, 0, 360) -- Ajustado para el perfil
+    sidebar.Size = UDim2.new(0, 233, 0, 390)
     sidebar.AutomaticCanvasSize = "Y"
     sidebar.CanvasSize = UDim2.new(0, 0, 0, 0)
     sidebar.ScrollBarThickness = 2
@@ -354,13 +355,13 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     ull_2.SortOrder = Enum.SortOrder.LayoutOrder
     ull_2.Padding = UDim.new(0, 5)
 
-    -- SECCIÓN DE PERFIL
+    -- ===== SECCIÓN DE PERFIL (Abajo de las tabs) =====
     local profileFrame = Instance.new("Frame")
     profileFrame.Name = "profileFrame"
     profileFrame.Parent = main
     profileFrame.BackgroundColor3 = COL_BG2
-    profileFrame.Position = UDim2.new(0.025, 0, 0.86, 0)
-    profileFrame.Size = UDim2.new(0, 226, 0, 65)
+    profileFrame.Position = UDim2.new(0.025, 0, 0.865, 0)
+    profileFrame.Size = UDim2.new(0, 226, 0, 60)
     profileFrame.ZIndex = 5
 
     local uc_prof = Instance.new("UICorner")
@@ -378,19 +379,22 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     avatar.Name = "avatar"
     avatar.Parent = profileFrame
     avatar.BackgroundColor3 = TOPBAR_ICON_BG
-    avatar.Position = UDim2.new(0, 10, 0.5, 0)
+    avatar.Position = UDim2.new(0, 8, 0.5, 0)
     avatar.AnchorPoint = Vector2.new(0, 0.5)
-    avatar.Size = UDim2.new(0, 46, 0, 46)
+    avatar.Size = UDim2.new(0, 44, 0, 44)
     avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150"
     avatar.ZIndex = 6
-    Instance.new("UICorner", avatar).CornerRadius = UDim.new(1, 0)
+
+    local uc_avatar = Instance.new("UICorner")
+    uc_avatar.CornerRadius = UDim.new(1, 0)
+    uc_avatar.Parent = avatar
 
     local username = Instance.new("TextLabel")
     username.Name = "username"
     username.Parent = profileFrame
     username.BackgroundTransparency = 1
-    username.Position = UDim2.new(0, 65, 0.2, 0)
-    username.Size = UDim2.new(1, -75, 0, 20)
+    username.Position = UDim2.new(0, 60, 0.2, 0)
+    username.Size = UDim2.new(1, -70, 0, 20)
     username.Font = Enum.Font.GothamBold
     username.Text = player.Name
     username.TextColor3 = COL_TEXT
@@ -402,8 +406,8 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     userid.Name = "userid"
     userid.Parent = profileFrame
     userid.BackgroundTransparency = 1
-    userid.Position = UDim2.new(0, 65, 0.55, 0)
-    userid.Size = UDim2.new(1, -75, 0, 20)
+    userid.Position = UDim2.new(0, 60, 0.55, 0)
+    userid.Size = UDim2.new(1, -70, 0, 20)
     userid.Font = Enum.Font.Gotham
     userid.Text = "ID: " .. player.UserId
     userid.TextColor3 = COL_SUBTEXT
@@ -458,8 +462,10 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     title.Size = UDim2.new(0, 220, 0, 20)
     title.Font = Enum.Font.GothamBold
     title.TextColor3 = COL_ACCENT
-    title.TextSize = 18
+    title.TextSize = 16
+    title.TextWrapped = true
     title.TextXAlignment = Enum.TextXAlignment.Left
+    title.TextYAlignment = Enum.TextYAlignment.Center
     title.ZIndex = 11
 
     local subtitle = Instance.new("TextLabel")
@@ -469,50 +475,90 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     subtitle.Position = UDim2.new(0, 54, 0, 26)
     subtitle.Size = UDim2.new(0, 220, 0, 16)
     subtitle.Font = Enum.Font.Gotham
-    subtitle.Text = "PREMIUM INTERFACE"
     subtitle.TextColor3 = COL_SUBTEXT
-    subtitle.TextSize = 11
+    subtitle.TextSize = 12
+    subtitle.TextWrapped = true
     subtitle.TextXAlignment = Enum.TextXAlignment.Left
+    subtitle.TextYAlignment = Enum.TextYAlignment.Center
     subtitle.ZIndex = 11
+    subtitle.Text = ""
 
-    -- botones de control (derecha)
-    local closeButton = Instance.new("ImageButton")
-    closeButton.Name = "closeButton"
-    closeButton.Parent = topbar
-    closeButton.AnchorPoint = Vector2.new(1, 0.5)
-    closeButton.BackgroundTransparency = 1
-    closeButton.Position = UDim2.new(1, -10, 0.5, 0)
-    closeButton.Size = UDim2.new(0, 24, 0, 24)
-    closeButton.Image = ICON_CLOSE
-    closeButton.ImageColor3 = COL_ACCENT
-    closeButton.ZIndex = 12
+    -- stats FPS / PING (rojo)
+    local statsFrame = Instance.new("Frame")
+    statsFrame.Name = "statsFrame"
+    statsFrame.Parent = topbar
+    statsFrame.BackgroundTransparency = 1
+    statsFrame.AnchorPoint = Vector2.new(1, 0.5)
+    statsFrame.Position = UDim2.new(1, -110, 0.5, 0)
+    statsFrame.Size = UDim2.new(0, 90, 0, 36)
+    statsFrame.ZIndex = 11
 
-    local expandButton = Instance.new("ImageButton")
-    expandButton.Name = "expandButton"
-    expandButton.Parent = topbar
-    expandButton.AnchorPoint = Vector2.new(1, 0.5)
-    expandButton.BackgroundTransparency = 1
-    expandButton.Position = UDim2.new(1, -44, 0.5, 0)
-    expandButton.Size = UDim2.new(0, 24, 0, 24)
-    expandButton.Image = ICON_EXPAND
-    expandButton.ImageColor3 = COL_SUBTEXT
-    expandButton.ZIndex = 12
+    local fpsLabel = Instance.new("TextLabel")
+    fpsLabel.Name = "fpsLabel"
+    fpsLabel.Parent = statsFrame
+    fpsLabel.BackgroundTransparency = 1
+    fpsLabel.Position = UDim2.new(0, 0, 0, 0)
+    fpsLabel.Size = UDim2.new(1, 0, 0, 16)
+    fpsLabel.Font = Enum.Font.GothamMedium
+    fpsLabel.TextColor3 = COL_ACCENT
+    fpsLabel.TextSize = 13
+    fpsLabel.TextXAlignment = Enum.TextXAlignment.Left
+    fpsLabel.Text = "FPS: --"
+    fpsLabel.ZIndex = 11
 
-    local collapseButton = Instance.new("ImageButton")
-    collapseButton.Name = "collapseButton"
-    collapseButton.Parent = topbar
-    collapseButton.AnchorPoint = Vector2.new(1, 0.5)
-    collapseButton.BackgroundTransparency = 1
-    collapseButton.Position = UDim2.new(1, -78, 0.5, 0)
-    collapseButton.Size = UDim2.new(0, 24, 0, 24)
-    collapseButton.Image = ICON_COLLAPSE
-    collapseButton.ImageColor3 = COL_SUBTEXT
-    collapseButton.ZIndex = 12
+    local pingLabel = Instance.new("TextLabel")
+    pingLabel.Name = "pingLabel"
+    pingLabel.Parent = statsFrame
+    pingLabel.BackgroundTransparency = 1
+    pingLabel.Position = UDim2.new(0, 0, 0, 18)
+    pingLabel.Size = UDim2.new(1, 0, 0, 16)
+    pingLabel.Font = Enum.Font.GothamMedium
+    pingLabel.TextColor3 = COL_ACCENT
+    pingLabel.TextSize = 13
+    pingLabel.TextXAlignment = Enum.TextXAlignment.Left
+    pingLabel.Text = "PING: --ms"
+    pingLabel.ZIndex = 11
 
-    addHover(closeButton, {scaleUp = 1.15})
-    addHover(expandButton, {scaleUp = 1.15})
-    addHover(collapseButton, {scaleUp = 1.15})
+    startFpsCounter(fpsLabel)
+    startPingCounter(pingLabel)
 
+    -- iconos de control con imágenes (rbxassetid directo)
+    local controls = Instance.new("Frame")
+    controls.Name = "controls"
+    controls.Parent = topbar
+    controls.AnchorPoint = Vector2.new(1, 0.5)
+    controls.BackgroundTransparency = 1
+    controls.Position = UDim2.new(1, -10, 0.5, 0)
+    controls.Size = UDim2.new(0, 90, 0, 24)
+    controls.ZIndex = 11
+
+    local ull_ctrl = Instance.new("UIListLayout")
+    ull_ctrl.Parent = controls
+    ull_ctrl.FillDirection = Enum.FillDirection.Horizontal
+    ull_ctrl.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    ull_ctrl.VerticalAlignment = Enum.VerticalAlignment.Center
+    ull_ctrl.SortOrder = Enum.SortOrder.LayoutOrder
+    ull_ctrl.Padding = UDim.new(0, 12)
+
+    local function iconControlButton(nameStr, imageId)
+        local btn = Instance.new("ImageButton")
+        btn.Name = nameStr
+        btn.Parent = controls
+        btn.BackgroundTransparency = 1
+        btn.Size = UDim2.new(0, 18, 0, 18)
+        btn.Image = imageId
+        btn.ImageColor3 = COL_ACCENT
+        btn.ScaleType = Enum.ScaleType.Fit
+        btn.ZIndex = 11
+        addHover(btn, {scaleUp = 1.3})
+        return btn
+    end
+
+    local collapseButton = iconControlButton("collapseButton", ICON_COLLAPSE)
+    local expandButton = iconControlButton("expandButton", ICON_EXPAND)
+    local closeButton = iconControlButton("closeButton", ICON_CLOSE)
+
+    -- rotación al click en expandir/colapsar (feedback visual extra)
     addClickSpin(expandButton, 90)
     addClickSpin(collapseButton, -20)
 
@@ -817,6 +863,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             "Esta acción cerrará el menú por completo.",
             "Sí",
             "No",
+            nil,
             function()
                 scrgui:Destroy()
             end,
@@ -864,7 +911,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 
     if visiblekey then
         game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == visiblekey then
+            if input.KeyCode == visiblekey then
                 window:ToggleVisible()
             end
         end)
@@ -933,8 +980,9 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         ticon.Position = UDim2.new(0.0311112702, 0, 0.193464488, 0)
         ticon.Size = UDim2.new(0, 71, 0, 71)
         ticon.ZIndex = 4
-        ticon.Image = icon or CONTROL_IMAGE
-        Instance.new("UICorner", ticon).CornerRadius = UDim.new(1, 0)
+        ticon.Image = icon
+        ticon.ImageColor3 = COL_TEXT
+        ticon.ScaleType = Enum.ScaleType.Fit
 
         local tshadow = Instance.new("ImageLabel")
         tshadow.Name = "tshadow"
@@ -964,13 +1012,12 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         if notif.Visible == true or notif2.Visible == true then return "Already visible" end
         notiftitle.Text = txt1
         notiftext.Text = txt2
-        notificon.Image = icohn or "rbxassetid://4871684504"
+        notificon = icohn
         notif.Visible = true
         notif.Size = UDim2.new(0, 260, 0, 320)
         notifbutton1.Text = b1
         game:GetService("TweenService"):Create(notif, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 304, 0, 362)}):Play()
         if callback then
-            local con1
             con1 = notifbutton1.MouseButton1Click:Connect(function()
                 con1:Disconnect()
                 callback()
@@ -979,29 +1026,30 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         end
     end
 
-    function window:Notify2(txt1, txt2, b1, b2, callback, callback2)
+    function window:Notify2(txt1, txt2, b1, b2, icohn, callback, callback2)
         if notif.Visible == true or notif2.Visible == true then return "Already visible" end
         notif2title.Text = txt1
         notif2text.Text = txt2
+        notif2icon = icohn
         notif2.Visible = true
         notif2.Size = UDim2.new(0, 260, 0, 220)
         notif2button1.Text = b1
         notif2button2.Text = b2
         game:GetService("TweenService"):Create(notif2, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 304, 0, 260)}):Play()
-        
-        local con1, con2
-        con1 = notif2button1.MouseButton1Click:Connect(function()
-            con1:Disconnect()
-            if con2 then con2:Disconnect() end
-            if callback then callback() end
-            notif2.Visible = false
-        end)
-        con2 = notif2button2.MouseButton1Click:Connect(function()
-            if con1 then con1:Disconnect() end
-            con2:Disconnect()
-            if callback2 then callback2() end
-            notif2.Visible = false
-        end)
+        if callback and callback2 then
+            con1 = notif2button1.MouseButton1Click:Connect(function()
+                con1:Disconnect()
+                con2:Disconnect()
+                callback()
+                notif2.Visible = false
+            end)
+            con2 = notif2button2.MouseButton1Click:Connect(function()
+                con1:Disconnect()
+                con2:Disconnect()
+                callback2()
+                notif2.Visible = false
+            end)
+        end
     end
 
     function window:Divider(name)
@@ -1046,6 +1094,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         do
             local goalPos = sidebar2.Position
             sidebar2.Position = goalPos - UDim2.new(0, 25, 0, 0)
+            local og = sidebar2.BackgroundTransparency
             game:GetService("TweenService"):Create(sidebar2, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = goalPos}):Play()
         end
 
@@ -1259,42 +1308,47 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         end
 
         function sec:TextField(name, placeholder, callback)
-            local textfield = Instance.new("Frame")
+            local textfield = Instance.new("TextLabel")
             textfield.Name = "textfield"
             textfield.Parent = workareamain
-            textfield.BackgroundColor3 = COL_BTN
-            textfield.Size = UDim2.new(0, 418, 0, 45)
-            Instance.new("UICorner", textfield).CornerRadius = UDim.new(0, 9)
-
-            local label = Instance.new("TextLabel")
-            label.Parent = textfield
-            label.BackgroundTransparency = 1
-            label.Position = UDim2.new(0, 14, 0, 0)
-            label.Size = UDim2.new(0, 150, 1, 0)
-            label.Font = Enum.Font.Gotham
-            label.Text = name
-            label.TextColor3 = COL_TEXT
-            label.TextSize = 18
-            label.TextXAlignment = Enum.TextXAlignment.Left
+            textfield.BackgroundColor3 = COL_BG2
+            textfield.BackgroundTransparency = 1
+            textfield.BorderSizePixel = 2
+            textfield.Size = UDim2.new(0, 418, 0, 37)
+            textfield.Font = Enum.Font.Gotham
+            textfield.Text = name
+            textfield.TextColor3 = COL_TEXT
+            textfield.TextSize = 21
+            textfield.TextWrapped = true
+            textfield.TextXAlignment = Enum.TextXAlignment.Left
 
             local Frame_2 = Instance.new("Frame")
             Frame_2.Parent = textfield
-            Frame_2.BackgroundColor3 = COL_BG2
-            Frame_2.Position = UDim2.new(1, -240, 0.5, 0)
-            Frame_2.AnchorPoint = Vector2.new(0, 0.5)
-            Frame_2.Size = UDim2.new(0, 230, 0, 34)
-            Instance.new("UICorner", Frame_2).CornerRadius = UDim.new(0, 8)
+            Frame_2.BackgroundColor3 = COL_BTN
+            Frame_2.Position = UDim2.new(0.441926777, 0, 0.0270270277, 0)
+            Frame_2.Size = UDim2.new(0, 233, 0, 34)
+
+            local uc_6 = Instance.new("UICorner")
+            uc_6.CornerRadius = UDim.new(0, 9)
+            uc_6.Parent = Frame_2
 
             local TextBox = Instance.new("TextBox")
             TextBox.Parent = Frame_2
+            TextBox.BackgroundColor3 = COL_BG2
             TextBox.BackgroundTransparency = 1
-            TextBox.Position = UDim2.new(0.05, 0, 0, 0)
-            TextBox.Size = UDim2.new(0.9, 0, 1, 0)
+            TextBox.BorderColor3 = Color3.fromRGB(27, 42, 53)
+            TextBox.BorderSizePixel = 0
+            TextBox.ClipsDescendants = true
+            TextBox.Position = UDim2.new(0.0643776804, 0, 0, -2)
+            TextBox.Size = UDim2.new(0, 203, 0, 34)
+            TextBox.ClearTextOnFocus = false
             TextBox.Font = Enum.Font.Gotham
-            TextBox.PlaceholderText = placeholder or "Escribe..."
+            TextBox.LineHeight = 0.870
+            TextBox.PlaceholderColor3 = COL_SUBTEXT
+            TextBox.PlaceholderText = placeholder or "Type..."
             TextBox.Text = ""
             TextBox.TextColor3 = COL_TEXT
-            TextBox.TextSize = 16
+            TextBox.TextSize = 21
             TextBox.TextXAlignment = Enum.TextXAlignment.Left
 
             if callback then
