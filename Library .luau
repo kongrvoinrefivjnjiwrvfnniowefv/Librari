@@ -13,15 +13,17 @@ local COL_BG2 = Color3.fromRGB(20, 20, 20)
 local COL_BTN = Color3.fromRGB(35, 35, 35)
 local COL_TEXT = Color3.fromRGB(255, 255, 255)
 local COL_SUBTEXT = Color3.fromRGB(190, 190, 190)
-local COL_ACCENT = Color3.fromRGB(220, 40, 45) -- antes azul, ahora rojo
+local COL_ACCENT = Color3.fromRGB(220, 40, 45)
 
-local TOPBAR_BG = Color3.fromRGB(12, 12, 12)
+-- la topbar ahora usa el MISMO color que el menú (COL_BG), no un color aparte
 local TOPBAR_STROKE = Color3.fromRGB(60, 60, 60)
 local TOPBAR_ICON_BG = Color3.fromRGB(25, 25, 25)
 
+-- imagen de perfil/control, confirmada que carga bien con rbxthumb
 local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
 
--- imágenes de los iconos de control de la topbar
+-- iconos de control: usar rbxassetid:// directo (rbxthumb es solo para thumbnails de Asset,
+-- estos IDs son Decals/Images sueltos y necesitan el formato directo)
 local ICON_CLOSE = "rbxassetid://111147657950432"
 local ICON_COLLAPSE = "rbxassetid://119364000008939"
 local ICON_EXPAND = "rbxassetid://76932851909318"
@@ -61,6 +63,64 @@ local function addHover(btn, opts)
             game:GetService("TweenService"):Create(btn, tweenOut, {BackgroundColor3 = baseColor}):Play()
         end
     end)
+end
+
+-- rotación suave al hacer click (para iconos tipo "expandir")
+local function addClickSpin(btn, degrees)
+    btn.MouseButton1Click:Connect(function()
+        local goal = btn.Rotation + (degrees or 90)
+        game:GetService("TweenService"):Create(
+            btn,
+            TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+            {Rotation = goal}
+        ):Play()
+    end)
+end
+
+-- pulso sutil infinito (respiración) para llamar la atención sin ser invasivo
+local function addPulse(ins, opts)
+    opts = opts or {}
+    local minT = opts.minTransparency or 0.1
+    local maxT = opts.maxTransparency or 0.4
+    local dur = opts.duration or 1.4
+    task.spawn(function()
+        while ins and ins.Parent do
+            local t1 = game:GetService("TweenService"):Create(ins, TweenInfo.new(dur, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {ImageTransparency = maxT})
+            t1:Play()
+            t1.Completed:Wait()
+            if not (ins and ins.Parent) then break end
+            local t2 = game:GetService("TweenService"):Create(ins, TweenInfo.new(dur, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {ImageTransparency = minT})
+            t2:Play()
+            t2.Completed:Wait()
+        end
+    end)
+end
+
+-- fade-in de transparencia de fondo (para frames al aparecer)
+local function fadeInBackground(ins, targetTransparency, duration)
+    local startT = ins.BackgroundTransparency
+    ins.BackgroundTransparency = 1
+    game:GetService("TweenService"):Create(
+        ins,
+        TweenInfo.new(duration or 0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        {BackgroundTransparency = targetTransparency}
+    ):Play()
+end
+
+-- entrada escalonada: anima una lista de instancias con pequeño delay entre cada una
+local function staggerIn(instances, delayStep)
+    delayStep = delayStep or 0.05
+    for i, ins in ipairs(instances) do
+        local goalPos = ins.Position
+        ins.Position = goalPos + UDim2.new(0, -20, 0, 0)
+        local goalTransparency = ins.BackgroundTransparency
+        ins.BackgroundTransparency = 1
+        task.delay((i - 1) * delayStep, function()
+            if ins and ins.Parent then
+                game:GetService("TweenService"):Create(ins, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = goalPos, BackgroundTransparency = goalTransparency}):Play()
+            end
+        end)
+    end
 end
 
 -- spinner rojo tipo "sin conexión" alrededor de un ImageLabel/ImageButton
@@ -193,6 +253,9 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 
         local _, stopSpin = addLoadingSpinner(splash, sicon)
 
+        -- pequeña animación de "respiración" en la imagen mientras carga
+        addPulse(sicon, {minTransparency = 0, maxTransparency = 0.25, duration = 0.9})
+
         splash:TweenPosition(UDim2.new(0.5, 0, 0.5, 0), "InOut", "Quart", 1)
         wait(3)
         stopSpin()
@@ -206,7 +269,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     main.Parent = scrgui
     main.AnchorPoint = Vector2.new(0.5, 0.5)
     main.BackgroundColor3 = COL_BG
-    main.BackgroundTransparency = 0.050
+    main.BackgroundTransparency = 1 -- arranca invisible para el fade-in
     main.Position = UDim2.new(0.5, 0, 2, 0)
     main.Size = NORMAL_SIZE
     main.ClipsDescendants = false
@@ -272,7 +335,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     workareacornerhider.BorderSizePixel = 0
     workareacornerhider.Size = UDim2.new(0, 18, 0.99895674, 0)
 
-    -- sidebar (ahora empieza más arriba porque se eliminó la searchbar)
+    -- sidebar
 
     local sidebar = Instance.new("ScrollingFrame")
     sidebar.Name = "sidebar"
@@ -292,13 +355,13 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     ull_2.SortOrder = Enum.SortOrder.LayoutOrder
     ull_2.Padding = UDim.new(0, 5)
 
-    -- ===== TOPBAR NEGRA =====
+    -- ===== TOPBAR: mismo color que el menú (COL_BG) =====
 
     local topbar = Instance.new("Frame")
     topbar.Name = "topbar"
     topbar.Parent = main
-    topbar.BackgroundColor3 = TOPBAR_BG
-    topbar.BackgroundTransparency = 0.05
+    topbar.BackgroundColor3 = COL_BG
+    topbar.BackgroundTransparency = 0
     topbar.Position = UDim2.new(0, 8, 0, 8)
     topbar.Size = UDim2.new(1, -16, 0, 52)
     topbar.ZIndex = 10
@@ -312,9 +375,9 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     topbarStroke.Parent = topbar
     topbarStroke.Color = TOPBAR_STROKE
     topbarStroke.Thickness = 1
-    topbarStroke.Transparency = 0.4
+    topbarStroke.Transparency = 0.5
 
-    -- icono circular pequeño (izquierda)
+    -- icono circular pequeño (izquierda) con pulso sutil
     local topbarIcon = Instance.new("ImageLabel")
     topbarIcon.Name = "topbarIcon"
     topbarIcon.Parent = topbar
@@ -405,7 +468,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     startFpsCounter(fpsLabel)
     startPingCounter(pingLabel)
 
-    -- iconos de control con IMÁGENES: [-] colapsar | [ ] expandir | X cerrar
+    -- iconos de control con imágenes (rbxassetid directo)
     local controls = Instance.new("Frame")
     controls.Name = "controls"
     controls.Parent = topbar
@@ -437,14 +500,15 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         return btn
     end
 
-    -- [-] colapsa la topbar
     local collapseButton = iconControlButton("collapseButton", ICON_COLLAPSE)
-    -- [ ] expandir/restaurar
     local expandButton = iconControlButton("expandButton", ICON_EXPAND)
-    -- X cerrar (con confirmación)
     local closeButton = iconControlButton("closeButton", ICON_CLOSE)
 
-    -- ===== botón único FUERA del menú, negro redondeado con la imagen: minimiza/reabre el menú completo =====
+    -- rotación al click en expandir/colapsar (feedback visual extra)
+    addClickSpin(expandButton, 90)
+    addClickSpin(collapseButton, -20)
+
+    -- ===== botón único FUERA del menú, negro redondeado con la imagen =====
     local reopenButton = Instance.new("ImageButton")
     reopenButton.Name = "reopenButton"
     reopenButton.Parent = scrgui
@@ -468,6 +532,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     reopenStroke.Thickness = 1.5
 
     addHover(reopenButton, {scaleUp = 1.1})
+    addPulse(reopenButton, {minTransparency = 0, maxTransparency = 0.15, duration = 1.6})
 
     -- notif1
     local notif = Instance.new("Frame")
@@ -553,7 +618,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     notiftext.TextSize = 16
     notiftext.TextWrapped = true
 
-    -- notifcation 2 (two button) -- usada para la confirmación de cerrar
+    -- notifcation 2 (two button)
 
     local notif2 = Instance.new("Frame")
     notif2.Name = "notif2"
@@ -660,7 +725,15 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     else
         title.Text = "Write Hub"
     end
+
+    -- animación de apertura inicial: fade-in + entrada del frame
+    main.Size = UDim2.new(0, 0, 0, 0)
     tp(main, UDim2.new(0.5, 0, 0.5, 0), 1)
+    game:GetService("TweenService"):Create(main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = NORMAL_SIZE,
+        BackgroundTransparency = 0.05
+    }):Play()
+
     window = {}
 
     -- ===== [-] colapsar la topbar =====
@@ -691,6 +764,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         if not isCollapsed then
             workarea.Visible = true
             sidebar.Visible = true
+            fadeInBackground(workarea, 0, 0.25)
         end
 
         collapseAnimating = false
@@ -714,11 +788,11 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 
         game:GetService("TweenService"):Create(
             main,
-            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut),
+            TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
             {Size = goalSize}
         ):Play()
 
-        task.wait(0.3)
+        task.wait(0.35)
         maxAnimating = false
     end
 
@@ -753,18 +827,19 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         if isOpen then
             main.Visible = true
             main.Size = UDim2.new(0, 0, 0, 0)
+            main.BackgroundTransparency = 1
             main.Position = UDim2.new(0.5, 0, 0.5, 0)
             game:GetService("TweenService"):Create(
                 main,
                 TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-                {Size = isMaximized and MAX_SIZE or NORMAL_SIZE}
+                {Size = isMaximized and MAX_SIZE or NORMAL_SIZE, BackgroundTransparency = 0.05}
             ):Play()
             task.wait(0.35)
         else
             local closeTween = game:GetService("TweenService"):Create(
                 main,
                 TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-                {Size = UDim2.new(0, 0, 0, 0)}
+                {Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1}
             )
             closeTween:Play()
             closeTween.Completed:Wait()
@@ -801,7 +876,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         tempnotif.Parent = scrgui
         tempnotif.AnchorPoint = Vector2.new(0.5, 0.5)
         tempnotif.BackgroundColor3 = COL_BG
-        tempnotif.BackgroundTransparency = 0.100
+        tempnotif.BackgroundTransparency = 1
         tempnotif.Position = UDim2.new(1, -250, 0.0794737339, 0)
         tempnotif.Size = UDim2.new(0, 447, 0, 117)
         tempnotif.Visible = true
@@ -865,6 +940,15 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         tshadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
         tshadow.ImageTransparency = 0.400
         tshadow.TileSize = UDim2.new(0, 1, 0, 1)
+
+        -- fade-in + deslizamiento de entrada de la notificación temporal
+        tempnotif.Position = tempnotif.Position + UDim2.new(0, 40, 0, 0)
+        local goalPos = UDim2.new(1, -250, 0.0794737339, 0)
+        game:GetService("TweenService"):Create(tempnotif, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Position = goalPos,
+            BackgroundTransparency = 0.100
+        }):Play()
+
         game:GetService("Debris"):AddItem(tempnotif, 5)
     end
 
@@ -874,7 +958,9 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         notiftext.Text = txt2
         notificon = icohn
         notif.Visible = true
+        notif.Size = UDim2.new(0, 260, 0, 320)
         notifbutton1.Text = b1
+        game:GetService("TweenService"):Create(notif, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 304, 0, 362)}):Play()
         if callback then
             con1 = notifbutton1.MouseButton1Click:Connect(function()
                 con1:Disconnect()
@@ -890,8 +976,10 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         notif2text.Text = txt2
         notif2icon = icohn
         notif2.Visible = true
+        notif2.Size = UDim2.new(0, 260, 0, 220)
         notif2button1.Text = b1
         notif2button2.Text = b2
+        game:GetService("TweenService"):Create(notif2, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 304, 0, 260)}):Play()
         if callback and callback2 then
             con1 = notif2button1.MouseButton1Click:Connect(function()
                 con1:Disconnect()
@@ -946,6 +1034,14 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         table.insert(sections, sidebar2)
         addHover(sidebar2, {scaleUp = 1.03})
 
+        -- animación de entrada del botón de sección al ser creado
+        do
+            local goalPos = sidebar2.Position
+            sidebar2.Position = goalPos - UDim2.new(0, 25, 0, 0)
+            local og = sidebar2.BackgroundTransparency
+            game:GetService("TweenService"):Create(sidebar2, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = goalPos}):Play()
+        end
+
         local workareamain = Instance.new("ScrollingFrame")
         workareamain.Name = "workareamain"
         workareamain.Parent = workarea
@@ -981,9 +1077,19 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
             end
             workareamain.Visible = true
 
+            -- animación de aparición: deslizamiento + fade
             workareamain.Position = UDim2.new(0.0393013097, 15, 0.0958904102, 0)
             local goal = UDim2.new(0.0393013097, 0, 0.0958904102, 0)
             game:GetService("TweenService"):Create(workareamain, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = goal}):Play()
+
+            -- entrada escalonada de los elementos dentro de la sección
+            local children = {}
+            for _, child in ipairs(workareamain:GetChildren()) do
+                if child:IsA("GuiObject") and child.Name ~= "UIListLayout" then
+                    table.insert(children, child)
+                end
+            end
+            staggerIn(children, 0.04)
         end
         function sec:Divider(name)
             local section = Instance.new("TextLabel")
@@ -1028,11 +1134,13 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
 
             if callback then
                 button.MouseButton1Click:Connect(function() 
-                    coroutine.wrap(function()
-                        button.TextSize -= 3
-                        task.wait(0.06)
-                        button.TextSize += 3
-                    end)()
+                    -- pulso de click más notorio: encoge y rebota
+                    local orig = button.Size
+                    local shrink = UDim2.new(orig.X.Scale, orig.X.Offset * 0.97, orig.Y.Scale, orig.Y.Offset * 0.9)
+                    local tw1 = game:GetService("TweenService"):Create(button, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = shrink})
+                    tw1:Play()
+                    tw1.Completed:Wait()
+                    game:GetService("TweenService"):Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = orig}):Play()
                     callback()
                 end)
             end
@@ -1123,7 +1231,10 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
                     knob.Position = knobGoal
                     Frame.BackgroundColor3 = colGoal
                 else
-                    game:GetService("TweenService"):Create(knob, TweenInfo.new(0.15, Enum.EasingStyle.Sine), {Position = knobGoal}):Play()
+                    -- knob "estira" ligeramente al moverse para dar sensación elástica
+                    local stretchSize = UDim2.new(0, 28, 0, 22)
+                    game:GetService("TweenService"):Create(knob, TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = stretchSize}):Play()
+                    game:GetService("TweenService"):Create(knob, TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = knobGoal, Size = UDim2.new(0, 22, 0, 22)}):Play()
                     game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.15), {BackgroundColor3 = colGoal}):Play()
                 end
             end
