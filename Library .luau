@@ -17,28 +17,28 @@ local Player = Players.LocalPlayer
 local PlayerMouse = Player:GetMouse()
 
 local redzlib = {
-    Themes = {
-        TuanAnhIOS = {
-            ["Color Hub 1"] = ColorSequence.new({
-                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 0, 30)),
-                ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 100, 255)),
-                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 30))
-            }),
-            ["Color Hub 2"] = Color3.fromRGB(10, 20, 40),
-            ["Color Stroke"] = Color3.fromRGB(0, 120, 255),
-            ["Color Theme"] = Color3.fromRGB(50, 150, 255),
-            ["Color Text"] = Color3.fromRGB(200, 230, 255),
-            ["Color Dark Text"] = Color3.fromRGB(120, 170, 210)
-        }
-    },
+	    Themes = {
+	        DarkRed = {
+	            ["Color Hub 1"] = ColorSequence.new({
+	                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(10, 0, 0)),
+	                ColorSequenceKeypoint.new(0.50, Color3.fromRGB(30, 0, 0)),
+	                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(10, 0, 0))
+	            }),
+	            ["Color Hub 2"] = Color3.fromRGB(5, 5, 5),
+	            ["Color Stroke"] = Color3.fromRGB(200, 0, 0),
+	            ["Color Theme"] = Color3.fromRGB(255, 0, 0),
+	            ["Color Text"] = Color3.fromRGB(255, 255, 255),
+	            ["Color Dark Text"] = Color3.fromRGB(180, 0, 0)
+	        }
+	    },
 	Info = {
 		Version = "1.1.0"
 	},
-	Save = {
-		UISize = {550, 380},
-		TabSize = 160,
-		Theme = "TuanAnhIOS"
-	},
+		Save = {
+			UISize = {450, 300}, -- Tamaño más compacto
+			TabSize = 130,       -- Pestañas más estrechas
+			Theme = "DarkRed"
+		},
 	Settings = {},
 	Connection = {},
 	Instances = {},
@@ -871,7 +871,19 @@ local redzlib = {
 }
 
 local ViewportSize = workspace.CurrentCamera.ViewportSize
-local UIScale = ViewportSize.Y / 450
+-- Cálculo de escala responsiva: base 800 para PC, escala mayor en móviles
+local function GetAutoUIScale()
+    local size = workspace.CurrentCamera.ViewportSize
+    local minRes = math.min(size.X, size.Y)
+    if minRes < 600 then -- Móvil
+        return minRes / 380
+    elseif minRes < 900 then -- Tablet
+        return minRes / 600
+    else -- PC
+        return minRes / 800
+    end
+end
+local UIScale = GetAutoUIScale()
 
 local Settings = redzlib.Settings
 local Flags = redzlib.Flags
@@ -1142,19 +1154,27 @@ local function MakeDrag(Instance)
 			InputOn = true
 		end)
 		
-		Instance.InputBegan:Connect(function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-				StartPos = Instance.Position
-				DragStart = Input.Position
-				
-				while UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do RunService.Heartbeat:Wait()
-					if InputOn then
-						Update(Input)
-					end
+			Instance.InputBegan:Connect(function(Input)
+				if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+					StartPos = Instance.Position
+					DragStart = Input.Position
+					
+					local Connection
+					Connection = UserInputService.InputChanged:Connect(function(Input)
+						if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
+							Update(Input)
+						end
+					end)
+					
+					local EndConnection
+					EndConnection = Input.Changed:Connect(function()
+						if Input.UserInputState == Enum.UserInputState.End then
+							Connection:Disconnect()
+							EndConnection:Disconnect()
+						end
+					end)
 				end
-				InputOn = false
-			end
-		end)
+			end)
 	end)
 	return Instance
 end
@@ -1261,11 +1281,11 @@ local function ButtonFrame(Instance, Title, Description, HolderSize)
 		RichText = true
 	}), "DarkText")
 
-	local Frame = Make("Button", Instance, {
-		Size = UDim2.new(1, 0, 0, 25),
-		AutomaticSize = "Y",
-		Name = "Option"
-	})Make("Corner", Frame, UDim.new(0, 6))
+		local Frame = Make("Button", Instance, {
+			Size = UDim2.new(1, 0, 0, 22), -- Más bajo
+			AutomaticSize = "Y",
+			Name = "Option"
+		})Make("Corner", Frame, UDim.new(0, 4)) -- Esquina más cerrada
 	
 	LabelHolder = Create("Frame", Frame, {
 		AutomaticSize = "Y",
@@ -1405,13 +1425,19 @@ function redzlib:MakeWindow(Configs)
 		end
 	end;LoadFile()
 	
-	local UISizeX, UISizeY = unpack(redzlib.Save.UISize)
-	local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
-		Size = UDim2.fromOffset(UISizeX, UISizeY),
-		Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
-		BackgroundTransparency = 0.03,
-		Name = "Hub"
-	}), "Main")
+		local UISizeX, UISizeY = unpack(redzlib.Save.UISize)
+        -- Si es móvil, forzar un tamaño más adaptado a la pantalla
+        if ViewportSize.X < 600 then
+            UISizeX = math.min(UISizeX, ViewportSize.X * 0.9)
+            UISizeY = math.min(UISizeY, ViewportSize.Y * 0.8)
+        end
+        
+		local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
+			Size = UDim2.fromOffset(UISizeX, UISizeY),
+			Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
+			BackgroundTransparency = 0.03,
+			Name = "Hub"
+		}), "Main")
 	Make("Gradient", MainFrame, {
 		Rotation = 45
 	})MakeDrag(MainFrame)
@@ -1432,57 +1458,57 @@ function redzlib:MakeWindow(Configs)
 		Name = "Top Bar"
 	})
 	
-	local Title = InsertTheme(Create("TextLabel", TopBar, {
-		Position = UDim2.new(0, 15, 0.5),
-		AnchorPoint = Vector2.new(0, 0.5),
-		AutomaticSize = "XY",
-		Text = WTitle,
-		TextXAlignment = "Left",
-		TextSize = 12,
-		TextColor3 = Theme["Color Text"],
-		BackgroundTransparency = 1,
-		Font = Enum.Font.GothamMedium,
-		Name = "Title"
-	}, {
-		InsertTheme(Create("TextLabel", {
-			Size = UDim2.fromScale(0, 1),
-			AutomaticSize = "X",
-			AnchorPoint = Vector2.new(0, 1),
-			Position = UDim2.new(1, 5, 0.9),
-			Text = WMiniText,
-			TextColor3 = Theme["Color Dark Text"],
-			BackgroundTransparency = 1,
+		local Title = InsertTheme(Create("TextLabel", TopBar, {
+			Position = UDim2.new(0, 10, 0.5), -- Margen reducido
+			AnchorPoint = Vector2.new(0, 0.5),
+			AutomaticSize = "XY",
+			Text = WTitle,
 			TextXAlignment = "Left",
-			TextYAlignment = "Bottom",
-			TextSize = 8,
-			Font = Enum.Font.Gotham,
-			Name = "SubTitle"
-		}), "DarkText")
-	}), "Text")
+			TextSize = 11, -- Texto más pequeño
+			TextColor3 = Theme["Color Text"],
+			BackgroundTransparency = 1,
+			Font = Enum.Font.GothamBold,
+			Name = "Title"
+		}, {
+			InsertTheme(Create("TextLabel", {
+				Size = UDim2.fromScale(0, 1),
+				AutomaticSize = "X",
+				AnchorPoint = Vector2.new(0, 1),
+				Position = UDim2.new(1, 5, 0.9),
+				Text = WMiniText,
+				TextColor3 = Theme["Color Dark Text"],
+				BackgroundTransparency = 1,
+				TextXAlignment = "Left",
+				TextYAlignment = "Bottom",
+				TextSize = 7, -- Texto más pequeño
+				Font = Enum.Font.Gotham,
+				Name = "SubTitle"
+			}), "DarkText")
+		}), "Text")
 	
-	local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
-		Size = UDim2.new(0, redzlib.Save.TabSize, 1, -TopBar.Size.Y.Offset),
-		ScrollBarImageColor3 = Theme["Color Theme"],
-		Position = UDim2.new(0, 0, 1, 0),
-		AnchorPoint = Vector2.new(0, 1),
-		ScrollBarThickness = 1.5,
-		BackgroundTransparency = 1,
-		ScrollBarImageTransparency = 0.2,
-		CanvasSize = UDim2.new(),
-		AutomaticCanvasSize = "Y",
-		ScrollingDirection = "Y",
-		BorderSizePixel = 0,
-		Name = "Tab Scroll"
-	}, {
-		Create("UIPadding", {
-			PaddingLeft = UDim.new(0, 10),
-			PaddingRight = UDim.new(0, 10),
-			PaddingTop = UDim.new(0, 10),
-			PaddingBottom = UDim.new(0, 10)
-		}), Create("UIListLayout", {
-			Padding = UDim.new(0, 5)
-		})
-	}), "ScrollBar")
+		local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
+			Size = UDim2.new(0, redzlib.Save.TabSize, 1, -TopBar.Size.Y.Offset),
+			ScrollBarImageColor3 = Theme["Color Theme"],
+			Position = UDim2.new(0, 0, 1, 0),
+			AnchorPoint = Vector2.new(0, 1),
+			ScrollBarThickness = 1, -- Scrollbar más fino
+			BackgroundTransparency = 1,
+			ScrollBarImageTransparency = 0.4,
+			CanvasSize = UDim2.new(),
+			AutomaticCanvasSize = "Y",
+			ScrollingDirection = "Y",
+			BorderSizePixel = 0,
+			Name = "Tab Scroll"
+		}, {
+			Create("UIPadding", {
+				PaddingLeft = UDim.new(0, 5), -- Padding reducido
+				PaddingRight = UDim.new(0, 5),
+				PaddingTop = UDim.new(0, 8),
+				PaddingBottom = UDim.new(0, 8)
+			}), Create("UIListLayout", {
+				Padding = UDim.new(0, 3) -- Espaciado reducido
+			})
+		}), "ScrollBar")
 	
 	local Containers = Create("Frame", Components, {
 		Size = UDim2.new(1, -MainScroll.Size.X.Offset, 1, -TopBar.Size.Y.Offset),
@@ -1795,29 +1821,29 @@ function redzlib:MakeWindow(Configs)
 			BackgroundTransparency = FirstTab and 1 or 0
 		}), "Theme")Make("Corner", Selected, UDim.new(0.5, 0))
 		
-		local Container = InsertTheme(Create("ScrollingFrame", {
-			Size = UDim2.new(1, 0, 1, 0),
-			Position = UDim2.new(0, 0, 1),
-			AnchorPoint = Vector2.new(0, 1),
-			ScrollBarThickness = 1.5,
-			BackgroundTransparency = 1,
-			ScrollBarImageTransparency = 0.2,
-			ScrollBarImageColor3 = Theme["Color Theme"],
-			AutomaticCanvasSize = "Y",
-			ScrollingDirection = "Y",
-			BorderSizePixel = 0,
-			CanvasSize = UDim2.new(),
-			Name = ("Container %i [ %s ]"):format(#ContainerList + 1, TName)
-		}, {
-			Create("UIPadding", {
-				PaddingLeft = UDim.new(0, 10),
-				PaddingRight = UDim.new(0, 10),
-				PaddingTop = UDim.new(0, 10),
-				PaddingBottom = UDim.new(0, 10)
-			}), Create("UIListLayout", {
-				Padding = UDim.new(0, 5)
-			})
-		}), "ScrollBar")
+			local Container = InsertTheme(Create("ScrollingFrame", {
+				Size = UDim2.new(1, 0, 1, 0),
+				Position = UDim2.new(0, 0, 1),
+				AnchorPoint = Vector2.new(0, 1),
+				ScrollBarThickness = 1,
+				BackgroundTransparency = 1,
+				ScrollBarImageTransparency = 0.4,
+				ScrollBarImageColor3 = Theme["Color Theme"],
+				AutomaticCanvasSize = "Y",
+				ScrollingDirection = "Y",
+				BorderSizePixel = 0,
+				CanvasSize = UDim2.new(),
+				Name = ("Container %i [ %s ]"):format(#ContainerList + 1, TName)
+			}, {
+				Create("UIPadding", {
+					PaddingLeft = UDim.new(0, 8),
+					PaddingRight = UDim.new(0, 8),
+					PaddingTop = UDim.new(0, 8),
+					PaddingBottom = UDim.new(0, 8)
+				}), Create("UIListLayout", {
+					Padding = UDim.new(0, 4)
+				})
+			}), "ScrollBar")
 		
 		table.insert(ContainerList, Container)
 		
@@ -1875,17 +1901,17 @@ function redzlib:MakeWindow(Configs)
 				Name = "Option"
 			})
 			
-			local SectionLabel = InsertTheme(Create("TextLabel", SectionFrame, {
-				Font = Enum.Font.GothamBold,
-				Text = SectionName,
-				TextColor3 = Theme["Color Text"],
-				Size = UDim2.new(1, -25, 1, 0),
-				Position = UDim2.new(0, 5),
-				BackgroundTransparency = 1,
-				TextTruncate = "AtEnd",
-				TextSize = 14,
-				TextXAlignment = "Left"
-			}), "Text")
+				local SectionLabel = InsertTheme(Create("TextLabel", SectionFrame, {
+					Font = Enum.Font.GothamBold,
+					Text = SectionName,
+					TextColor3 = Theme["Color Text"],
+					Size = UDim2.new(1, -25, 1, 0),
+					Position = UDim2.new(0, 2), -- Margen más ajustado
+					BackgroundTransparency = 1,
+					TextTruncate = "AtEnd",
+					TextSize = 12, -- Más pequeño
+					TextXAlignment = "Left"
+				}), "Text")
 			
 			local Section = {}
 			table.insert(redzlib.Options, {type = "Section", Name = SectionName, func = Section})
