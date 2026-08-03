@@ -1272,7 +1272,7 @@ local function getObjGen()
             Gui.UserInfo.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
             Gui.UserInfo.BackgroundTransparency = 0.5
             Gui.UserInfo.ClipsDescendants = true
-            Gui.UserInfo.Size = UDim2.new(1.85, 0, 0.25, 0)
+            Gui.UserInfo.Size = UDim2.new(1, 0, 0.25, 0)
             Gui.UserInfo.Position = UDim2.new(0, 0, 0.75, 0)
             Gui.UserInfo.ZIndex = 150
 
@@ -1382,7 +1382,7 @@ local function getObjGen()
             Gui.Logo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
             Gui.Logo.BackgroundTransparency = 1.000
             Gui.Logo.LayoutOrder = -5
-            Gui.Logo.Size = UDim2.new(1, 0, 0.15, 0)
+            Gui.Logo.Size = UDim2.new(0.2, 0, 0.15, 0)
             Gui.Logo.ZIndex = 122
             Gui.Logo.Image = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
             Gui.Logo.ImageColor3 = Color3.fromRGB(255, 0, 0)
@@ -1395,6 +1395,28 @@ local function getObjGen()
             }
             Gui.UIGradient_5.Rotation = 45
             Gui.UIGradient_5.Parent = Gui.Logo
+
+            local TitleText = Instance.new("TextLabel")
+            TitleText.Name = "TitleText"
+            TitleText.Parent = Gui.Cheats_2
+            TitleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            TitleText.BackgroundTransparency = 1.000
+            TitleText.Position = UDim2.new(0.25, 0, 0.05, 0)
+            TitleText.Size = UDim2.new(0.7, 0, 0.05, 0)
+            TitleText.ZIndex = 122
+            TitleText.Font = Enum.Font.GothamBold
+            TitleText.Text = "Title"
+            TitleText.TextColor3 = Color3.fromRGB(255, 0, 0)
+            TitleText.TextScaled = true
+            TitleText.TextSize = 24.000
+            TitleText.TextXAlignment = Enum.TextXAlignment.Left
+
+            local TitleGradient = Instance.new("UIGradient")
+            TitleGradient.Color = ColorSequence.new{
+                ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)),
+                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))
+            }
+            TitleGradient.Parent = TitleText
 
             Gui.CheatHolder.Name = "CheatHolder"
             Gui.CheatHolder.Parent = Gui.Cheats_2
@@ -3136,7 +3158,7 @@ local function getEffect()
             conns,
             ui.InputBegan:Connect(
                 function(input, gp)
-                    if gp == true or input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                    if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
                         return
                     end
 
@@ -3155,7 +3177,7 @@ local function getEffect()
             conns,
             ui.InputEnded:Connect(
                 function(input, gp)
-                    if gp == true or input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+                    if input.UserInputType ~= Enum.UserInputType.MouseButton1 then
                         return
                     end
 
@@ -3284,17 +3306,16 @@ function UILibrary.new(gameName, userId, rank)
     window.MainUI.Sidebar.ContentHolder.UserInfo.UserIcon.Image = "rbxthumb://type=AvatarHeadShot&id="..game.Players.LocalPlayer.UserId.."&w=150&h=150"
     
     --// Minimize Button
-    local MinimizeBtn = Instance.new("TextButton")
+    local MinimizeBtn = Instance.new("ImageButton")
     MinimizeBtn.Name = "MinimizeBtn"
     MinimizeBtn.Parent = GUI
     MinimizeBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    MinimizeBtn.Position = UDim2.new(0, 20, 0, 20)
-    MinimizeBtn.Size = UDim2.new(0, 40, 0, 40)
+    MinimizeBtn.Position = UDim2.new(0, 10, 0, 10)
+    MinimizeBtn.Size = UDim2.new(0, 50, 0, 50)
     MinimizeBtn.ZIndex = 999
-    MinimizeBtn.Font = Enum.Font.GothamBold
-    MinimizeBtn.Text = "-"
-    MinimizeBtn.TextColor3 = Color3.fromRGB(255, 0, 0)
-    MinimizeBtn.TextSize = 24.000
+    MinimizeBtn.Image = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
+    MinimizeBtn.ImageColor3 = Color3.fromRGB(255, 0, 0)
+    MinimizeBtn.BackgroundTransparency = 0.5
     
     local MinimizeCorner = Instance.new("UICorner")
     MinimizeCorner.CornerRadius = UDim.new(0.2, 0)
@@ -3304,10 +3325,10 @@ function UILibrary.new(gameName, userId, rank)
     MinimizeBtn.MouseButton1Click:Connect(function()
         isMinimized = not isMinimized
         window.MainUI.Visible = not isMinimized
-        MinimizeBtn.Text = isMinimized and "+" or "-"
+        MinimizeBtn.ImageColor3 = isMinimized and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0) -- Cambiar color de la imagen al minimizar/maximizar
     end)
 
-    return setmetatable(
+    local self = setmetatable(
         {
             UI = {},
             windowInfo = {
@@ -3322,6 +3343,15 @@ function UILibrary.new(gameName, userId, rank)
         },
         UILibrary.Window
     )
+    
+    -- Ocultar todas las pestañas al inicio
+    for _, child in pairs(window.MainUI.Content:GetChildren()) do
+        if child:IsA("Frame") or child:IsA("ScrollingFrame") then
+            child.Visible = false
+        end
+    end
+    
+    return self
 end
 
 function UILibrary.Window:setAnimSpeed(val)
@@ -3884,6 +3914,7 @@ function UILibrary.Window:ChangeCategorySelection(name)
         local tab = self.MainUI.MainUI.Content:FindFirstChild(name)
         if tab then
             tab.Visible = true
+            tab.Position = UDim2.fromScale(0, 0)
         end
 
         TweenService:Create(
@@ -4174,10 +4205,6 @@ local function setupEffects(ui, hover)
 
     ui.InputBegan:Connect(
         function(input, gp)
-            if gp then
-                return
-            end
-
             if input.UserInputType == Enum.UserInputType.MouseMovement then
                 TweenService:Create(hover, TI, constructTweenInfo(.5)):Play()
             elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -4188,15 +4215,10 @@ local function setupEffects(ui, hover)
 
     ui.InputEnded:Connect(
         function(input, gp)
-            if gp then
-                return
-            end
-
             if input.UserInputType == Enum.UserInputType.MouseMovement then
                 TweenService:Create(hover, TI, constructTweenInfo(1)):Play()
             elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
                 TweenService:Create(hover, TI, constructTweenInfo(.5)):Play()
-
                 ClickEvent:Fire()
             end
         end
