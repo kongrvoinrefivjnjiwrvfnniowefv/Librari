@@ -22,12 +22,11 @@ local TOPBAR_ICON_BG = Color3.fromRGB(25, 25, 25)
 -- imagen de perfil/control, confirmada que carga bien con rbxthumb
 local CONTROL_IMAGE = "rbxthumb://type=Asset&id=86868808077613&w=150&h=150"
 
--- iconos de control: usar rbxassetid:// directo (rbxthumb es solo para thumbnails de Asset;
--- estos IDs son Decals/Images sueltos y necesitaban el formato directo -- corregido, antes
--- usaban "rbxthumb://<id>" sin los parámetros type=Asset&id=..., por eso no cargaban)
-local ICON_CLOSE = "rbxassetid://111147657950432"
-local ICON_COLLAPSE = "rbxassetid://119364000008939"
-local ICON_EXPAND = "rbxassetid://76932851909318"
+-- iconos de control: usar rbxthumb con parámetros para asegurar que carguen
+-- (rbxassetid directo solo funciona si es el ID de Imagen, no el de Decal)
+local ICON_CLOSE = "rbxthumb://type=Asset&id=111147657950432&w=150&h=150"
+local ICON_COLLAPSE = "rbxthumb://type=Asset&id=119364000008939&w=150&h=150"
+local ICON_EXPAND = "rbxthumb://type=Asset&id=76932851909318&w=150&h=150"
 
 local NORMAL_SIZE = UDim2.new(0, 721, 0, 584)
 local MAX_SIZE = UDim2.new(0, 900, 0, 720)
