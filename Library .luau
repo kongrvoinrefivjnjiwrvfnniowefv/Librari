@@ -345,7 +345,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     sidebar.BackgroundTransparency = 1
     sidebar.BorderSizePixel = 0
     sidebar.Position = UDim2.new(0.0249653254, 0, 0.19, 0)
-    sidebar.Size = UDim2.new(0, 233, 0, 460)
+    sidebar.Size = UDim2.new(0, 233, 0, 390)
     sidebar.AutomaticCanvasSize = "Y"
     sidebar.CanvasSize = UDim2.new(0, 0, 0, 0)
     sidebar.ScrollBarThickness = 2
@@ -354,6 +354,66 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
     ull_2.Parent = sidebar
     ull_2.SortOrder = Enum.SortOrder.LayoutOrder
     ull_2.Padding = UDim.new(0, 5)
+
+    -- ===== SECCIÓN DE PERFIL (Abajo de las tabs) =====
+    local profileFrame = Instance.new("Frame")
+    profileFrame.Name = "profileFrame"
+    profileFrame.Parent = main
+    profileFrame.BackgroundColor3 = COL_BG2
+    profileFrame.Position = UDim2.new(0.025, 0, 0.865, 0)
+    profileFrame.Size = UDim2.new(0, 226, 0, 60)
+    profileFrame.ZIndex = 5
+
+    local uc_prof = Instance.new("UICorner")
+    uc_prof.CornerRadius = UDim.new(0, 12)
+    uc_prof.Parent = profileFrame
+
+    local profStroke = Instance.new("UIStroke")
+    profStroke.Parent = profileFrame
+    profStroke.Color = TOPBAR_STROKE
+    profStroke.Thickness = 1
+    profStroke.Transparency = 0.5
+
+    local player = game:GetService("Players").LocalPlayer
+    local avatar = Instance.new("ImageLabel")
+    avatar.Name = "avatar"
+    avatar.Parent = profileFrame
+    avatar.BackgroundColor3 = TOPBAR_ICON_BG
+    avatar.Position = UDim2.new(0, 8, 0.5, 0)
+    avatar.AnchorPoint = Vector2.new(0, 0.5)
+    avatar.Size = UDim2.new(0, 44, 0, 44)
+    avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150"
+    avatar.ZIndex = 6
+
+    local uc_avatar = Instance.new("UICorner")
+    uc_avatar.CornerRadius = UDim.new(1, 0)
+    uc_avatar.Parent = avatar
+
+    local username = Instance.new("TextLabel")
+    username.Name = "username"
+    username.Parent = profileFrame
+    username.BackgroundTransparency = 1
+    username.Position = UDim2.new(0, 60, 0.2, 0)
+    username.Size = UDim2.new(1, -70, 0, 20)
+    username.Font = Enum.Font.GothamBold
+    username.Text = player.Name
+    username.TextColor3 = COL_TEXT
+    username.TextSize = 14
+    username.TextXAlignment = Enum.TextXAlignment.Left
+    username.ZIndex = 6
+
+    local userid = Instance.new("TextLabel")
+    userid.Name = "userid"
+    userid.Parent = profileFrame
+    userid.BackgroundTransparency = 1
+    userid.Position = UDim2.new(0, 60, 0.55, 0)
+    userid.Size = UDim2.new(1, -70, 0, 20)
+    userid.Font = Enum.Font.Gotham
+    userid.Text = "ID: " .. player.UserId
+    userid.TextColor3 = COL_SUBTEXT
+    userid.TextSize = 12
+    userid.TextXAlignment = Enum.TextXAlignment.Left
+    userid.ZIndex = 6
 
     -- ===== TOPBAR: mismo color que el menú (COL_BG) =====
 
@@ -745,6 +805,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         if isCollapsed then
             workarea.Visible = false
             sidebar.Visible = false
+            profileFrame.Visible = false
         end
 
         local tw = game:GetService("TweenService"):Create(
@@ -758,6 +819,7 @@ function lib:init(ti, dosplash, visiblekey, deleteprevious)
         if not isCollapsed then
             workarea.Visible = true
             sidebar.Visible = true
+            profileFrame.Visible = true
             fadeInBackground(workarea, 0, 0.25)
         end
 
